@@ -1,7 +1,0 @@
-query exampleQuery($input: NonIdentifiable) {
-    example
-}
-
-mutation exampleMutation($variable: NonIdentifiable) {
-    inputs
-}

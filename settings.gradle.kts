@@ -1,5 +1,6 @@
 plugins {
     id("org.danilopianini.gradle-pre-commit-git-hooks") version "2.1.0"
+    id("org.gradle.toolchains.foojay-resolver-convention") version "0.10.0"
 }
 
 gitHooks {
@@ -9,18 +10,11 @@ gitHooks {
     createHooks(overwriteExisting = true)
 }
 
-rootProject.name = "pocket-android"
-include(":Pocket")
-include(":pocket-ui")
-include(":project-tools")
+rootProject.name = "neverreader"
+include(":app")
+include(":backend")
+include(":ui")
 include(":utils")
 include(":utils-android")
-include(":sync")
-include(":sync-gen")
-include(":sync-android")
-include(":sync-pocket")
-include(":sync-pocket-android")
-include(":analytics")
-include(":sync-parser")
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")

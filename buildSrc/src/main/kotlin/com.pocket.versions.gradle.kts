@@ -8,13 +8,10 @@ plugins {
 
 tasks.withType<DependencyUpdatesTask> {
     resolutionStrategy {
-        componentSelection { 
+        componentSelection {
             all {
-                if (
-                    (candidate.displayName.startsWith("com.google.crypto.tink:tink-android") && candidate.version.isNewerThan("1.2.2"))
-                    || (candidate.group == "com.fasterxml.jackson.core" && candidate.version.isNewerThan("2.8.6"))
-                ) {
-                    reject("Need sync engine code changes, so punting for now.")
+                if (candidate.group == "com.fasterxml.jackson.core" && candidate.version.isNewerThan("2.8.6")) {
+                    reject("Punted for now; utils module uses it.")
                 }
                 if (
                     (candidate.displayName.startsWith("commons-io:commons-io") && candidate.version.isNewerThan("2.6"))

@@ -2,7 +2,7 @@ plugins {
     pocketAndroidLib()
 }
 android {
-    namespace = "com.pocket.utils.android"
+    namespace = "com.neverreader.utils.android"
 }
 dependencies {
     api(projects.utils)

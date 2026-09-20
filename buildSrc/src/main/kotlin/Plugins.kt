@@ -18,6 +18,9 @@ fun PluginDependenciesSpec.kotlinJvm(): PluginDependencySpec =
 fun PluginDependenciesSpec.kotlinKapt(): PluginDependencySpec =
     id("org.jetbrains.kotlin.kapt")
 
+fun PluginDependenciesSpec.kotlinKsp(): PluginDependencySpec =
+    id("com.google.devtools.ksp")
+
 fun PluginDependenciesSpec.versions(): PluginDependencySpec =
     id("com.pocket.versions")
 

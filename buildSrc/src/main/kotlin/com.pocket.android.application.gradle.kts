@@ -8,7 +8,7 @@ android {
 }
 androidComponents {
     beforeVariants {
-        it.enableUnitTest = it.name == (System.getenv("PR_BUILD_VARIANT") ?: "developDebug")
+        it.enableUnitTest = true
     }
 }
 kotlin {
