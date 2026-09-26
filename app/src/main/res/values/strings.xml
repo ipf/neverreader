@@ -504,6 +504,7 @@
 	<string name="fxa_account_migrated">Your account has been migrated successfully.</string>
 
 	<string name="my_list_filter_all">All</string>
+	<string name="my_list_tab_unread">Unread</string>
 	<string name="my_list_filter_tagged">Tagged</string>
 	<string name="my_list_filter_favorites">Favorites</string>
 	<string name="my_list_filter_notes">Notes</string>

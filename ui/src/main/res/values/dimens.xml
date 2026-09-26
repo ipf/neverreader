@@ -23,6 +23,10 @@
     <!-- 203 visual width plus the built in side paddings.  -->
     <!-- This makes sure the 5 revealed actions all have at least 40dp tappable height -->
     <dimen name="nr_rec_tile_width_max">450dp</dimen>
+    <!-- List row: the article image is a fixed 3:2 tile on the trailing edge. -->
+    <dimen name="saves_image_width">90dp</dimen>
+    <dimen name="saves_image_height">60dp</dimen>
+    <dimen name="saves_row_min_height">140dp</dimen>
     <dimen name="nr_menu_option_height">54dp</dimen>
     <dimen name="nr_display_setting_section_height">65dp</dimen>
     <dimen name="nr_snackbar_height">53dp</dimen>

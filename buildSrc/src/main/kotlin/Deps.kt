@@ -149,10 +149,6 @@ object Deps {
         private const val VERSION = "1.14.3"
         const val jsoup = "org.jsoup:jsoup:$VERSION"
     }
-    object Nikartm {
-        private const val VERSION = "2.0.0"
-        const val imageSupport = "io.github.nikartm:image-support:$VERSION"
-    }
     object MockK {
         private const val VERSION = "1.12.4"
         const val mockk = "io.mockk:mockk:$VERSION"

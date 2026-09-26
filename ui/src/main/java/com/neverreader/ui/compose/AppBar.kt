@@ -1,6 +1,12 @@
 package com.neverreader.ui.compose
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -11,58 +17,54 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.neverreader.ui.R
+import com.neverreader.ui.theme.AppTheme
 import com.neverreader.ui.view.ThinDivider
 import com.neverreader.ui.view.button.AppIconButton
 import com.neverreader.ui.view.button.UpIcon
-import com.neverreader.ui.theme.AppTheme
 
+/**
+ * The top app bar. Height is pinned to `nr_app_bar_height` (56dp) so it matches
+ * the settings screen, which still uses the XML bar.
+ */
 @Composable
 fun AppBar(
     modifier: Modifier = Modifier,
     navigationIcon: @Composable () -> Unit = {},
     title: @Composable () -> Unit = {},
-    actions: @Composable() (RowScope.() -> Unit) = {},
+    actions: @Composable (RowScope.() -> Unit) = {},
 ) {
-    val navIconBuiltInSpace = 13.dp
-
-    Column(modifier) {
+    Column(modifier.fillMaxWidth()) {
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(dimensionResource(R.dimen.nr_app_bar_height)),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Spacer(Modifier.width(AppTheme.dimensions.sideGrid - navIconBuiltInSpace))
+            Spacer(Modifier.width(AppTheme.dimensions.sideGrid))
             navigationIcon()
-            Spacer(Modifier.width(dimensionResource(R.dimen.nr_space_md) - navIconBuiltInSpace))
-            TitleContainer(content = title)
-            Spacer(Modifier.width(dimensionResource(R.dimen.nr_space_md)))
-            Row(content = actions)
+            Row(
+                modifier = Modifier.weight(1f),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                CompositionLocalProvider(LocalTextStyle provides AppTheme.typography.h7) {
+                    title()
+                }
+            }
+            actions()
+            Spacer(Modifier.width(AppTheme.dimensions.sideGrid))
         }
         ThinDivider()
     }
 }
 
-@Composable
-private fun RowScope.TitleContainer(
-    content: @Composable () -> Unit,
-) {
-    CompositionLocalProvider(
-        LocalTextStyle provides AppTheme.typography.h7,
-    ) {
-        Box(Modifier.weight(1f)) {
-            content()
-        }
-    }
-}
-
 @Preview
 @Composable
-fun AppBarPreview() {
-    AppBar(
-        Modifier.width(480.dp),
-        {
-            AppIconButton(onClick = {}) {
-                UpIcon()
-            }
-        },
-        { Text("Title") },
-    )
+private fun AppBarPreview() {
+    AppTheme {
+        AppBar(
+            Modifier.width(480.dp),
+            navigationIcon = { AppIconButton(onClick = {}) { UpIcon() } },
+            title = { Text("Saves") },
+        )
+    }
 }
