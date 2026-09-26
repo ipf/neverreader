@@ -20,15 +20,15 @@ import kotlin.math.max
  * Apache 2.0 License.
  *
  *
- * This layout class wraps views like a text view wraps words. You can add views and they are positioned one after another
+ * This layout class wraps views like a text view wraps words. You can add views, and they are positioned one after another,
  * and when it gets to the edge, it wraps and continues onto the next line.
  *
  *
  * It has a horizontal and vertical layout mode.
  *
  *
- * Some additional modifications were made to the class such as the ability to set [.maxLines]. This will truncate
- * the view to a maximum number of lines and not shown any views that do not fit.
+ * Some additional modifications were made to the class, such as the ability to set [.maxLines]. This will truncate
+ * the view to a maximum number of lines and not show any views that do not fit.
  */
 open class FlowLayout : ViewGroup {
     private val mLineHeights = SparseIntArray()

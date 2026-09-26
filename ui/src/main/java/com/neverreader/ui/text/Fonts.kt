@@ -23,11 +23,11 @@ import android.graphics.Typeface
  * This class is intended for use only on the UI-Thread. (If we find a reason to enforce this, we can add later)
  *
  *
- * Dev Note: Why not use the font tools in support library? Our main NeverReader app needs the fonts available for use in css and html
+ * Dev Note: Why not use the font tools in the support library? Our main NeverReader app needs the fonts available for use in css and html
  * as well. While there is file:///android_res/ available, in practice it appeared pretty unreliable and could break
  * based on changing package names, using modules, build configs and could be affected by different WebView implementations
  * and versions. For example: https://bugs.chromium.org/p/chromium/issues/detail?id=599869 So having them in assets allows
- * any apps that use this module to access these fonts in code, xml and in html/css without having to duplicate large font files.
+ * any apps that use this module to access these fonts in code, XML and in html/css without having to duplicate large font files.
  * We also experienced bugs with ResourcesCompat.getFont on some devices.
  */
 object Fonts {
