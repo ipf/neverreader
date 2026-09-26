@@ -580,6 +580,8 @@
     <string name="auth_backend_wallabag" translatable="false">Wallabag</string>
     <string name="auth_server_url_hint" translatable="false">Server URL (https://…)</string>
     <string name="auth_authorize" translatable="false">Authorize</string>
+    <string name="auth_username" translatable="false">Username</string>
+    <string name="auth_password" translatable="false">Password</string>
     <string name="auth_enter_code_in_browser" translatable="false">Enter this code in your browser:</string>
     <string name="settings_title" translatable="false">Settings</string>
     <string name="settings_section_account" translatable="false">Account</string>

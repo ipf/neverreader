@@ -6,18 +6,55 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.neverreader.app.R
-import androidx.core.widget.doAfterTextChanged
-import dagger.hilt.android.AndroidEntryPoint
-import androidx.fragment.app.viewModels
-import com.neverreader.app.databinding.FragmentAuthenticationBinding
 import com.neverreader.app.MainActivity
+import com.neverreader.app.R
 import com.neverreader.backend.model.BackendType
-import com.neverreader.sdk.util.AbsNeverReaderFragment
 import com.neverreader.sdk.util.AbsNeverReaderActivity
+import com.neverreader.sdk.util.AbsNeverReaderFragment
+import com.neverreader.ui.compose.AppBar
+import com.neverreader.ui.compose.FilterChips
+import com.neverreader.ui.theme.AppTheme
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 /**
@@ -27,65 +64,32 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class AuthenticationFragment : AbsNeverReaderFragment() {
 
-    private var _binding: FragmentAuthenticationBinding? = null
-    private val binding get() = _binding!!
-
     private val viewModel: AuthenticationViewModel by viewModels()
 
     override fun onCreateViewImpl(
         inflater: LayoutInflater?,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? {
-        _binding = FragmentAuthenticationBinding.inflate(inflater!!,  container, false)
-        return binding.root
+    ): View = ComposeView(requireContext()).apply {
+        setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+        setContent {
+            AppTheme {
+                AuthenticationScreen(
+                    viewModel = viewModel,
+                    onOpenUrl = ::openVerificationUrl,
+                    onAuthenticated = ::goToMainScreen,
+                )
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        binding.backendTypeReadeck.setOnClickListener { viewModel.onBackendTypeChange(BackendType.READECK) }
-        binding.backendTypeWallabag.setOnClickListener { viewModel.onBackendTypeChange(BackendType.WALLABAG) }
-        binding.serverUrl.doAfterTextChanged { viewModel.onServerUrlChange(it?.toString().orEmpty()) }
-        binding.authorize.setOnClickListener { viewModel.startReadeckDeviceFlow() }
-
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    viewModel.state.collect { state ->
-                        // Only sync from state when it differs, otherwise every keystroke
-                        // (state update -> setText) resets the cursor to position 0.
-                        if (binding.serverUrl.text?.toString() != state.url) {
-                            binding.serverUrl.setText(state.url)
-                        }
-                        binding.error.text = state.error ?: ""
-                        when (state) {
-                            is AuthenticationViewModel.State.EnterServerUrl -> {
-                                binding.status.text = ""
-                                binding.deviceCode.text = ""
-                            }
-                            is AuthenticationViewModel.State.Authorizing -> {
-                                binding.status.text = state.message
-                            }
-                            is AuthenticationViewModel.State.DeviceFlow -> {
-                                binding.status.text = getString(R.string.auth_enter_code_in_browser)
-                                binding.deviceCode.text = state.session.userCode
-                                openVerificationUrl(state.session.verificationUriComplete ?: state.session.verificationUri)
-                            }
-                        }
-                    }
-                }
-                launch {
-                    viewModel.events.collect { event ->
-                        when (event) {
-                            is AuthenticationViewModel.Event.Success -> {
-                                // Login done: go to the main screen.
-                                (activity as? AbsNeverReaderActivity)?.let { activity ->
-                                    activity.startActivity(Intent(activity, MainActivity::class.java))
-                                    activity.finish()
-                                }
-                            }
-                        }
+                viewModel.events.collect { event ->
+                    when (event) {
+                        is AuthenticationViewModel.Event.Success -> goToMainScreen()
                     }
                 }
             }
@@ -93,17 +97,186 @@ class AuthenticationFragment : AbsNeverReaderFragment() {
     }
 
     private fun openVerificationUrl(url: String) {
-        runCatching {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+        runCatching { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
+    }
+
+    private fun goToMainScreen() {
+        (activity as? AbsNeverReaderActivity)?.let { activity ->
+            activity.startActivity(Intent(activity, MainActivity::class.java))
+            activity.finish()
+        }
+    }
+}
+
+@Composable
+private fun AuthenticationScreen(
+    viewModel: AuthenticationViewModel,
+    onOpenUrl: (String) -> Unit,
+    onAuthenticated: () -> Unit,
+) {
+    val current by viewModel.state.collectAsStateWithLifecycle()
+    val state = current
+
+    // The device flow is only useful if the user can act on the code, so open the
+    // browser as soon as a session arrives rather than waiting for a tap.
+    LaunchedEffect(state) {
+        if (state is AuthenticationViewModel.State.DeviceFlow) {
+            onOpenUrl(state.session.verificationUriComplete ?: state.session.verificationUri)
         }
     }
 
-    fun onNewIntent(intent: Intent?) {
-        // nothing to handle here yet
-    }
+    AppBar(title = { Text(stringResource(R.string.auth_title)) })
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+    Column(
+        Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .imePadding()
+            .padding(horizontal = AppTheme.dimensions.sideGrid),
+        verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.spaceSmall),
+    ) {
+        Spacer(Modifier.size(AppTheme.dimensions.spaceSmall))
+        Text(
+            text = stringResource(R.string.auth_subtitle),
+            style = AppTheme.typography.p4,
+            color = AppTheme.colors.textSecondary,
+        )
+        Spacer(Modifier.size(AppTheme.dimensions.spaceSmall))
+
+        FilterChips(
+            tabs = BackendType.entries,
+            selected = state.backendType,
+            onSelect = viewModel::onBackendTypeChange,
+            label = { type ->
+                stringResource(
+                    when (type) {
+                        BackendType.READECK -> R.string.auth_backend_readeck
+                        BackendType.WALLABAG -> R.string.auth_backend_wallabag
+                    }
+                )
+            },
+        )
+
+        OutlinedTextField(
+            value = state.url,
+            onValueChange = viewModel::onServerUrlChange,
+            label = { Text(stringResource(R.string.auth_server_url_hint)) },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Uri,
+                imeAction = ImeAction.Next,
+            ),
+            modifier = Modifier.fillMaxWidth(),
+        )
+
+        if (state.backendType == BackendType.WALLABAG) {
+            WallabagCredentials(
+                enabled = state !is AuthenticationViewModel.State.Authorizing,
+                onSubmit = viewModel::loginWallabag,
+            )
+        }
+
+        when (state) {
+            is AuthenticationViewModel.State.Authorizing -> {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp)
+                    Spacer(Modifier.size(AppTheme.dimensions.spaceSmall))
+                    Text(state.message, style = AppTheme.typography.p4)
+                }
+            }
+
+            is AuthenticationViewModel.State.DeviceFlow -> {
+                Text(
+                    text = stringResource(R.string.auth_enter_code_in_browser),
+                    style = AppTheme.typography.p4,
+                    color = AppTheme.colors.textSecondary,
+                )
+                Text(
+                    text = state.session.userCode,
+                    style = AppTheme.typography.h5,
+                )
+            }
+
+            is AuthenticationViewModel.State.EnterServerUrl -> {
+                if (state.backendType == BackendType.READECK) {
+                    PrimaryButton(
+                        text = stringResource(R.string.auth_authorize),
+                        onClick = viewModel::startReadeckDeviceFlow,
+                    )
+                }
+            }
+        }
+
+        if (!state.error.isNullOrBlank()) {
+            Text(
+                text = state.error!!,
+                style = AppTheme.typography.p4,
+                color = AppTheme.colors.coral2,
+            )
+        }
+    }
+}
+
+/**
+ * Wallabag uses the OAuth2 password grant, so it needs credentials the Readeck
+ * device flow does not.
+ */
+@Composable
+private fun WallabagCredentials(
+    enabled: Boolean,
+    onSubmit: (String, String) -> Unit,
+) {
+    var username by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+
+    Column(verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.spaceSmall)) {
+        OutlinedTextField(
+            value = username,
+            onValueChange = { username = it },
+            label = { Text(stringResource(R.string.auth_username)) },
+            singleLine = true,
+            enabled = enabled,
+            modifier = Modifier.fillMaxWidth(),
+        )
+        OutlinedTextField(
+            value = password,
+            onValueChange = { password = it },
+            label = { Text(stringResource(R.string.auth_password)) },
+            singleLine = true,
+            enabled = enabled,
+            visualTransformation = PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Done,
+            ),
+            modifier = Modifier.fillMaxWidth(),
+        )
+        PrimaryButton(
+            text = stringResource(R.string.auth_authorize),
+            enabled = enabled && username.isNotBlank() && password.isNotBlank(),
+            onClick = { onSubmit(username, password) },
+        )
+    }
+}
+
+@Composable
+private fun PrimaryButton(
+    text: String,
+    onClick: () -> Unit,
+    enabled: Boolean = true,
+) {
+    Button(
+        onClick = onClick,
+        enabled = enabled,
+        shape = MaterialTheme.shapes.small,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = AppTheme.colors.primary,
+            contentColor = AppTheme.colors.onPrimary,
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = AppTheme.dimensions.spaceSmall),
+    ) {
+        Text(text, textAlign = TextAlign.Center)
     }
 }

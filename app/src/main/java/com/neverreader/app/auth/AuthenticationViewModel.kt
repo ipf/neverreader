@@ -36,7 +36,11 @@ class AuthenticationViewModel @Inject constructor(
         field = MutableSharedFlow<Event>(replay = 1)
 
     fun onServerUrlChange(url: String) {
-        state.value = State.EnterServerUrl(url = url.trim())
+        state.value = State.EnterServerUrl(
+            url = url.trim(),
+            backendType = state.value.backendType,
+            error = state.value.error,
+        )
     }
 
     fun onBackendTypeChange(type: BackendType) {
@@ -58,7 +62,7 @@ class AuthenticationViewModel @Inject constructor(
                 val session = withContext(Dispatchers.IO) {
                     ReadeckAuth.startDeviceFlow(serverUrl, clientId, http)
                 }
-                state.value = State.DeviceFlow(serverUrl, session)
+                state.value = State.DeviceFlow(serverUrl, session, BackendType.READECK)
                 val token = withContext(Dispatchers.IO) {
                     ReadeckAuth.awaitToken(serverUrl, clientId, session, http = http)
                 }
@@ -71,10 +75,22 @@ class AuthenticationViewModel @Inject constructor(
 
     /**
      * Wallabag: OAuth2 password grant.
+     *
+     * Most self-hosted instances have Wallabag's own public client registered, so the
+     * credentials default to it. A server with only custom clients can override them
+     * via [loginWallabagWithClient].
      */
-    fun loginWallabag(username: String, password: String, clientId: String, clientSecret: String) {
+    fun loginWallabag(username: String, password: String) =
+        loginWallabagWithClient(username, password, WALLABAG_CLIENT_ID, WALLABAG_CLIENT_SECRET)
+
+    fun loginWallabagWithClient(
+        username: String,
+        password: String,
+        clientId: String,
+        clientSecret: String,
+    ) {
         val serverUrl = state.value.url
-        if (serverUrl.isBlank() || username.isBlank() || password.isBlank() || clientId.isBlank() || clientSecret.isBlank()) {
+        if (serverUrl.isBlank() || username.isBlank() || password.isBlank()) {
             fail("All fields are required")
             return
         }
@@ -108,22 +124,27 @@ class AuthenticationViewModel @Inject constructor(
     }
 
     private fun fail(message: String) {
-        state.value = State.EnterServerUrl(url = state.value.url, error = message)
+        state.value = State.EnterServerUrl(
+            url = state.value.url,
+            backendType = state.value.backendType,
+            error = message,
+        )
     }
 
     sealed class State {
         abstract val url: String
+        abstract val backendType: BackendType
         abstract val error: String?
 
         data class EnterServerUrl(
             override val url: String = "",
-            val backendType: BackendType = BackendType.READECK,
+            override val backendType: BackendType = BackendType.READECK,
             override val error: String? = null,
         ) : State()
 
         data class Authorizing(
             override val url: String,
-            val backendType: BackendType,
+            override val backendType: BackendType,
             val message: String,
             override val error: String? = null,
         ) : State()
@@ -131,11 +152,18 @@ class AuthenticationViewModel @Inject constructor(
         data class DeviceFlow(
             override val url: String,
             val session: com.neverreader.backend.readeck.DeviceSession,
+            override val backendType: BackendType,
             override val error: String? = null,
         ) : State()
     }
 
     sealed class Event {
         data object Success : Event()
+    }
+
+    companion object {
+        /** Wallabag's own registered public OAuth2 client. */
+        const val WALLABAG_CLIENT_ID = "wallabag"
+        const val WALLABAG_CLIENT_SECRET = "wallabag"
     }
 }
