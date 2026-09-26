@@ -5,4 +5,9 @@
     <color name="add_overlay_free_stroke">@color/nr_bg</color>
     <color name="nr_rotation_lock">@color/white</color>
     <color name="nr_rotation_lock_bg_base">@color/nr_grey_2</color>
+
+    <!-- Adaptive icon background. Deepened in values-night so it is not glaring
+         on a dark launcher. -->
+    <color name="ic_launcher_bg_start">#009990</color>
+    <color name="ic_launcher_bg_end">#004D48</color>
 </resources>

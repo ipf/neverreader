@@ -49,9 +49,10 @@ object ReadeckAuth {
     suspend fun registerClient(serverUrl: String, http: OkHttpClient = OkHttpClient()): String {
         val body = buildJsonObject {
             put("client_name", "NeverReader")
+            // Readeck requires an https client_uri that resolves to a public
+            // address, so this cannot be a local or project URL.
             put("client_uri", "https://readeck.org")
             put("software_id", "com.neverreader")
-            put("software_version", "1.0")
             // Device flow only: with the default grant types (incl. authorization_code)
             // Readeck requires redirect_uris, which we don't use.
             put("grant_types", buildJsonArray { add("urn:ietf:params:oauth:grant-type:device_code") })
@@ -90,21 +91,24 @@ object ReadeckAuth {
         var interval = session.interval
         repeat(maxAttempts) {
             delay(interval * 1000)
-            val body = FormBody.Builder()
-                .add("grant_type", "urn:ietf:params:oauth:grant-type:device_code")
-                .add("device_code", session.deviceCode)
-                .add("client_id", clientId)
-                .build()
+            val body = buildJsonObject {
+                put("grant_type", "urn:ietf:params:oauth:grant-type:device_code")
+                put("device_code", session.deviceCode)
+                put("client_id", clientId)
+            }.toString().toRequestBody("application/json".toMediaType())
             val request = Request.Builder().url(base(serverUrl) + "/oauth/token").post(body).build()
             val response = withContext(Dispatchers.IO) { http.newCall(request).execute() }
             response.use {
                 val text = it.body?.string().orEmpty()
                 if (it.isSuccessful) return json.decodeFromString<TokenResponse>(text).accessToken
-                val error = runCatching { json.decodeFromString<ErrorResponse>(text).error }.getOrNull()
-                when (error) {
+                val parsed = runCatching { json.decodeFromString<ErrorResponse>(text) }.getOrNull()
+                when (val error = parsed?.error) {
                     "authorization_pending" -> Unit
                     "slow_down" -> interval += 5
-                    else -> throw IOException("device flow failed: ${error ?: "HTTP ${it.code}"}")
+                    else -> throw IOException(
+                        "device flow failed: " +
+                            (parsed?.errorDescription ?: error ?: "HTTP ${it.code}")
+                    )
                 }
             }
         }

@@ -125,23 +125,12 @@ private fun AuthenticationScreen(
         }
     }
 
-    AppBar(title = { Text(stringResource(R.string.auth_title)) })
-
-    Column(
-        Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .imePadding()
-            .padding(horizontal = AppTheme.dimensions.sideGrid),
-        verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.spaceSmall),
-    ) {
-        Spacer(Modifier.size(AppTheme.dimensions.spaceSmall))
-        Text(
-            text = stringResource(R.string.auth_subtitle),
-            style = AppTheme.typography.p4,
-            color = AppTheme.colors.textSecondary,
-        )
-        Spacer(Modifier.size(AppTheme.dimensions.spaceSmall))
+    // One root layout. A bare ComposeView positions every top-level child at
+    // (0,0), so emitting the app bar, the backend chips and the form as siblings
+    // made them draw on top of each other - which is what buried the Authorize
+    // button and made the top bar look overlaid.
+    Column(Modifier.fillMaxSize()) {
+        AppBar(title = { Text(stringResource(R.string.auth_title)) })
 
         FilterChips(
             tabs = BackendType.entries,
@@ -157,62 +146,78 @@ private fun AuthenticationScreen(
             },
         )
 
-        OutlinedTextField(
-            value = state.url,
-            onValueChange = viewModel::onServerUrlChange,
-            label = { Text(stringResource(R.string.auth_server_url_hint)) },
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Uri,
-                imeAction = ImeAction.Next,
-            ),
-            modifier = Modifier.fillMaxWidth(),
-        )
-
-        if (state.backendType == BackendType.WALLABAG) {
-            WallabagCredentials(
-                enabled = state !is AuthenticationViewModel.State.Authorizing,
-                onSubmit = viewModel::loginWallabag,
+        Column(
+            Modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState())
+                .imePadding()
+                .padding(horizontal = AppTheme.dimensions.sideGrid),
+            verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.spaceSmall),
+        ) {
+            Text(
+                text = stringResource(R.string.auth_subtitle),
+                style = AppTheme.typography.p4,
+                color = AppTheme.colors.textSecondary,
             )
-        }
 
-        when (state) {
-            is AuthenticationViewModel.State.Authorizing -> {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+            OutlinedTextField(
+                value = state.url,
+                onValueChange = viewModel::onServerUrlChange,
+                label = { Text(stringResource(R.string.auth_server_url_hint)) },
+                singleLine = true,
+                isError = !state.error.isNullOrBlank(),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Uri,
+                    imeAction = ImeAction.Next,
+                ),
+                modifier = Modifier.fillMaxWidth(),
+            )
+
+            if (state.backendType == BackendType.WALLABAG) {
+                WallabagCredentials(
+                    enabled = state !is AuthenticationViewModel.State.Authorizing,
+                    onSubmit = viewModel::loginWallabag,
+                )
+            }
+
+            when (state) {
+                is AuthenticationViewModel.State.Authorizing -> Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
                     CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp)
                     Spacer(Modifier.size(AppTheme.dimensions.spaceSmall))
                     Text(state.message, style = AppTheme.typography.p4)
                 }
-            }
 
-            is AuthenticationViewModel.State.DeviceFlow -> {
-                Text(
-                    text = stringResource(R.string.auth_enter_code_in_browser),
-                    style = AppTheme.typography.p4,
-                    color = AppTheme.colors.textSecondary,
-                )
-                Text(
-                    text = state.session.userCode,
-                    style = AppTheme.typography.h5,
-                )
-            }
-
-            is AuthenticationViewModel.State.EnterServerUrl -> {
-                if (state.backendType == BackendType.READECK) {
-                    PrimaryButton(
-                        text = stringResource(R.string.auth_authorize),
-                        onClick = viewModel::startReadeckDeviceFlow,
+                is AuthenticationViewModel.State.DeviceFlow -> {
+                    Text(
+                        text = stringResource(R.string.auth_enter_code_in_browser),
+                        style = AppTheme.typography.p4,
+                        color = AppTheme.colors.textSecondary,
+                    )
+                    Text(
+                        text = state.session.userCode,
+                        style = AppTheme.typography.h5,
                     )
                 }
-            }
-        }
 
-        if (!state.error.isNullOrBlank()) {
-            Text(
-                text = state.error!!,
-                style = AppTheme.typography.p4,
-                color = AppTheme.colors.coral2,
-            )
+                is AuthenticationViewModel.State.EnterServerUrl -> {
+                    if (state.backendType == BackendType.READECK) {
+                        PrimaryButton(
+                            text = stringResource(R.string.auth_authorize),
+                            onClick = viewModel::startReadeckDeviceFlow,
+                        )
+                    }
+                }
+            }
+
+            state.error?.takeIf { it.isNotBlank() }?.let { message ->
+                Text(
+                    text = message,
+                    style = AppTheme.typography.p4,
+                    color = AppTheme.colors.coral2,
+                )
+            }
         }
     }
 }

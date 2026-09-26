@@ -129,9 +129,11 @@ class ReadeckAdapterTest {
         )
         assertEquals("tok", token)
         val poll = server.takeRequest()
+        // Readeck registers only application/json on /oauth/token.
+        assertTrue(poll.getHeader("Content-Type")!!.startsWith("application/json"))
         val body = poll.body.readUtf8()
-        assertTrue(body.contains("grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Adevice_code"))
-        assertTrue(body.contains("device_code=dc"))
+        assertTrue(body, body.contains("urn:ietf:params:oauth:grant-type:device_code"))
+        assertTrue(body, body.contains("\"device_code\":\"dc\""))
     }
 
     @Test

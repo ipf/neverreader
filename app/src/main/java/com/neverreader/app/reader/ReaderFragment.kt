@@ -12,6 +12,7 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -24,6 +25,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -100,65 +102,81 @@ private fun ReaderScreen(
     val state = current
     val bookmark = (state as? ReaderViewModel.State.Content)?.bookmark
 
-    AppBar(
-        navigationIcon = {
-            AppIconButton(onClick = onBack) { UpIcon() }
-        },
-        title = { Text(state.url.displayHost()) },
-        actions = {
-            val item = bookmark
-            if (item == null) return@AppBar
-            AppIconButton(onClick = { viewModel.toggleFavorite(item) }) {
-                Icon(
-                    painter = painterResource(
-                        if (item.favorite) {
-                            com.neverreader.ui.R.drawable.ic_nr_favorite_solid
-                        } else {
-                            com.neverreader.ui.R.drawable.ic_nr_favorite_line
-                        }
-                    ),
-                    contentDescription = stringResource(com.neverreader.ui.R.string.ic_favorite),
-                    tint = if (item.favorite) AppTheme.colors.amber3 else AppTheme.colors.grey3,
+    // One root layout: a bare ComposeView positions every top-level child at
+    // (0,0), so the app bar and the article drew over each other.
+    Column(Modifier.fillMaxSize()) {
+        AppBar(
+            navigationIcon = {
+                AppIconButton(onClick = onBack) { UpIcon() }
+            },
+            title = {
+                Text(
+                    text = state.url.displayHost(),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
-            }
-            AppIconButton(onClick = { onShare(item.url, item.title) }) {
-                Icon(
-                    painter = painterResource(
-                        com.neverreader.ui.R.drawable.ic_nr_android_share_solid
-                    ),
-                    contentDescription = stringResource(com.neverreader.ui.R.string.ic_share),
-                    tint = AppTheme.colors.grey3,
-                )
-            }
-            AppIconButton(onClick = { viewModel.archive(item) }) {
-                Icon(
-                    painter = painterResource(com.neverreader.ui.R.drawable.ic_nr_archive_line),
-                    contentDescription = stringResource(com.neverreader.ui.R.string.ic_archive),
-                    tint = AppTheme.colors.grey3,
-                )
-            }
-        },
-    )
+            },
+            actions = {
+                val item = bookmark
+                if (item == null) return@AppBar
+                AppIconButton(onClick = { viewModel.toggleFavorite(item) }) {
+                    Icon(
+                        painter = painterResource(
+                            if (item.favorite) {
+                                com.neverreader.ui.R.drawable.ic_nr_favorite_solid
+                            } else {
+                                com.neverreader.ui.R.drawable.ic_nr_favorite_line
+                            }
+                        ),
+                        contentDescription = stringResource(com.neverreader.ui.R.string.ic_favorite),
+                        tint = if (item.favorite) AppTheme.colors.amber3 else AppTheme.colors.grey3,
+                    )
+                }
+                AppIconButton(onClick = { onShare(item.url, item.title) }) {
+                    Icon(
+                        painter = painterResource(
+                            com.neverreader.ui.R.drawable.ic_nr_android_share_solid
+                        ),
+                        contentDescription = stringResource(com.neverreader.ui.R.string.ic_share),
+                        tint = AppTheme.colors.grey3,
+                    )
+                }
+                AppIconButton(onClick = { viewModel.archive(item) }) {
+                    Icon(
+                        painter = painterResource(com.neverreader.ui.R.drawable.ic_nr_archive_line),
+                        contentDescription = stringResource(com.neverreader.ui.R.string.ic_archive),
+                        tint = AppTheme.colors.grey3,
+                    )
+                }
+            },
+        )
 
-    when (state) {
-        is ReaderViewModel.State.Loading -> Box(Modifier.fillMaxSize(), Alignment.Center) {
-            CircularProgressIndicator()
-        }
+        when (state) {
+            is ReaderViewModel.State.Loading -> Box(
+                Modifier.fillMaxSize(),
+                Alignment.Center,
+            ) {
+                CircularProgressIndicator()
+            }
 
-        is ReaderViewModel.State.Error -> Box(Modifier.fillMaxSize(), Alignment.Center) {
-            Text(
-                text = stringResource(R.string.reader_load_failed),
-                style = AppTheme.typography.p3,
-                color = AppTheme.colors.textSecondary,
+            is ReaderViewModel.State.Error -> Box(
+                Modifier.fillMaxSize(),
+                Alignment.Center,
+            ) {
+                Text(
+                    text = stringResource(R.string.reader_load_failed),
+                    style = AppTheme.typography.p3,
+                    color = AppTheme.colors.textSecondary,
+                )
+            }
+
+            is ReaderViewModel.State.Content -> ArticleWebView(
+                html = state.html,
+                baseUrl = state.url,
+                darkTheme = darkTheme,
+                modifier = Modifier.fillMaxSize(),
             )
         }
-
-        is ReaderViewModel.State.Content -> ArticleWebView(
-            html = state.html,
-            baseUrl = state.url,
-            darkTheme = darkTheme,
-            modifier = Modifier.fillMaxSize(),
-        )
     }
 }
 

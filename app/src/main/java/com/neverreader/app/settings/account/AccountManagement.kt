@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.neverreader.app.R
 import com.neverreader.app.UserManager
@@ -80,16 +81,26 @@ private fun AccountScreen(
     onBack: () -> Unit,
     onLogout: () -> Unit,
 ) {
-    AppBar(
-        navigationIcon = { AppIconButton(onClick = onBack) { UpIcon() } },
-        title = { Text(stringResource(R.string.setting_account_management)) },
-    )
-    Column(
-        Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-    ) {
-        SettingsHeader(stringResource(R.string.settings_section_account))
-        SettingsAction(R.string.settings_logout, onClick = onLogout)
+    // One root layout: a bare ComposeView positions every top-level child at
+    // (0,0), so the app bar and the list drew over each other.
+    Column(Modifier.fillMaxSize()) {
+        AppBar(
+            navigationIcon = { AppIconButton(onClick = onBack) { UpIcon() } },
+            title = {
+                Text(
+                    text = stringResource(R.string.setting_account_management),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            },
+        )
+        Column(
+            Modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState())
+        ) {
+            SettingsHeader(stringResource(R.string.settings_section_account))
+            SettingsAction(R.string.settings_logout, onClick = onLogout)
+        }
     }
 }

@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -119,80 +120,85 @@ private fun MyListScreen(
     var refreshing by remember { mutableStateOf(false) }
     val sortFilter by viewModel.sortFilterState.collectAsStateWithLifecycle()
 
-    AppBar(
-        title = { Text(stringResource(R.string.nm_app)) },
-        actions = {
-            AppIconButton(onClick = onOpenAddUrl) {
-                Icon(
-                    painter = painterResource(com.neverreader.ui.R.drawable.ic_nr_add_tags_line),
-                    contentDescription = stringResource(com.neverreader.ui.R.string.ic_archive),
-                )
-            }
-        },
-    )
-
-    FilterChips(
-        tabs = ListManager.Tab.entries,
-        selected = sortFilter.tab,
-        onSelect = viewModel::setTab,
-        label = { tab ->
-            stringResource(
-                when (tab) {
-                    ListManager.Tab.UNREAD -> R.string.my_list_tab_unread
-                    ListManager.Tab.FAVORITES -> R.string.my_list_filter_favorites
-                    ListManager.Tab.ARCHIVE -> R.string.nm_archive
-                }
-            )
-        },
-    )
-
-    PullToRefreshBox(
-        isRefreshing = refreshing,
-        onRefresh = {
-            refreshing = true
-            SyncWorker.enqueueNow(context)
-            scope.launch {
-                // The list updates from the sync; clear the spinner on the next
-                // emission rather than guessing at a duration.
-                items.refresh()
-                refreshing = false
-            }
-        },
-        modifier = Modifier.fillMaxSize(),
-    ) {
-        LazyColumn(Modifier.fillMaxSize()) {
-            items(
-                count = items.itemCount,
-                key = { index -> items.peek(index)?.bookmark?.id ?: index },
-            ) { index ->
-                val state = items[index] ?: return@items
-                val dismissState = rememberSwipeToDismissBoxState(
-                    confirmValueChange = { value ->
-                        if (value != SwipeToDismissBoxValue.Settled) {
-                            viewModel.archive(state.bookmark)
-                        }
-                        // Never settle on a value: the paging diff removes the row,
-                        // and settling would animate it back into view.
-                        false
-                    },
-                )
-                SwipeToDismissBox(
-                    state = dismissState,
-                    backgroundContent = { SwipeToArchiveBackground() },
-                ) {
-                    ItemRow(
-                        title = state.title,
-                        domain = state.domain,
-                        meta = state.meta,
-                        excerpt = state.excerpt,
-                        imageUrl = state.imageUrl,
-                        favorite = state.favorite,
-                        unread = state.unread,
-                        onClick = { viewModel.onItemClicked(state.bookmark) },
-                        onToggleFavorite = { viewModel.toggleFavorite(state.bookmark) },
-                        onShare = { share(context, state.bookmark) },
-                        onOverflow = { viewModel.archive(state.bookmark) },
+    // One root layout: a bare ComposeView positions every top-level child at
+    // (0,0), so the app bar, the filter chips and the list all drew on top
+    // of each other.
+    Column(Modifier.fillMaxSize()) {
+        AppBar(
+            title = { Text(stringResource(R.string.nm_app)) },
+            actions = {
+                AppIconButton(onClick = onOpenAddUrl) {
+                    Icon(
+                        painter = painterResource(com.neverreader.ui.R.drawable.ic_nr_add_tags_line),
+                        contentDescription = stringResource(com.neverreader.ui.R.string.ic_archive),
                     )
+                }
+            },
+        )
+
+        FilterChips(
+            tabs = ListManager.Tab.entries,
+            selected = sortFilter.tab,
+            onSelect = viewModel::setTab,
+            label = { tab ->
+                stringResource(
+                    when (tab) {
+                        ListManager.Tab.UNREAD -> R.string.my_list_tab_unread
+                        ListManager.Tab.FAVORITES -> R.string.my_list_filter_favorites
+                        ListManager.Tab.ARCHIVE -> R.string.nm_archive
+                    }
+                )
+            },
+        )
+
+        PullToRefreshBox(
+            isRefreshing = refreshing,
+            onRefresh = {
+                refreshing = true
+                SyncWorker.enqueueNow(context)
+                scope.launch {
+                    // The list updates from the sync; clear the spinner on the next
+                    // emission rather than guessing at a duration.
+                    items.refresh()
+                    refreshing = false
+                }
+            },
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            LazyColumn(Modifier.fillMaxSize()) {
+                items(
+                    count = items.itemCount,
+                    key = { index -> items.peek(index)?.bookmark?.id ?: index },
+                ) { index ->
+                    val state = items[index] ?: return@items
+                    val dismissState = rememberSwipeToDismissBoxState(
+                        confirmValueChange = { value ->
+                            if (value != SwipeToDismissBoxValue.Settled) {
+                                viewModel.archive(state.bookmark)
+                            }
+                            // Never settle on a value: the paging diff removes the row,
+                            // and settling would animate it back into view.
+                            false
+                        },
+                    )
+                    SwipeToDismissBox(
+                        state = dismissState,
+                        backgroundContent = { SwipeToArchiveBackground() },
+                    ) {
+                        ItemRow(
+                            title = state.title,
+                            domain = state.domain,
+                            meta = state.meta,
+                            excerpt = state.excerpt,
+                            imageUrl = state.imageUrl,
+                            favorite = state.favorite,
+                            unread = state.unread,
+                            onClick = { viewModel.onItemClicked(state.bookmark) },
+                            onToggleFavorite = { viewModel.toggleFavorite(state.bookmark) },
+                            onShare = { share(context, state.bookmark) },
+                            onOverflow = { viewModel.archive(state.bookmark) },
+                        )
+                    }
                 }
             }
         }
