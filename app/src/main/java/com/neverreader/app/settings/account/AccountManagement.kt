@@ -3,15 +3,31 @@ package com.neverreader.app.settings.account
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
-import dagger.hilt.android.AndroidEntryPoint
+import android.view.ViewGroup
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import com.neverreader.app.R
-import com.neverreader.app.App
 import com.neverreader.app.UserManager
-import com.neverreader.app.settings.AbsPrefsFragment
-import com.neverreader.app.settings.view.preferences.Preference
-import com.neverreader.app.settings.view.preferences.PreferenceViews
 import com.neverreader.sdk.util.AbsNeverReaderActivity
+import com.neverreader.sdk.util.AbsNeverReaderFragment
+import com.neverreader.ui.compose.AppBar
+import com.neverreader.ui.compose.SettingsAction
+import com.neverreader.ui.compose.SettingsHeader
+import com.neverreader.ui.theme.AppTheme
+import com.neverreader.ui.view.button.AppIconButton
+import com.neverreader.ui.view.button.UpIcon
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 /** A thin class to allow [AccountManagementFragment] to be launched as a fullscreen activity. */
@@ -37,22 +53,43 @@ class AccountManagementActivity : AbsNeverReaderActivity() {
 
 /** Account info and logout. */
 @AndroidEntryPoint
-class AccountManagementFragment : AbsPrefsFragment() {
+class AccountManagementFragment : AbsNeverReaderFragment() {
 
-    private val userManager: UserManager get() = App.from(requireContext()).userManager
+    @Inject
+    lateinit var userManager: UserManager
 
-    override val title: Int
-        get() = R.string.setting_account_management
+    override fun onCreateViewImpl(
+        inflater: LayoutInflater?,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View = ComposeView(requireContext()).apply {
+        setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+        setContent {
+            AppTheme {
+                AccountScreen(
+                    onBack = { requireActivity().onBackPressedDispatcher.onBackPressed() },
+                    onLogout = { userManager.logout(activity as? AbsNeverReaderActivity) },
+                )
+            }
+        }
+    }
+}
 
-    override val bannerView: View? = null
-
-    override fun createPrefs(prefs: ArrayList<Preference>?) {
-        prefs?.add(
-            PreferenceViews.newActionBuilder(this, R.string.settings_logout)
-                .setOnClickListener {
-                    userManager.logout(activity as? AbsNeverReaderActivity)
-                }
-                .build(),
-        )
+@Composable
+private fun AccountScreen(
+    onBack: () -> Unit,
+    onLogout: () -> Unit,
+) {
+    AppBar(
+        navigationIcon = { AppIconButton(onClick = onBack) { UpIcon() } },
+        title = { Text(stringResource(R.string.setting_account_management)) },
+    )
+    Column(
+        Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+    ) {
+        SettingsHeader(stringResource(R.string.settings_section_account))
+        SettingsAction(R.string.settings_logout, onClick = onLogout)
     }
 }

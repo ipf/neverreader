@@ -1,56 +1,87 @@
 package com.neverreader.app.settings
 
-import dagger.hilt.android.AndroidEntryPoint
+import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.neverreader.app.App
 import com.neverreader.app.R
 import com.neverreader.app.UserManager
 import com.neverreader.app.settings.account.AccountManagementActivity
-import com.neverreader.app.settings.view.preferences.HeaderPreference
-import com.neverreader.app.settings.view.preferences.Preference
-import com.neverreader.app.settings.view.preferences.PreferenceViews
-import com.neverreader.app.R.string
 import com.neverreader.sdk.util.AbsNeverReaderActivity
 import com.neverreader.sdk.util.AbsNeverReaderFragment
+import com.neverreader.ui.compose.AppBar
+import com.neverreader.ui.compose.SettingsAction
+import com.neverreader.ui.compose.SettingsHeader
+import com.neverreader.ui.view.button.AppIconButton
+import com.neverreader.ui.view.button.UpIcon
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 /**
  * The settings screen: account and open-source licenses.
  */
 @AndroidEntryPoint
-class PrefsFragment : AbsPrefsFragment() {
+class PrefsFragment : AbsNeverReaderFragment() {
 
-    private val userManager: UserManager get() = App.from(requireContext()).userManager
+    @Inject
+    lateinit var userManager: UserManager
 
-    override val title: Int
-        get() = R.string.settings_title
+    override fun onCreateViewImpl(
+        inflater: LayoutInflater?,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View = ComposeView(requireContext()).apply {
+        setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+        setContent {
+            com.neverreader.ui.theme.AppTheme {
+                SettingsScreen(
+                    onBack = { requireActivity().onBackPressedDispatcher.onBackPressed() },
+                    onAccount = {
+                        AccountManagementActivity.startActivity(requireContext())
+                    },
+                    onLogout = { userManager.logout(activity as AbsNeverReaderActivity) },
+                    onOpenSourceLicenses = {
+                        OpenSourceLicensesActivity.startActivity(requireContext())
+                    },
+                )
+            }
+        }
+    }
+}
 
-    override val bannerView: View? = null
+@Composable
+private fun SettingsScreen(
+    onBack: () -> Unit,
+    onAccount: () -> Unit,
+    onLogout: () -> Unit,
+    onOpenSourceLicenses: () -> Unit,
+) {
+    AppBar(
+        navigationIcon = { AppIconButton(onClick = onBack) { UpIcon() } },
+        title = { Text(stringResource(R.string.settings_title)) },
+    )
+    Column(
+        Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+    ) {
+        SettingsHeader(stringResource(R.string.settings_section_account))
+        SettingsAction(R.string.settings_account, onClick = onAccount)
+        SettingsAction(R.string.settings_logout, onClick = onLogout)
 
-    override fun createPrefs(prefs: ArrayList<Preference>?) {
-        prefs?.add(HeaderPreference(this, getString(R.string.settings_section_account), false))
-        prefs?.add(
-            PreferenceViews.newActionBuilder(this, R.string.settings_account)
-                .setOnClickListener {
-                    AccountManagementActivity.startActivity(requireContext())
-                }
-                .build(),
-        )
-        prefs?.add(
-            PreferenceViews.newActionBuilder(this, R.string.settings_logout)
-                .setOnClickListener {
-                    userManager.logout(activity as AbsNeverReaderActivity)
-                }
-                .build(),
-        )
-
-        prefs?.add(HeaderPreference(this, getString(R.string.settings_section_about), false))
-        prefs?.add(
-            PreferenceViews.newActionBuilder(this, R.string.settings_open_source_licenses)
-                .setOnClickListener {
-                    OpenSourceLicensesActivity.startActivity(requireContext())
-                }
-                .build(),
-        )
+        SettingsHeader(stringResource(R.string.settings_section_about))
+        SettingsAction(R.string.settings_open_source_licenses, onClick = onOpenSourceLicenses)
     }
 }
