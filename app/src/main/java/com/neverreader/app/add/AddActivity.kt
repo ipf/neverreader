@@ -11,8 +11,8 @@ import com.neverreader.backend.model.Bookmark
 import com.neverreader.sdk.util.AbsNeverReaderActivity
 import com.neverreader.ui.view.notification.AppSnackbar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
@@ -97,7 +97,11 @@ class AddActivity : AbsNeverReaderActivity() {
 
     private fun commitSave(intentItem: IntentItem) {
         if (intentItem.url != null) {
-            saver.add(intentItem, CoroutineScope(Dispatchers.Main), AddItemFromIntentUtil.Callback(this::onSaved))
+            // lifecycleScope, not a scope constructed per call: the save outlives this
+            // transparent Activity, which finishes as soon as the toast is queued.
+            lifecycleScope.launch {
+                saver.add(intentItem, this, AddItemFromIntentUtil.Callback(this@AddActivity::onSaved))
+            }
         } else {
             showToast(AppSnackbar.Type.ERROR_EXCLAIM_OUTSIDE, R.string.ts_add_invalid_url)
         }

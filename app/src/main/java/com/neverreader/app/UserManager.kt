@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import com.neverreader.backend.repo.AccountManager
 import com.neverreader.backend.sync.SyncWorker
@@ -21,9 +22,15 @@ import javax.inject.Singleton
  */
 @Singleton
 class UserManager @Inject constructor(
-    @ApplicationContext context: Context?,
+    @ApplicationContext private val appContext: Context,
     private val accountManager: AccountManager
 ) : AppLifecycle {
+    /**
+     * Logout work outlives the Activity that started it, so it runs on a
+     * singleton scope rather than one constructed per call and never cancelled.
+     */
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
     val isLoggedIn: Boolean
         /**
          * Whether the user has an active account.
@@ -33,8 +40,8 @@ class UserManager @Inject constructor(
     /**
      * Call after an auth flow has saved the active account; kicks off a sync.
      */
-    fun onAuthSuccess(context: Context?) {
-        SyncWorker.enqueueNow(context!!)
+    fun onAuthSuccess() {
+        SyncWorker.enqueueNow(appContext)
     }
 
     /**
@@ -45,10 +52,12 @@ class UserManager @Inject constructor(
     }
 
     private fun threads_logout(activity: AbsNeverReaderActivity?) {
-        val context = activity?.applicationContext
-        CoroutineScope(Dispatchers.IO).launch {
+        // The application context, not the Activity's: this Activity may already be
+        // finishing, or be null when logout is triggered from a fragment whose host
+        // is not an AbsNeverReaderActivity.
+        scope.launch {
             accountManager.logout()
-            SyncWorker.enqueueNow(context!!)
+            SyncWorker.enqueueNow(appContext)
         }
         if (activity != null) {
             startDefaultActivity(activity)

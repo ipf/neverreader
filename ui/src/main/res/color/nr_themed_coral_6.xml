@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<selector xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="UnusedResources">
-    <item app:state_dark="true" android:color="@color/nr_dm_coral_6"/>
-    <item android:color="@color/nr_coral_6"/>
-</selector>

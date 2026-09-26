@@ -1,6 +1,7 @@
 package com.neverreader.util.java
 
 import android.content.Context
+import java.util.Locale
 import com.neverreader.app.App
 import com.neverreader.app.R
 
@@ -78,6 +79,7 @@ object BytesUtil {
                 .toString() + " " + context.getString(R.string.setting_cache_mb)
         } else {
             return String.format(
+                Locale.getDefault(),
                 "%.1f",
                 bytesToGb(bytes)
             ) + " " + context.getString(R.string.setting_cache_gb)
