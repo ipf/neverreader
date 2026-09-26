@@ -29,7 +29,6 @@ dependencies {
     implementation(libs.androidx.navigation.fragment)
     implementation(libs.androidx.paging.compose)
     implementation(libs.coil.compose)
-    implementation(libs.coil.network.okhttp)
     debugImplementation(libs.androidx.compose.ui.tooling)
     implementation(libs.androidx.compose.ui.tooling.preview)
     testImplementation(platform(libs.androidx.compose.bom))

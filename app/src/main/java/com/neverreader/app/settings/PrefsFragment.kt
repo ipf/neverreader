@@ -20,11 +20,13 @@ import com.neverreader.app.App
 import com.neverreader.app.R
 import com.neverreader.app.UserManager
 import com.neverreader.app.settings.account.AccountManagementActivity
+import com.neverreader.sdk.preferences.AppPrefs
 import com.neverreader.sdk.util.AbsNeverReaderActivity
 import com.neverreader.sdk.util.AbsNeverReaderFragment
 import com.neverreader.ui.compose.AppBar
 import com.neverreader.ui.compose.SettingsAction
 import com.neverreader.ui.compose.SettingsHeader
+import com.neverreader.ui.compose.SettingsToggle
 import com.neverreader.ui.view.button.AppIconButton
 import com.neverreader.ui.view.button.UpIcon
 import dagger.hilt.android.AndroidEntryPoint
@@ -35,6 +37,9 @@ import javax.inject.Inject
  */
 @AndroidEntryPoint
 class PrefsFragment : AbsNeverReaderFragment() {
+
+    @Inject
+    lateinit var appPrefs: AppPrefs
 
     @Inject
     lateinit var userManager: UserManager
@@ -48,6 +53,7 @@ class PrefsFragment : AbsNeverReaderFragment() {
         setContent {
             com.neverreader.ui.theme.AppTheme {
                 SettingsScreen(
+                    appPrefs = appPrefs,
                     onBack = { requireActivity().onBackPressedDispatcher.onBackPressed() },
                     onAccount = {
                         AccountManagementActivity.startActivity(requireContext())
@@ -64,6 +70,7 @@ class PrefsFragment : AbsNeverReaderFragment() {
 
 @Composable
 private fun SettingsScreen(
+    appPrefs: AppPrefs,
     onBack: () -> Unit,
     onAccount: () -> Unit,
     onLogout: () -> Unit,
@@ -90,6 +97,12 @@ private fun SettingsScreen(
             SettingsHeader(stringResource(R.string.settings_section_account))
             SettingsAction(R.string.settings_account, onClick = onAccount)
             SettingsAction(R.string.settings_logout, onClick = onLogout)
+
+            SettingsHeader(stringResource(R.string.settings_section_privacy))
+            SettingsToggle(
+                titleRes = R.string.settings_load_third_party_images,
+                pref = appPrefs.LOAD_THIRD_PARTY_IMAGES,
+            )
 
             SettingsHeader(stringResource(R.string.settings_section_about))
             SettingsAction(R.string.settings_open_source_licenses, onClick = onOpenSourceLicenses)

@@ -45,6 +45,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.neverreader.app.R
 import com.neverreader.app.list.add.AddUrlBottomSheetFragment
+import com.neverreader.app.repository.ThumbnailRepository
 import com.neverreader.app.list.list.ListManager
 import com.neverreader.backend.model.Bookmark
 import com.neverreader.backend.sync.SyncWorker
@@ -56,6 +57,7 @@ import com.neverreader.ui.compose.SwipeToArchiveBackground
 import com.neverreader.ui.theme.AppTheme
 import com.neverreader.ui.view.button.AppIconButton
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 import kotlinx.coroutines.launch
 
 /**
@@ -65,6 +67,9 @@ import kotlinx.coroutines.launch
 class MyListFragment : AbsNeverReaderFragment() {
 
     private val viewModel: MyListViewModel by viewModels()
+
+    @Inject
+    lateinit var thumbnailRepository: ThumbnailRepository
 
     override fun onCreateViewImpl(
         inflater: LayoutInflater?,
@@ -77,6 +82,7 @@ class MyListFragment : AbsNeverReaderFragment() {
                 MyListScreen(
                     viewModel = viewModel,
                     onOpenAddUrl = ::showAddUrl,
+                    loadImage = { url -> thumbnailRepository.load(url) },
                 )
             }
         }
@@ -113,6 +119,7 @@ class MyListFragment : AbsNeverReaderFragment() {
 private fun MyListScreen(
     viewModel: MyListViewModel,
     onOpenAddUrl: () -> Unit,
+    loadImage: suspend (String) -> ByteArray?,
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -163,7 +170,9 @@ private fun MyListScreen(
                     refreshing = false
                 }
             },
-            modifier = Modifier.fillMaxSize(),
+            // The list takes the height left under the app bar and chips, rather
+            // than the full height, or it spills past the bottom of the column.
+            modifier = Modifier.weight(1f),
         ) {
             LazyColumn(Modifier.fillMaxSize()) {
                 items(
@@ -191,6 +200,7 @@ private fun MyListScreen(
                             meta = state.meta,
                             excerpt = state.excerpt,
                             imageUrl = state.imageUrl,
+                            loadImage = loadImage,
                             favorite = state.favorite,
                             unread = state.unread,
                             onClick = { viewModel.onItemClicked(state.bookmark) },

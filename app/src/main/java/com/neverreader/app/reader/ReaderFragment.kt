@@ -197,6 +197,10 @@ private fun ArticleWebView(
             WebView(context).apply {
                 settings.javaScriptEnabled = false
                 settings.domStorageEnabled = false
+                // targetSdk is never set, so it defaults to 26, where this
+                // defaults to true: article HTML from the user's server could
+                // otherwise read local files.
+                settings.allowFileAccess = false
                 // Follow the system font scale. This was pinned to 100, so reader
                 // text ignored the user's font size setting entirely.
                 settings.textZoom = (context.resources.configuration.fontScale * 100).toInt()
@@ -205,8 +209,11 @@ private fun ArticleWebView(
                         view: WebView,
                         request: WebResourceRequest,
                     ): Boolean {
-                        // Keep in-article navigation in the WebView; anything else
-                        // (ads, trackers) is dropped rather than launched.
+                        // Keep in-article navigation in the WebView; anything else is
+                        // dropped rather than launched. Note this only covers
+                        // main-frame navigations - images, CSS and frames are
+                        // subresources and still reach the article's own host, which
+                        // is inherent to rendering HTML.
                         return request.url.host != Uri.parse(baseUrl).host
                     }
                 }

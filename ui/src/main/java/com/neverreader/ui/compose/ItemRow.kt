@@ -16,6 +16,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,6 +49,7 @@ fun ItemRow(
     meta: String?,
     excerpt: String?,
     imageUrl: String?,
+    loadImage: suspend (String) -> ByteArray?,
     favorite: Boolean,
     unread: Boolean,
     onClick: () -> Unit,
@@ -106,8 +109,14 @@ fun ItemRow(
 
             if (!imageUrl.isNullOrBlank()) {
                 Spacer(Modifier.width(AppTheme.dimensions.spaceSmall))
+                // The bytes are fetched by the app, not by the image library, so the
+                // Authorization header can be attached when the image is served by
+                // the user's own server. Coil only decodes.
+                val bytes by produceState<ByteArray?>(null, imageUrl) {
+                    value = loadImage(imageUrl)
+                }
                 AsyncImage(
-                    model = imageUrl,
+                    model = bytes,
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -173,6 +182,7 @@ private fun ItemRowPreview() {
             meta = "6 min read",
             excerpt = "A long look at why design tokens drift, and what to do about it.",
             imageUrl = null,
+            loadImage = { null },
             favorite = true,
             unread = true,
             onClick = {},

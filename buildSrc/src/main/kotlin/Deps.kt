@@ -29,21 +29,11 @@ object Deps {
         }
     }
     object Android {
-        object InstallReferrer {
-            private const val VERSION = "2.2"
-            const val installReferrer = "com.android.installreferrer:installreferrer:$VERSION"
-        }
     }
-    object Square {
+    object Google {
         object JavaPoet {
             private const val VERSION = "1.13.0"
             const val javaPoet = "com.squareup:javapoet:$VERSION"
-        }
-    }
-    object Google {
-        object FlexBox {
-            private const val VERSION = "3.0.0"
-            const val flexbox = "com.google.android.flexbox:flexbox:$VERSION"
         }
         object Tink {
             private const val VERSION = "1.2.2"
@@ -56,9 +46,6 @@ object Deps {
         object Material {
             private const val VERSION = "1.8.0"
             const val material = "com.google.android.material:material:$VERSION"
-        }
-        object Play {
-            const val core = "com.google.android.play:core:1.10.3"
         }
         object JUniversalCharDet {
             private const val VERSION = "1.0.3"

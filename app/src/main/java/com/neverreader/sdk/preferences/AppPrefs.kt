@@ -30,6 +30,17 @@ class AppPrefs @Inject constructor(
 ) {
     val ROTATION_LOCK: BooleanPreference = prefs.forUser("enableRotationLock", !isTablet(context))
 
+    /**
+     * Whether to load article thumbnails that are served by a third party.
+     *
+     * Off by default. Readeck proxies thumbnails through your own server, so
+     * those always load. Wallabag hands back the article's raw OpenGraph image
+     * URL, so loading it would tell every article's image host your IP address
+     * just for scrolling past it.
+     */
+    val LOAD_THIRD_PARTY_IMAGES: BooleanPreference =
+        prefs.forUser("loadThirdPartyImages", false)
+
     fun changes(): Flow<String?>? {
         return prefs.changes()
     }

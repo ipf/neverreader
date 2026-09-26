@@ -5,7 +5,6 @@
     <!-- Normal Permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
     <queries>
 
@@ -15,11 +14,6 @@
             <data android:scheme="https" />
         </intent>
 
-        <!-- Apps (browsers) that support Custom Tabs -->
-        <intent>
-            <action android:name=
-                "android.support.customtabs.action.CustomTabsService" />
-        </intent>
 
         <!-- Apps that accept sharing plaintext -->
         <intent>
@@ -84,16 +78,7 @@
             </intent-filter>
         </activity-alias>
 
-        <activity
-            android:name="com.neverreader.app.reader.internal.originalweb.overlay.OriginalWebOverlayActivity"
-            android:configChanges="keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
-            android:theme="@style/Theme.Transparent.StandaloneDialogActivity2"
-            android:exported="false"
-            android:windowSoftInputMode="adjustResize|stateHidden" />
 
-        <receiver android:name="com.neverreader.app.reader.internal.originalweb.CustomTabEventReceiver"
-            android:exported="false"
-            />
 
         <provider
             android:name="androidx.core.content.FileProvider"
