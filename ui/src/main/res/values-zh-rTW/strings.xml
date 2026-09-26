@@ -52,7 +52,6 @@
     <string name="text_setting_line_height">行高</string>
     <string name="text_setting_margin">邊界</string>
 
-    <string name="current_typeface" comment="{typeface} is a placeholder for the current text typeface setting, eg Blanco, Graphik, do not translate the content within {}">變更 {typeface} 字樣</string>
 
     <string name="theme_toggle_light_desc">變更至淺色主題</string>
     <string name="theme_toggle_dark_desc">變更至暗色調主題</string>

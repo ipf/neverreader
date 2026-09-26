@@ -2,7 +2,58 @@
 Note:
 textStyle="0" = Light Theme
 textStyle="1" = Dark Theme
+
+The faces below are the OFL fonts bundled in ui/src/main/assets/fonts. This
+stylesheet used to name GraphikLcg and Blanco without ever declaring a
+@font-face rule, so the WebView silently fell back to Helvetica/Arial and the
+reader has never rendered in the brand face. The file:///android_asset/ scheme
+is what loadDataWithBaseURL resolves bundled assets through.
 */
+
+@font-face {
+  font-family: "NeverReader Sans";
+  font-style: normal;
+  font-weight: 400;
+  src: url("file:///android_asset/fonts/Inter-Regular.ttf") format("truetype");
+}
+@font-face {
+  font-family: "NeverReader Sans";
+  font-style: normal;
+  font-weight: 500;
+  src: url("file:///android_asset/fonts/Inter-Medium.ttf") format("truetype");
+}
+@font-face {
+  font-family: "NeverReader Sans";
+  font-style: normal;
+  font-weight: 700;
+  src: url("file:///android_asset/fonts/Inter-Bold.ttf") format("truetype");
+}
+@font-face {
+  font-family: "NeverReader Sans";
+  font-style: italic;
+  font-weight: 400;
+  src: url("file:///android_asset/fonts/Inter-Italic.ttf") format("truetype");
+}
+
+/* Source Serif 4, the reading face. Used where a serif is wanted. */
+@font-face {
+  font-family: "NeverReader Serif";
+  font-style: normal;
+  font-weight: 400;
+  src: url("file:///android_asset/fonts/SourceSerif4-Regular.otf") format("opentype");
+}
+@font-face {
+  font-family: "NeverReader Serif";
+  font-style: normal;
+  font-weight: 600;
+  src: url("file:///android_asset/fonts/SourceSerif4-Semibold.otf") format("opentype");
+}
+@font-face {
+  font-family: "NeverReader Serif";
+  font-style: italic;
+  font-weight: 400;
+  src: url("file:///android_asset/fonts/SourceSerif4-It.otf") format("opentype");
+}
 
 :root {
   --pkt_grey_1: #1A1A1A;
@@ -18,7 +69,7 @@ textStyle="1" = Dark Theme
 
 body { 
 	color: #111111;
-	font-family: GraphikLcg, "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-family: "NeverReader Sans", -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;
 	text-align: center;
 	visibility: hidden;
 	line-height: 1.4em;
@@ -81,47 +132,6 @@ body[textStyle="1"] a:active {
 body[textStyle="1"] table.ril_dataTable th
 {
 	border-color: #cccccc !important;
-}
-
-body[fontType="0"] {
-    font-family: Blanco, Georgia, serif;
-    font-size: 1.0em;
-}
-body[fontType="1"] {
-    font-family: GraphikLcg, "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 0.9em;
-}
-body[fontType="2"] {
-    font-family: IdealSans, Blanco, Georgia, serif;
-    font-size: 0.85em;
-}
-body[fontType="3"] {
-    font-family: Inter, Blanco, Georgia, serif;
-    font-size: 0.9em;
-}
-body[fontType="4"] {
-    font-family: IBMPlexSans, Blanco, Georgia, serif;
-    font-size: 0.95em;
-}
-body[fontType="5"] {
-    font-family: Sentinel, Blanco, Georgia, serif;
-    font-size: 0.95em;
-}
-body[fontType="6"] {
-    font-family: Tiempos, Blanco, Georgia, serif;
-    font-size: 0.9em;
-}
-body[fontType="7"] {
-    font-family: Vollkorn, Blanco, Georgia, serif;
-    font-size: 0.95em;
-}
-body[fontType="8"] {
-    font-family: Whitney, Blanco, Georgia, serif;
-    font-size: 0.85em;
-}
-body[fontType="9"] {
-    font-family: ZillaSlab, Blanco, Georgia, serif;
-    font-size: 0.95em;
 }
 
 #RIL_domain
@@ -380,7 +390,7 @@ hr
 	font-style: normal;
 	text-align: center;
 	color: #6d6c6c;
-	font-family: GraphikLcg, "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-family: "NeverReader Sans", -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 #RIL_header cite a {
     color: #6d6c6c;
@@ -413,7 +423,7 @@ body[textStyle="1"] #RIL_header .RIL_author
 	line-height: 1.3em;
 	font-size: 23px;
 	text-align: center;
-	font-family: GraphikLcg, "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-family: "NeverReader Serif", Georgia, serif;
 }
 
 /* night mode lines */

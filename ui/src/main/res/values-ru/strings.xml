@@ -52,7 +52,6 @@
     <string name="text_setting_line_height">Высота строки</string>
     <string name="text_setting_margin">Поле</string>
 
-    <string name="current_typeface" comment="{typeface} is a placeholder for the current text typeface setting, eg Blanco, Graphik, do not translate the content within {}">Изменить шрифт {typeface}</string>
 
     <string name="theme_toggle_light_desc">Сменить тему на светлую</string>
     <string name="theme_toggle_dark_desc">Сменить тему на темную</string>

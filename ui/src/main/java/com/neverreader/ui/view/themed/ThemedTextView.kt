@@ -112,9 +112,9 @@ open class ThemedTextView @JvmOverloads constructor(
 
     fun setBold(bold: Boolean) {
         if (bold) {
-            setTypeface(Fonts.get(context, Fonts.Font.GRAPHIK_LCG_BOLD))
+            setTypeface(Fonts.get(context, Fonts.Font.INTER_MEDIUM))
         } else {
-            setTypeface(Fonts.get(context, Fonts.Font.GRAPHIK_LCG_REGULAR))
+            setTypeface(Fonts.get(context, Fonts.Font.INTER_REGULAR))
         }
     }
 

@@ -52,7 +52,6 @@
     <string name="text_setting_line_height">라인 높이</string>
     <string name="text_setting_margin">여백</string>
 
-    <string name="current_typeface" comment="{typeface} is a placeholder for the current text typeface setting, eg Blanco, Graphik, do not translate the content within {}">{typeface}에서 서체 변경</string>
 
     <string name="theme_toggle_light_desc">밝게 테마로 변경</string>
     <string name="theme_toggle_dark_desc">어둡게 테마로 변경</string>

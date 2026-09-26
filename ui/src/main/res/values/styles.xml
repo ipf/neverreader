@@ -159,19 +159,19 @@
     <style name="App_Text_H5" parent="android:Widget.TextView">
         <item name="android:textSize">23sp</item>
         <item name="lineHeight">28sp</item>
-        <item name="typeface">graphik_lcg_medium</item>
+        <item name="typeface">inter_medium</item>
         <item name="compatTextColor">@color/nr_text_primary</item>
     </style>
     <style name="App_Text_P3" parent="android:Widget.TextView">
         <item name="android:textSize">@dimen/nr_medium_text</item>
         <item name="lineHeight">24sp</item>
-        <item name="typeface">graphik_lcg_regular</item>
+        <item name="typeface">inter_regular</item>
         <item name="compatTextColor">@color/nr_text_primary</item>
     </style>
     <style name="App_Text_P4" parent="android:Widget.TextView">
         <item name="android:textSize">14sp</item>
         <item name="lineHeight">20sp</item>
-        <item name="typeface">graphik_lcg_regular</item>
+        <item name="typeface">inter_regular</item>
         <item name="compatTextColor">@color/nr_text_primary</item>
     </style>
     <!--
@@ -185,45 +185,45 @@
     <style name="App_Text_Extra_Large_Title">
         <item name="android:textSize">@dimen/nr_extra_large_text</item>
         <item name="lineHeight">32sp</item>
-        <item name="typeface">doyle_medium</item>
+        <item name="typeface">source_serif_4_medium</item>
         <item name="compatTextColor">@color/nr_themed_grey_1</item>
     </style>
     <style name="App_Text_Large_Title">
         <item name="android:textSize">@dimen/nr_large_text</item>
         <item name="lineHeight">30sp</item>
-        <item name="typeface">graphik_lcg_medium</item>
+        <item name="typeface">inter_medium</item>
         <item name="compatTextColor">@color/nr_themed_grey_1</item>
     </style>
     <style name="App_Text_Title">
         <item name="android:textSize">@dimen/nr_medium_text</item>
         <item name="lineHeight">@dimen/nr_line_height_default</item>
-        <item name="typeface">graphik_lcg_medium</item>
+        <item name="typeface">inter_medium</item>
         <item name="compatTextColor">@color/nr_nst_activateable_grey_1</item>
     </style>
     <style name="App_Text_LightTitle">
         <item name="android:textSize">@dimen/nr_medium_text</item>
         <item name="lineHeight">22sp</item>
-        <item name="typeface">graphik_lcg_medium</item>
+        <item name="typeface">inter_medium</item>
         <item name="compatTextColor">@color/nr_themed_grey_3</item>
     </style>
     
     <style name="App_Text_Medium">
         <item name="android:textSize">@dimen/nr_medium_text</item>
         <item name="lineHeight">22sp</item>
-        <item name="typeface">graphik_lcg_regular</item>
+        <item name="typeface">inter_regular</item>
         <item name="compatTextColor">@color/nr_themed_grey_1</item>
     </style>
     <style name="App_Text_Light">
         <item name="android:textSize">@dimen/nr_medium_text</item>
         <item name="lineHeight">22sp</item>
-        <item name="typeface">graphik_lcg_regular</item>
+        <item name="typeface">inter_regular</item>
         <item name="compatTextColor">@color/nr_nst_disableable_grey_3</item>
     </style>
     <style name="App_Text_Link">
         <item name="android:clickable">true</item>
         <item name="android:textSize">@dimen/nr_medium_text</item>
         <item name="lineHeight">24sp</item>
-        <item name="typeface">graphik_lcg_regular</item>
+        <item name="typeface">inter_regular</item>
         <item name="compatTextColor">@color/nr_themed_teal_2_clickable</item>
         <item name="android:background">@drawable/nr_ripple_borderless</item>
         <item name="android:minHeight">42dp</item>
@@ -234,19 +234,19 @@
     <style name="App_Text_Small_LightTitle">
         <item name="android:textSize">@dimen/nr_small_text</item>
         <item name="lineHeight">16sp</item>
-        <item name="typeface">graphik_lcg_medium</item>
+        <item name="typeface">inter_medium</item>
         <item name="compatTextColor">@color/nr_nst_disableable_grey_3</item>
     </style>
     <style name="App_Text_Small_Medium">
         <item name="android:textSize">@dimen/nr_small_text</item>
         <item name="lineHeight">@dimen/nr_line_height_default</item>
-        <item name="typeface">graphik_lcg_regular</item>
+        <item name="typeface">inter_regular</item>
         <item name="compatTextColor">@color/nr_themed_grey_1</item>
     </style>
     <style name="App_Text_Small_Light">
         <item name="android:textSize">@dimen/nr_small_text</item>
         <item name="lineHeight">22dp</item>
-        <item name="typeface">graphik_lcg_regular</item>
+        <item name="typeface">inter_regular</item>
         <item name="compatTextColor">@color/nr_nst_disableable_grey_3</item>
     </style>
     
@@ -254,29 +254,29 @@
         <item name="android:clickable">true</item>
         <item name="android:textSize">@dimen/nr_small_text</item>
         <item name="lineHeight">22sp</item>
-        <item name="typeface">graphik_lcg_regular</item>
+        <item name="typeface">inter_regular</item>
         <item name="compatTextColor">@color/nr_themed_teal_2_clickable</item>
         <item name="android:background">@drawable/nr_ripple_borderless</item>
     </style>
     <style name="App_Text_Small_Link_Bold" parent="App_Text_Small_Link">
-        <item name="typeface">graphik_lcg_medium</item>
+        <item name="typeface">inter_medium</item>
     </style>
     <style name="App_Text_Mini_Medium">
         <item name="android:textSize">@dimen/nr_mini_text</item>
         <item name="lineHeight">17sp</item>
-        <item name="typeface">graphik_lcg_regular</item>
+        <item name="typeface">inter_regular</item>
         <item name="compatTextColor">@color/nr_themed_grey_1</item>
     </style>
     <style name="App_Text_Mini_Light">
         <item name="android:textSize">@dimen/nr_mini_text</item>
         <item name="lineHeight">17sp</item>
-        <item name="typeface">graphik_lcg_regular</item>
+        <item name="typeface">inter_regular</item>
         <item name="compatTextColor">@color/nr_themed_grey_3</item>
     </style>
     <style name="App_Text_Teeny_Tiny_Light">
         <item name="android:textSize">@dimen/nr_teeny_tiny_text</item>
         <item name="lineHeight">14sp</item>
-        <item name="typeface">graphik_lcg_regular</item>
+        <item name="typeface">inter_regular</item>
         <item name="compatTextColor">@color/nr_themed_grey_3</item>
     </style>
 
@@ -313,7 +313,7 @@
         <item name="android:paddingTop">11dp</item>
         <item name="android:paddingBottom">11dp</item>
         <item name="android:textSize">@dimen/nr_medium_text</item>
-        <item name="typeface">graphik_lcg_regular</item>
+        <item name="typeface">inter_regular</item>
         <item name="compatEditTextColor">@color/nr_edittext_text</item>
         <item name="compatEditTextHintColor">@color/nr_themed_grey_4</item>
         <item name="colorControlActivated">@color/nr_themed_teal_2</item>

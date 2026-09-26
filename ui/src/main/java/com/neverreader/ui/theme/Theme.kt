@@ -29,7 +29,9 @@ fun AppTheme(
     val colors = if (darkTheme) DarkColors else LightColors
     val assets = currentAssetManager
     val typography = remember(assets) {
-        AppTypography().withFontFamily(AppFontFamily.of(assets))
+        AppTypography()
+            .withFontFamily(AppFontFamily.Sans(assets))
+            .withDisplayFamily(AppFontFamily.Display(assets))
     }
 
     MaterialTheme(

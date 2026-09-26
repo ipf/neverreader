@@ -52,7 +52,6 @@
     <string name="text_setting_line_height">Regelafstand</string>
     <string name="text_setting_margin">Marge</string>
 
-    <string name="current_typeface" comment="{typeface} is a placeholder for the current text typeface setting, eg Blanco, Graphik, do not translate the content within {}">Lettertype {typeface} wijzigen</string>
 
     <string name="theme_toggle_light_desc">Veranderen naar een licht thema</string>
     <string name="theme_toggle_dark_desc">Veranderen naar een donker thema</string>

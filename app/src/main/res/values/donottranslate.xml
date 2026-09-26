@@ -7,9 +7,6 @@
     <string name="alpha_settings" translatable="false">Alpha Settings</string>
 
     <!-- Premium font list display names-->
-    <string name="blanco" translatable="false">Blanco</string>
-    <string name="graphik" translatable="false">Graphik</string>
-    <string name="idealsans" translatable="false">Ideal Sans</string>
     <string name="inter" translatable="false">Inter</string>
     <string name="plex_sans" translatable="false">Plex Sans</string>
     <string name="sentinel" translatable="false">Sentinel</string>

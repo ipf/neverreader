@@ -20,10 +20,10 @@ class MarkdownFormatter(
             override fun configureSpansFactory(builder: MarkwonSpansFactory.Builder) {
                 builder
                     .setFactory(Emphasis::class.java) { _, _ ->
-                        CustomTypefaceSpan(Fonts.get(context, Fonts.Font.GRAPHIK_LCG_REGULAR_ITALIC)!!)
+                        CustomTypefaceSpan(Fonts.get(context, Fonts.Font.INTER_REGULAR_ITALIC)!!)
                     }
                     .setFactory(StrongEmphasis::class.java) { _, _ ->
-                        CustomTypefaceSpan(Fonts.get(context, Fonts.Font.GRAPHIK_LCG_MEDIUM)!!)
+                        CustomTypefaceSpan(Fonts.get(context, Fonts.Font.INTER_MEDIUM)!!)
                     }
             }
 

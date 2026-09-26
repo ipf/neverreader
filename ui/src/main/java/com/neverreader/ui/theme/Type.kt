@@ -12,62 +12,52 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
 /**
- * Typeface used for all UI text.
+ * The typefaces the app ships.
  *
- * The original brand faces (Graphik LCG, Doyle) are commercially licensed and
- * are stored GPG-encrypted under `secrets/fonts/`. Run `secrets/decrypt.sh` to
- * drop them into the assets and they will be picked up automatically. Until
- * then we fall back to Inter, which is the closest open-licensed geometric
- * grotesque and is what gives the app its Pocket-era look.
+ * The original brand faces (Graphik LCG for UI, Doyle for display) were
+ * commercially licensed and are not redistributable, so they were replaced
+ * with the closest open-licensed equivalents:
+ *
+ *  - [Sans] — Inter for Graphik LCG. A neo-grotesque with the same upright,
+ *    neutral-but-warm character, and the best small-size hinting of any
+ *    open grotesque, which matters at the 14sp the UI leans on.
+ *  - [Serif] — Source Serif 4 for Doyle. A transitional serif with optical
+ *    sizes; [Sans] stays the default and the serif is for display text and
+ *    long-form reading.
+ *
+ * Both are OFL-1.1 and ship in `assets/fonts`. The reader loads them by name
+ * through `@font-face` rules in `assets/html/c/text.css`, so the two must stay
+ * in sync; see [com.neverreader.app.reader.ReaderFragment].
  */
 object AppFontFamily {
-    private const val ASSET_DIR = "fonts"
+    private const val DIR = "fonts/"
 
-    private val GRAPHIK = mapOf(
-        FontWeight.Normal to "graphik_lcg_regular_no_leading.otf",
-        FontWeight.Medium to "graphik_lcg_medium_no_leading.otf",
-        FontWeight.Bold to "graphik_lcg_bold_no_leading.otf",
+    /** The UI face. Inter, standing in for Graphik LCG. */
+    fun Sans(assets: AssetManager) = FontFamily(
+        Font(DIR + "Inter-Regular.ttf", assets, FontWeight.Normal),
+        Font(DIR + "Inter-Medium.ttf", assets, FontWeight.Medium),
+        Font(DIR + "Inter-Bold.ttf", assets, FontWeight.Bold),
+        Font(DIR + "Inter-Italic.ttf", assets, FontWeight.Normal, FontStyle.Italic),
+        Font(DIR + "Inter-MediumItalic.ttf", assets, FontWeight.Medium, FontStyle.Italic),
     )
 
-    private val INTER = mapOf(
-        FontWeight.Normal to "Inter-Regular.ttf",
-        FontWeight.Medium to "Inter-Medium.ttf",
-        FontWeight.Bold to "Inter-Bold.ttf",
+    /**
+     * Source Serif 4, standing in for Doyle.
+     *
+     * Split by optical size the way the family is designed: [Serif] is the
+     * reading cut for body text, [Display] is the tighter, higher-contrast cut
+     * for headings.
+     */
+    fun Serif(assets: AssetManager) = FontFamily(
+        Font(DIR + "SourceSerif4-Regular.otf", assets, FontWeight.Normal),
+        Font(DIR + "SourceSerif4-Semibold.otf", assets, FontWeight.SemiBold),
+        Font(DIR + "SourceSerif4-It.otf", assets, FontWeight.Normal, FontStyle.Italic),
     )
 
-    private fun exists(assets: AssetManager, name: String): Boolean = try {
-        assets.open("$ASSET_DIR/$name").close()
-        true
-    } catch (_: java.io.IOException) {
-        false
-    }
-
-    fun of(assets: AssetManager): FontFamily {
-        val family = if (GRAPHIK.values.all { exists(assets, it) }) GRAPHIK else INTER
-        val regular = family.getValue(FontWeight.Normal)
-        val medium = family.getValue(FontWeight.Medium)
-        val bold = family.getValue(FontWeight.Bold)
-
-        // Inter and Graphik name their italics differently, so resolve each by
-        // what is actually on disk rather than deriving the name.
-        fun italic(candidates: List<String>): String =
-            candidates.firstOrNull { exists(assets, it) } ?: regular
-
-        val regularItalic = italic(
-            listOf("Inter-Italic.ttf", "graphik_lcg_regular_italic_no_leading.otf")
-        )
-        val mediumItalic = italic(
-            listOf("Inter-MediumItalic.ttf", "graphik_lcg_medium_italic_no_leading.otf")
-        )
-
-        return FontFamily(
-            Font("$ASSET_DIR/$regular", assets, FontWeight.Normal),
-            Font("$ASSET_DIR/$medium", assets, FontWeight.Medium),
-            Font("$ASSET_DIR/$bold", assets, FontWeight.Bold),
-            Font("$ASSET_DIR/$regularItalic", assets, FontWeight.Normal, FontStyle.Italic),
-            Font("$ASSET_DIR/$mediumItalic", assets, FontWeight.Medium, FontStyle.Italic),
-        )
-    }
+    /** The display cut of Source Serif 4, for titles. */
+    fun Display(assets: AssetManager) = FontFamily(
+        Font(DIR + "SourceSerif4Display-Semibold.otf", assets, FontWeight.SemiBold),
+    )
 }
 
 /**
@@ -97,6 +87,26 @@ data class AppTypography(
         h5 = h5.copy(fontFamily = fontFamily),
         h6 = h6.copy(fontFamily = fontFamily),
         h7 = h7.copy(fontFamily = fontFamily),
+        p1 = p1.copy(fontFamily = fontFamily),
+        p2 = p2.copy(fontFamily = fontFamily),
+        p3 = p3.copy(fontFamily = fontFamily),
+        p4 = p4.copy(fontFamily = fontFamily),
+    )
+
+    /**
+     * Gives the display sizes the serif cut, replacing the Doyle-based
+     * `App_Text_Extra_Large_Title` the XML styles used to reach for.
+     */
+    fun withDisplayFamily(fontFamily: FontFamily) = copy(
+        h1 = h1.copy(fontFamily = fontFamily),
+        h2 = h2.copy(fontFamily = fontFamily),
+        h3 = h3.copy(fontFamily = fontFamily),
+    )
+
+    /**
+     * Gives the body sizes the reading serif, for long-form article text.
+     */
+    fun withReadingFamily(fontFamily: FontFamily) = copy(
         p1 = p1.copy(fontFamily = fontFamily),
         p2 = p2.copy(fontFamily = fontFamily),
         p3 = p3.copy(fontFamily = fontFamily),

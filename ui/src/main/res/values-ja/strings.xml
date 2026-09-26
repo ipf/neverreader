@@ -52,7 +52,6 @@
     <string name="text_setting_line_height">行の高さ</string>
     <string name="text_setting_margin">余白</string>
 
-    <string name="current_typeface" comment="{typeface} is a placeholder for the current text typeface setting, eg Blanco, Graphik, do not translate the content within {}">{typeface}の書体を変更</string>
 
     <string name="theme_toggle_light_desc">ライトテーマに変更</string>
     <string name="theme_toggle_dark_desc">ダークテーマに変更</string>

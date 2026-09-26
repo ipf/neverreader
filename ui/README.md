@@ -150,18 +150,24 @@ Some horizontal divider variants:
 
 ## Fonts
 
-Pocket's interface font is Graphix. From xml, it can be used like so:
+The UI face is Inter and the reading/display face is Source Serif 4, both OFL and both in
+`src/main/assets/fonts`. They replaced Pocket's licensed Graphix and Doyle.
+
+In Compose, use `AppFontFamily.Sans` / `.Serif` / `.Display`.
+
+From xml, a `ThemedTextView` can pick one with:
 
 ```xml
-<com.pocket.ui.view.themed.ThemedTextView
+<com.neverreader.ui.view.themed.ThemedTextView
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    app:typeface="graphik_lcg_bold" />
+    app:typeface="inter_medium" />
 ```
 
 From code, use `Fonts.get(Context, Font)`.
 
-In a WebView, see the implementation notes in the Fonts class docs for details on how to use.
+In a WebView, declare an `@font-face` pointing at `file:///android_asset/fonts/...`. See
+`app/src/main/assets/html/c/text.css` for a worked example.
 
 ## Bottom Sheets
 

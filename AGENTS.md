@@ -55,9 +55,12 @@ app (UI) → repositories → Room DB → WorkManager sync
   Reach for `AppTheme.colors` / `AppTheme.typography` / `AppTheme.dimensions`,
   never a raw hex or a `res/values` colour. `AppTheme(darkTheme = …)` takes the
   mode as a parameter so the in-app preference wins over the system setting.
-- **Fonts:** the licensed brand faces (Graphik LCG, Doyle) are GPG-encrypted under
-  `secrets/fonts/`; run `secrets/decrypt.sh` to install them and they are picked up
-  automatically. The committed default is Inter (OFL), the open substitute.
+- **Fonts:** the original Pocket brand faces (Graphik LCG, Doyle) were
+  commercially licensed and are gone, replaced by open-licensed equivalents in
+  `ui/src/main/assets/fonts/`: **Inter** for UI sans and **Source Serif 4** for
+  display and reading text, both OFL-1.1. Compose loads them via
+  `AppFontFamily`; the reader loads them by name through the `@font-face` rules
+  in `app/src/main/assets/html/c/text.css`. If you change a face, change both.
 - **`Backend` interface** (`backend/…/Backend.kt`): auth, `fetchEntries(cursor)`,
   `fetchArticle(id)`, add/archive/favorite/delete, tags, annotations. Each adapter
   exposes a `BackendCapabilities` for what it does not support (e.g. highlights,

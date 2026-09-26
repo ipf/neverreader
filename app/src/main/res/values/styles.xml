@@ -56,7 +56,7 @@
 		<item name="verticalSpacing">@dimen/chip_layout_spacing</item>
 	</style>
 	<style name="TagChipEditTextField">
-        <item name="typeface">graphik_lcg_regular</item>
+        <item name="typeface">inter_regular</item>
         <item name="android:textSize">@dimen/chip_text</item>
         <item name="android:textColor">@color/nr_themed_grey_1</item>
         <item name="android:textColorHint">@color/nr_themed_grey_4</item>

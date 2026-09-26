@@ -5,16 +5,16 @@
         <attr name="state_dark" format="boolean" />
     </declare-styleable>
 
+    <!--
+        Values map to com.neverreader.ui.text.Fonts.Font. The names are the OFL faces
+        the app ships; they replaced the licensed Graphik LCG and Doyle.
+    -->
     <attr name="typeface" format="enum">
-        <enum name="graphik_lcg_medium" value="1" />
-        <enum name="graphik_lcg_medium_italic" value="2" />
-        <enum name="graphik_lcg_regular" value="3" />
-        <enum name="graphik_lcg_regular_italic" value="4" />
-        <enum name="blanco_regular" value="5" />
-        <enum name="blanco_bold" value="6" />
-        <enum name="blanco_italic" value="7" />
-        <enum name="blanco_bold_italic" value="8" />
-        <enum name="doyle_medium" value="9" />
+        <enum name="inter_medium" value="1" />
+        <enum name="inter_medium_italic" value="2" />
+        <enum name="inter_regular" value="3" />
+        <enum name="inter_regular_italic" value="4" />
+        <enum name="source_serif_4_medium" value="9" />
     </attr>
 
     <declare-styleable name="DefaultStyles">

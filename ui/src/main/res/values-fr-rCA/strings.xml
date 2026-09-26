@@ -52,7 +52,6 @@
     <string name="text_setting_line_height">Hauteur de ligne</string>
     <string name="text_setting_margin">Marge</string>
 
-    <string name="current_typeface" comment="{typeface} is a placeholder for the current text typeface setting, eg Blanco, Graphik, do not translate the content within {}">Changer le type de caractères actuel de {typeface}</string>
 
     <string name="theme_toggle_light_desc">Passer au thème clair</string>
     <string name="theme_toggle_dark_desc">Passer au thème foncé</string>

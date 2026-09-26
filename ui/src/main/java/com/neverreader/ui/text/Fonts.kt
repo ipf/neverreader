@@ -31,8 +31,8 @@ import android.graphics.Typeface
  * We also experienced bugs with ResourcesCompat.getFont on some devices.
  */
 object Fonts {
-    /** Filename of the graphik-lcg font family css file within the assets directory.  */
-    private val cache: MutableMap<Font?, Typeface?> = HashMap<Font?, Typeface?>()
+    /** Typefaces are expensive to load, so they are cached for the process lifetime. */
+    private val cache: MutableMap<Font, Typeface?> = HashMap()
 
     /**
      * Get a typeface by attribute.
@@ -58,7 +58,8 @@ object Fonts {
             try {
                 typeFace = Typeface.createFromAsset(context.getAssets(), font.filename)
             } catch (e: RuntimeException) {
-                // Custom fonts are licensed and may not be present; fall back to the system default.
+                // The font should be in assets; fall back to the system default
+                // rather than crashing if a build is missing one.
                 typeFace = Typeface.create(
                     Typeface.SANS_SERIF,
                     if (font.bold()) Typeface.BOLD else Typeface.NORMAL
@@ -69,28 +70,20 @@ object Fonts {
         return typeFace
     }
 
+    /**
+     * The faces the legacy XML views can reach, for `app:typeface`.
+     *
+     * Compose uses [com.neverreader.ui.theme.AppFontFamily] instead, which loads
+     * the same files and is the preferred path.
+     */
     enum class Font(val attrValue: Int, val filename: String) {
-        GRAPHIK_LCG_BOLD(10, "graphik_lcg_bold_no_leading.otf"),
-        GRAPHIK_LCG_MEDIUM(1, "graphik_lcg_medium_no_leading.otf"),
-        GRAPHIK_LCG_MEDIUM_ITALIC(2, "graphik_lcg_medium_italic_no_leading.otf"),
-        GRAPHIK_LCG_REGULAR(3, "graphik_lcg_regular_no_leading.otf"),
-        GRAPHIK_LCG_REGULAR_ITALIC(4, "graphik_lcg_regular_italic_no_leading.otf"),
-
-        BLANCO_REGULAR(5, "blanco_osf_regular.otf"),
-        BLANCO_BOLD(6, "blanco_osf_bold.otf"),
-        BLANCO_ITALIC(7, "blanco_osf_italic.otf"),
-        BLANCO_BOLD_ITALIC(8, "blanco_osf_bold_italic.otf"),
-
-        DOYLE_MEDIUM(9, "doyle_medium.otf"),
-
-        /**
-         * NeverReader icons as a typeface.  This allows certain images to be easily added to text Strings while still
-         * properly scaling with the user's text size settings.
-         */
+        INTER_MEDIUM(1, "fonts/Inter-Medium.ttf"),
+        INTER_MEDIUM_ITALIC(2, "fonts/Inter-MediumItalic.ttf"),
+        INTER_REGULAR(3, "fonts/Inter-Regular.ttf"),
+        INTER_REGULAR_ITALIC(4, "fonts/Inter-Italic.ttf"),
+        SOURCE_SERIF_4_MEDIUM(9, "fonts/SourceSerif4Display-Semibold.otf"),
         ;
 
-        fun bold(): Boolean {
-            return this == Font.GRAPHIK_LCG_BOLD || this == Font.BLANCO_BOLD || this == Font.BLANCO_BOLD_ITALIC || this == Font.DOYLE_MEDIUM
-        }
+        fun bold(): Boolean = this == INTER_MEDIUM || this == SOURCE_SERIF_4_MEDIUM
     }
 }
