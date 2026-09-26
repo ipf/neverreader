@@ -6,8 +6,7 @@ import android.view.WindowManager
 import com.neverreader.app.R
 import com.neverreader.ui.util.DimenUtil.dpToPxInt
 import com.neverreader.ui.view.button.ButtonBoxDrawable
-import com.neverreader.ui.view.themed.AppThemeUtil.getState
-import com.neverreader.ui.view.themed.ThemedFrameLayout
+import android.widget.FrameLayout
 import com.neverreader.util.android.FormFactor.dpToPx
 import com.neverreader.util.android.WindowManagerUtil.getScreenHeight
 import com.neverreader.util.android.WindowManagerUtil.getScreenWidth
@@ -17,7 +16,7 @@ import kotlin.math.min
 /**
  * Handles the logic of creating a dialog size that fits the screen well
  */
-class DialogSizeWrapper : ThemedFrameLayout {
+class DialogSizeWrapper : FrameLayout {
     private var mMaxWidthPx = 0f
     private var mMaxHeight = 0f
 
@@ -58,15 +57,6 @@ class DialogSizeWrapper : ThemedFrameLayout {
         )
     }
 
-    override fun drawableStateChanged() {
-        super.drawableStateChanged()
-        val state = getState(this)!![0]
-        if (state == com.neverreader.ui.R.attr.state_light) {
-            setPadding(0, 0, 0, 0)
-        } else if (state == com.neverreader.ui.R.attr.state_dark) {
-            setPadding(mPad, mPad, mPad, mPad)
-        }
-    }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val windowManager = (getContext().getSystemService(Context.WINDOW_SERVICE) as WindowManager)

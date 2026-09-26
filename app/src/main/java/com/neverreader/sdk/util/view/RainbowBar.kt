@@ -6,18 +6,20 @@ import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import com.neverreader.app.App.Companion.getContext as appContextFn
 import com.neverreader.app.R
+import com.neverreader.app.settings.Theme
+import com.neverreader.sdk.util.AbsNeverReaderActivity
 import com.neverreader.sdk.util.drawable.RainbowDrawable
-import com.neverreader.ui.view.themed.ThemedView
+import android.view.View
 
-class RainbowBar : ThemedView {
+class RainbowBar : View {
     var rainbow: RainbowDrawable? = null
         private set
 
-    constructor(context: Context?) : super(context) {
+    constructor(context: Context) : super(context) {
         init()
     }
 
-    constructor(context: Context?, attrs: AttributeSet?, defStyle: Int) : super(
+    constructor(context: Context, attrs: AttributeSet?, defStyle: Int) : super(
         context,
         attrs,
         defStyle
@@ -25,12 +27,14 @@ class RainbowBar : ThemedView {
         init()
     }
 
-    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
         init()
     }
 
     private fun init() {
         this.rainbow = RainbowDrawable(this)
+        this.rainbow!!.isDark =
+            Theme.isDark((context as? AbsNeverReaderActivity)?.currentTheme() ?: Theme.LIGHT)
     }
 
     protected override fun verifyDrawable(who: Drawable): Boolean {

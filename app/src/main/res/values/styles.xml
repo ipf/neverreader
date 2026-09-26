@@ -2,65 +2,12 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="Theme.Transparent" parent="android:Theme">
-        <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowBackground">@color/transparent</item>
-        <item name="android:windowContentOverlay">@null</item>
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowIsFloating">true</item>
-        <item name="android:backgroundDimEnabled">false</item>
-        <item name="android:windowAnimationStyle">@null</item>
-    </style>
 
-    <style name="Theme.Transparent.NoAnimation" parent="Theme.Transparent">
-        <item name="android:windowAnimationStyle">@null</item>
-    </style>
 
     <!-- Version 2 is switching the base theme to see if we can fix the abc_ic_ab_back_material.xml resource not found crash on 4.4 -->
 
-    <style name="Theme.Transparent2" parent="Theme.NeverReaderBase.Light">
-        <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowBackground">@color/transparent</item>
-        <item name="android:windowContentOverlay">@null</item>
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowIsFloating">true</item>
-        <item name="android:backgroundDimEnabled">false</item>
-        <item name="android:windowAnimationStyle">@null</item>
-    </style>
 
-    <style name="Theme.Transparent.StandaloneDialogActivity2" parent="Theme.Transparent2">
-        <item name="android:backgroundDimEnabled">true</item>
-        <item name="android:windowMinWidthMajor">100%</item>
-        <item name="android:windowMinWidthMinor">100%</item>
-    </style>
 
-    <style name="TagChipEditText">
-		<item name="android:minHeight">44dp</item>
-        <item name="android:paddingTop">8.5dp</item>
-        <item name="android:paddingBottom">8.5dp</item>
-        <item name="android:paddingLeft">@dimen/nr_space_sm</item>
-        <item name="android:paddingStart">@dimen/nr_space_sm</item>
-        <item name="android:paddingRight">@dimen/nr_space_sm</item>
-        <item name="android:paddingEnd">@dimen/nr_space_sm</item>
-		<item name="chiptext_lineMode">0</item>
-		<item name="chiptext_flowStyle">@style/TagChipEditTextFlow</item>
-		<item name="chiptext_fieldStyle">@style/TagChipEditTextField</item>
-		<item name="chiptext_fieldHeight">@dimen/chip_tag_height</item>
-		<item name="chiptext_commitChars">,</item>
-		<item name="chiptext_clearEnabled">false</item>
-		<item name="chiptext_animateAdditions">true</item>
-		<item name="chiptext_hint">@string/lb_select_tags_hint</item>
-	</style>
-	<style name="TagChipEditTextFlow">
-		<item name="horizontalSpacing">@dimen/chip_layout_spacing</item>
-		<item name="verticalSpacing">@dimen/chip_layout_spacing</item>
-	</style>
-	<style name="TagChipEditTextField">
-        <item name="typeface">inter_regular</item>
-        <item name="android:textSize">@dimen/chip_text</item>
-        <item name="android:textColor">@color/nr_themed_grey_1</item>
-        <item name="android:textColorHint">@color/nr_themed_grey_4</item>
-    </style>
     
     <style name="ProgressCircle">
         <item name="android:layout_width">@dimen/circle_progress_diameter</item>
@@ -73,20 +20,23 @@
         <item name="android:windowBackground">@color/transparent</item>
     </style>
     
-    <style name="DrawerItemView" parent="android:Widget">
-        <item name="android:focusable">true</item>
-    </style>
     
-    <style name="ListenTitle" parent="App_Text_Title">
-        <item name="android:ellipsize">end</item>
-        <item name="android:gravity">center_horizontal</item>
-        <item name="android:maxLines">2</item>
-    </style>
     
-    <style name="ListenSubhead" parent="App_Text_Small_Light">
-        <item name="android:ellipsize">end</item>
-        <item name="android:gravity">center_horizontal</item>
-        <item name="android:maxLines">1</item>
+
+    <!-- The share-target and pick-target activities are transparent overlays. -->
+    <style name="Theme.Transparent" parent="android:Theme">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
+
+    <style name="Theme.Transparent.StandaloneDialogActivity2" parent="Theme.Transparent">
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowMinWidthMajor">100%</item>
+        <item name="android:windowMinWidthMinor">100%</item>
     </style>
 
 </resources>

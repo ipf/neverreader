@@ -44,6 +44,19 @@ class RainbowDrawable(callback: Callback?) : Drawable() {
 
     private var mIsBorderVisible = true
     private var mIsDark = false
+
+    /**
+     * Whether to draw dimmed. The host view sets this from the activity theme;
+     * it used to be scraped out of the view's drawable state, which depended on
+     * the state_dark attribute that no longer exists.
+     */
+    var isDark: Boolean
+        get() = mIsDark
+        set(value) {
+            if (mIsDark == value) return
+            mIsDark = value
+            applyAlphas()
+        }
     private var mAnimationState = AnimateState.IDLE
     private var mAnimationStart: Long = 0
     private var mAnimationDuration: Long = 0
@@ -79,14 +92,18 @@ class RainbowDrawable(callback: Callback?) : Drawable() {
     override fun onStateChange(state: IntArray): Boolean {
         super.onStateChange(state)
 
-        mIsDark = Theme.isDark(state)
+        mIsDark = isDark
 
-        PAINT_MINT.alpha = if (mIsDark) DARK_MODE_ALPHA else 255
-        PAINT_TURQUOISE.alpha = if (mIsDark) DARK_MODE_ALPHA else 255
-        PAINT_GOLD.alpha = if (mIsDark) DARK_MODE_ALPHA else 255
-        PAINT_CORAL.alpha = if (mIsDark) DARK_MODE_ALPHA else 255
-
+        applyAlphas()
         return true
+    }
+
+    private fun applyAlphas() {
+        val alpha = if (mIsDark) DARK_MODE_ALPHA else 255
+        PAINT_MINT.alpha = alpha
+        PAINT_TURQUOISE.alpha = alpha
+        PAINT_GOLD.alpha = alpha
+        PAINT_CORAL.alpha = alpha
     }
 
     fun setBorderVisible(visible: Boolean) {

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Dark-mode overrides. Android picks these by the current uiMode. -->
+    <color name="nr_bg">@color/nr_dm_base_bg</color>
+    <color name="nr_themed_coral_2">@color/nr_dm_coral_2</color>
+    <color name="nr_themed_grey_1">@color/nr_dm_grey_1</color>
+    <color name="nr_themed_grey_3">@color/nr_dm_grey_3</color>
+    <color name="nr_themed_grey_6">@color/nr_dm_grey_6</color>
+    <color name="nr_themed_teal_3">@color/nr_dm_teal_3</color>
+    <color name="nr_themed_teal_4">@color/nr_dm_teal_4</color>
+    <color name="nr_themed_amber_1">@color/amber_30</color>
+</resources>

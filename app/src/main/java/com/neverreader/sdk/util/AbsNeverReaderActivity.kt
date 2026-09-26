@@ -27,7 +27,12 @@ import androidx.annotation.StyleRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.OnApplyWindowInsetsListener
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.ViewCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
@@ -41,12 +46,8 @@ import com.neverreader.app.settings.Brightness
 import com.neverreader.app.settings.Theme
 import com.neverreader.sdk.util.fragment.NeverReaderFragmentManager
 import com.neverreader.sdk.util.view.RainbowBar
-import com.neverreader.ui.view.notification.AppSnackbar
-import com.neverreader.ui.view.notification.AppSnackbar.Companion.current
-import com.neverreader.ui.view.notification.AppSnackbar.Companion.make
-import com.neverreader.ui.view.notification.AppSnackbar.Companion.setAnchor
-import com.neverreader.ui.view.themed.ThemeColors
-import com.neverreader.ui.view.themed.Themed
+import com.neverreader.ui.compose.AppSnackbarHost
+import com.neverreader.ui.theme.AppTheme
 import com.neverreader.util.android.ApiLevel
 import com.neverreader.util.android.ContextUtil
 import com.neverreader.util.android.FormFactor
@@ -58,6 +59,7 @@ import com.neverreader.util.android.fragment.FragmentUtil.FragmentLaunchMode
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import com.neverreader.util.android.view.ManuallyUpdateTheme
 import com.neverreader.util.java.Logs
 import com.neverreader.util.java.Milliseconds
@@ -70,7 +72,7 @@ import java.lang.ref.WeakReference
  * The base activity for NeverReader's screens. Automatically handles tracking and [AppLifecycle] events.
  * See [.isUserPresent] to opt out.
  */
-abstract class AbsNeverReaderActivity : AppCompatActivity(), Themed {
+abstract class AbsNeverReaderActivity : AppCompatActivity() {
     protected var mContent: AppActivityContentView? = null
 
     enum class ActivityAccessRestriction {
@@ -131,6 +133,33 @@ abstract class AbsNeverReaderActivity : AppCompatActivity(), Themed {
      */
     private var mAskUrlOverlayVisible = false
 
+    /**
+     * Every snackbar in the app renders here. Replaces the old AppSnackbar view,
+     * which needed the themed-view colour machinery just to pick a background.
+     */
+    val snackbarHostState: SnackbarHostState = SnackbarHostState()
+
+    private fun setUpSnackbarHost() {
+        mRoot!!.snackbarHost.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                AppTheme(darkTheme = Theme.isDark(currentTheme())) {
+                    AppSnackbarHost(snackbarHostState)
+                }
+            }
+        }
+    }
+
+    /** Shows a message on the shared host. Fire and forget. */
+    protected fun snack(message: String, long: Boolean = false) {
+        lifecycleScope.launch {
+            snackbarHostState.showSnackbar(
+                message = message,
+                duration = if (long) SnackbarDuration.Long else SnackbarDuration.Short,
+            )
+        }
+    }
+
     private var mToasty: Toast? = null
 
     val neverReaderFragmentManager: NeverReaderFragmentManager =
@@ -179,6 +208,7 @@ abstract class AbsNeverReaderActivity : AppCompatActivity(), Themed {
         mRoot = findViewById<NeverReaderActivityRootView>(R.id.nr_root)
         mRoot!!.attach(this)
         mContent = mRoot!!.contentView
+        setUpSnackbarHost()
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -222,7 +252,6 @@ abstract class AbsNeverReaderActivity : AppCompatActivity(), Themed {
                     insets.systemWindowInsetRight,
                     insets.systemWindowInsetBottom
                 )
-                updateAskUrlOverlayPadding(current)
                 insets
             })
 
@@ -334,27 +363,6 @@ abstract class AbsNeverReaderActivity : AppCompatActivity(), Themed {
          */
         get() = Theme.FLAG_ALLOW_ALL
 
-    override fun getThemeState(view: View): IntArray? {
-        return app()!!.theme().getState(view)
-    }
-
-    override fun getThemeColors(context: Context): ThemeColors {
-        return getThemeColors(app()!!.theme().get(context))
-    }
-
-    override fun getThemeColorsChanges(context: Context): Observable<ThemeColors?> {
-        return app()!!.theme()
-            .observeFor(context)!!
-            .map { theme: Int? -> this.getThemeColors(theme!!) }
-    }
-
-    private fun getThemeColors(theme: Int): ThemeColors {
-        return when (theme) {
-            Theme.DARK -> ThemeColors.DARK
-            Theme.LIGHT -> ThemeColors.LIGHT
-            else -> ThemeColors.LIGHT
-        }
-    }
 
     /**
      * Something has modified the theme (dark/light mode), the UI should update as needed.
@@ -654,80 +662,39 @@ abstract class AbsNeverReaderActivity : AppCompatActivity(), Themed {
 
     private fun showAskUrl(url: String) {
         // TODO if you share Copy Link, don't show this for that link
+        lifecycleScope.launch {
+            mAskUrlOverlayVisible = true
+            val result = snackbarHostState.showSnackbar(
+                message = getString(R.string.lb_add_copied_url),
+                actionLabel = getString(com.neverreader.ui.R.string.ac_save),
+                withDismissAction = true,
+                // Held until the user acts or swipes it away, as before.
+                duration = SnackbarDuration.Indefinite,
+            )
+            mAskUrlOverlayVisible = false
+            onClipboardUrlPromptViewDismissed()
+            if (result != SnackbarResult.ActionPerformed) return@launch
 
-        val ask = make(
-            this,
-            AppSnackbar.Type.DEFAULT_DISMISSABLE,
-            null,
-            url.replace("https?://(www.)?".toRegex(), ""),
-            null
-        )
-        ask.bind().onAction(com.neverreader.ui.R.string.ac_save, object : View.OnClickListener {
-            @StringRes
-            var message: Int = 0
-
-            override fun onClick(v: View?) {
-                ask.bind().dismiss()
-                mAskUrlOverlayVisible = false
-
-                CoroutineScope(Dispatchers.IO).launch {
-                    var message: Int
-                    val existing = runCatching {
-                        App.from(this@AbsNeverReaderActivity).bookmarks().bookmarkByUrlOnce(url)
-                    }.getOrNull()
-                    val saved = runCatching {
-                        App.from(this@AbsNeverReaderActivity).bookmarks().add(url, null)
-                    }
-                    message = if (existing != null) {
-                        R.string.ts_add_already
-                    } else if (saved.isSuccess) {
-                        R.string.ts_add_added
-                    } else {
-                        R.string.ts_add_error
-                    }
-                    UiThreadResponse { _, _ ->
-                        val confirm = make(
-                            this@AbsNeverReaderActivity,
-                            if (message != R.string.ts_add_added) AppSnackbar.Type.ERROR_DISMISSABLE else AppSnackbar.Type.DEFAULT_DISMISSABLE,
-                            null,
-                            getText(message),
-                            null
-                        )
-                        updateAskUrlOverlayPadding(confirm)
-                        onClipboardUrlPromptViewLayout(confirm)
-                        confirm.bind()
-                            .onDismiss(AppSnackbar.OnDismissListener { _ ->
-                                onClipboardUrlPromptViewDismissed(confirm)
-                            })
-                        confirm.show()
-
-                        // Hide in 3 seconds
-                        mHandler!!.postDelayed(
-                            Runnable { confirm.bind().dismiss() },
-                            Milliseconds.SECOND * 3
-                        )
-                    }.uiOnComplete(true, null)
+            val message = withContext(Dispatchers.IO) {
+                val existing = runCatching {
+                    App.from(this@AbsNeverReaderActivity).bookmarks().bookmarkByUrlOnce(url)
+                }.getOrNull()
+                val saved = runCatching {
+                    App.from(this@AbsNeverReaderActivity).bookmarks().add(url, null)
+                }
+                when {
+                    existing != null -> R.string.ts_add_already
+                    saved.isSuccess -> R.string.ts_add_added
+                    else -> R.string.ts_add_error
                 }
             }
-        }).singleLineMessage(true).title(getText(R.string.lb_add_copied_url))
-
-        updateAskUrlOverlayPadding(ask)
-        onClipboardUrlPromptViewLayout(ask)
-        ask.bind().onDismiss(AppSnackbar.OnDismissListener { `__`: AppSnackbar.DismissReason? ->
-            onClipboardUrlPromptViewDismissed(ask)
-        })
-
-
-        // Show
-        mAskUrlOverlayVisible = true
-        ask.show()
-
-
-        // Hide in 10 seconds
-        mHandler!!.postDelayed(Runnable {
-            ask.bind().dismiss()
-            mAskUrlOverlayVisible = false
-        }, Milliseconds.SECOND * 10)
+            // Auto-dismissing. The old bar was forced down after a flat 3s, which
+            // was unreadable at large font sizes; Short scales with the setting.
+            snackbarHostState.showSnackbar(
+                message = message.toString(),
+                duration = SnackbarDuration.Short,
+            )
+        }
     }
 
     /**
@@ -736,27 +703,17 @@ abstract class AbsNeverReaderActivity : AppCompatActivity(), Themed {
      *
      * @param view The view to move to a different position in the layout.
      */
-    protected fun onClipboardUrlPromptViewLayout(view: AppSnackbar?) {}
+    /** Called when the clipboard prompt is shown, for subclasses that need to move it. */
+    protected fun onClipboardUrlPromptViewLayout() {}
 
     /**
      * If needed, this can be overridden to add custom dismissal handling.
      *
      * @param view the view that was just dismissed
      */
-    protected fun onClipboardUrlPromptViewDismissed(view: AppSnackbar?) {}
+    /** Called when the clipboard prompt goes away. */
+    protected fun onClipboardUrlPromptViewDismissed() {}
 
-    protected fun updateAskUrlOverlayPadding(askView: View?) {
-        if (askView != null) {
-            val paddingDefault =
-                getResources().getDimension(com.neverreader.ui.R.dimen.nr_space_sm).toInt()
-            askView.setPadding(
-                paddingDefault + mWindowInsets.left,
-                paddingDefault,
-                paddingDefault + mWindowInsets.right,
-                paddingDefault + mWindowInsets.bottom
-            )
-        }
-    }
 
 
     public override fun onPause() {
@@ -1106,16 +1063,6 @@ abstract class AbsNeverReaderActivity : AppCompatActivity(), Themed {
 
     val listenViewStates: Observable<Any?>?
         get() = Observable.empty<Any?>()
-
-    /**
-     * Default implementation to display a snackbar on this Activity.  Simply calls show.
-     *
-     * @param bar the snackbar
-     */
-    fun showSnackbar(bar: AppSnackbar) {
-        setAnchor(this, bar, null)
-        bar.show()
-    }
 
     companion object {
         const val DIALOG_SUBCLASS: Int = 20 // Should be higher than any generic dialog ids

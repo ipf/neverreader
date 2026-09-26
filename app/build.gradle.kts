@@ -67,11 +67,6 @@ android {
         compose = true
         buildConfig = true
     }
-    // Serves DataBindingCommons.kt's @BindingAdapter annotations on the legacy views.
-    // Removed in the Compose migration, together with the views themselves.
-    dataBinding {
-        enable = true
-    }
 }
 
 licensee {

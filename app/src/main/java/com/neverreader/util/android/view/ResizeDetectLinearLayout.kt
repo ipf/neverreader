@@ -84,11 +84,6 @@ class ResizeDetectLinearLayout : LinearLayout, ResizeDetectView, ForegroundDrawa
         mListener = listener
     }
 
-    override fun onCreateDrawableState(extraSpace: Int): IntArray? {
-        val state = super.onCreateDrawableState(extraSpace + 1)
-        mergeDrawableStates(state, from(getContext())!!.theme().getState(this))
-        return state
-    }
 
     fun setDividerStroke(color: ColorStateList?, stroke: Int, inset: Int) {
         mDrawDivider = true

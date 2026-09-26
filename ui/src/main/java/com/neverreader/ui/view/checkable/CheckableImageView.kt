@@ -6,9 +6,9 @@ import android.util.AttributeSet
 import android.view.SoundEffectConstants
 import com.neverreader.ui.util.CheckableHelper
 import com.neverreader.ui.util.CheckableHelper.SuperSetContentDescription
-import com.neverreader.ui.view.themed.ThemedImageView
+import androidx.appcompat.widget.AppCompatImageView
 
-open class CheckableImageView : ThemedImageView, CheckableHelper.Checkable {
+open class CheckableImageView : AppCompatImageView, CheckableHelper.Checkable {
     private val mCheckable: CheckableHelper? = CheckableHelper(
         this,
         SuperSetContentDescription { contentDescription: CharSequence? ->
@@ -25,7 +25,7 @@ open class CheckableImageView : ThemedImageView, CheckableHelper.Checkable {
         mCheckable!!.initAttributes(context, attrs)
     }
 
-    constructor(context: Context?, attrs: AttributeSet?, defStyle: Int) : super(
+    constructor(context: Context, attrs: AttributeSet?, defStyle: Int) : super(
         context,
         attrs,
         defStyle

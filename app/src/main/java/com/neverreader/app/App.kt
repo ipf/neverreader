@@ -17,7 +17,6 @@ import com.neverreader.util.android.Clipboard
 import com.neverreader.app.settings.rotation.RotationLock
 import com.neverreader.sdk.preferences.AppPrefs
 import com.neverreader.sdk.util.AbsNeverReaderActivity
-import com.neverreader.ui.view.notification.AppSnackbar
 import com.neverreader.util.android.IntentUtils
 import androidx.work.Configuration
 import dagger.hilt.android.HiltAndroidApp
@@ -52,7 +51,6 @@ class App : Application(), Configuration.Provider {
     override fun onCreate() {
         super.onCreate()
         AndroidThreeTen.init(this)
-        AppSnackbar.init { _, _, _ -> }
         SyncWorker.schedule(this)
     }
 

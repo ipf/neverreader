@@ -15,7 +15,7 @@ import android.view.animation.LinearInterpolator
 import com.neverreader.ui.R
 import com.neverreader.ui.util.DimenUtil.dpToPxInt
 import com.neverreader.ui.util.IntrinsicSizeHelper
-import com.neverreader.ui.util.NestedColorStateList
+import androidx.appcompat.content.res.AppCompatResources
 import org.apache.commons.lang3.ArrayUtils
 import java.util.Random
 import kotlin.math.max
@@ -27,10 +27,10 @@ class RainbowProgressCircleView : View, AnimatorUpdateListener {
     private val mRandom = Random()
 
     private var mColorStateLists = arrayOf<ColorStateList?>(
-        NestedColorStateList.get(getContext(), R.color.nr_themed_teal_4),
-        NestedColorStateList.get(getContext(), R.color.nr_themed_teal_3),
-        NestedColorStateList.get(getContext(), R.color.nr_themed_coral_2),
-        NestedColorStateList.get(getContext(), R.color.nr_themed_amber_1)
+        AppCompatResources.getColorStateList(getContext(), R.color.nr_themed_teal_4),
+        AppCompatResources.getColorStateList(getContext(), R.color.nr_themed_teal_3),
+        AppCompatResources.getColorStateList(getContext(), R.color.nr_themed_coral_2),
+        AppCompatResources.getColorStateList(getContext(), R.color.nr_themed_amber_1)
     )
 
     private var mIsStarting = false

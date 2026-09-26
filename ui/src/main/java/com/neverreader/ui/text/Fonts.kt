@@ -10,7 +10,6 @@ import android.graphics.Typeface
  * At runtime, you can get these fonts with [.get].
  *
  *
- * In xml, use a [com.neverreader.ui.view.themed.ThemedTextView] or [com.neverreader.ui.view.themed.ThemedEditText] and the app:typeface attribute.
  *
  *
  * and then fonts can be referenced in css styles by the font family names declared in that file.

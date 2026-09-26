@@ -16,7 +16,6 @@ import com.neverreader.app.R
 import com.neverreader.app.settings.rotation.interf.RotationLockView
 import com.neverreader.app.settings.rotation.interf.RotationLockView.OnClick
 import com.neverreader.ui.util.CheckableHelper
-import com.neverreader.ui.util.NestedColorStateList.get
 import com.neverreader.ui.view.button.ButtonBoxDrawable
 import com.neverreader.ui.view.checkable.CheckableImageView
 
@@ -55,7 +54,7 @@ class AppRotationLockView : FrameLayout, RotationLockView {
         toggle!!.setBackgroundDrawable(bg)
 
         val lockimage = AppCompatResources.getDrawable(context, R.drawable.ic_rotation)
-        DrawableCompat.setTintList(lockimage!!, get(context, R.color.nr_rotation_lock))
+        DrawableCompat.setTintList(lockimage!!, AppCompatResources.getColorStateList(context, R.color.nr_rotation_lock))
         toggle!!.setImageDrawable(lockimage)
     }
 

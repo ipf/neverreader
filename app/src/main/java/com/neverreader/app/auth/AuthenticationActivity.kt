@@ -8,7 +8,6 @@ import com.neverreader.app.R
 import com.neverreader.backend.model.BackendType
 import com.neverreader.sdk.util.AbsNeverReaderActivity
 import com.neverreader.sdk.util.AbsNeverReaderFragment
-import com.neverreader.ui.view.notification.AppSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 

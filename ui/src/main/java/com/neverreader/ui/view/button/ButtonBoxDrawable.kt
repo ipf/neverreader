@@ -10,8 +10,8 @@ import android.graphics.PixelFormat
 import android.graphics.Rect
 import android.graphics.RectF
 import android.graphics.drawable.Drawable
+import androidx.appcompat.content.res.AppCompatResources
 import com.neverreader.ui.util.DimenUtil.dpToPx
-import com.neverreader.ui.util.NestedColorStateList
 
 class ButtonBoxDrawable constructor(
     context: Context,
@@ -79,9 +79,9 @@ class ButtonBoxDrawable constructor(
         mCornerStyle = cornerStyle
         mOutlineStroke = outlineStroke
 
-        mColorFill = if (fillColors != 0) NestedColorStateList.get(context, fillColors) else null
+        mColorFill = if (fillColors != 0) AppCompatResources.getColorStateList(context, fillColors) else null
         mColorStroke =
-            if (strokeColors != 0) NestedColorStateList.get(context, strokeColors) else null
+            if (strokeColors != 0) AppCompatResources.getColorStateList(context, strokeColors) else null
     }
 
     override fun isStateful(): Boolean {

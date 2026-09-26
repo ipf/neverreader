@@ -91,6 +91,14 @@ class NeverReaderActivityRootView : ResizeDetectRelativeLayout {
         get() = content!!
 
     /**
+     * The Compose surface every activity's snackbars render into. Owned here so
+     * that one host serves the whole app, rather than each screen setting up its
+     * own.
+     */
+    val snackbarHost: androidx.compose.ui.platform.ComposeView
+        get() = findViewById(R.id.snackbarHost)
+
+    /**
      * Called when the activity has detected the user's press of the back key.
      * @return true if handled the back press, false to let something else handle
      */

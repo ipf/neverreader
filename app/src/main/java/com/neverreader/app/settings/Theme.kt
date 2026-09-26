@@ -113,26 +113,7 @@ class Theme @Inject constructor(prefs: Preferences) {
         changes.onNext(change)
     }
 
-    /**
-     * Get the current theme represented by a view state int[]
-     *
-     * @param forView
-     * @return
-     */
-    fun getState(forView: View): IntArray {
-        return getState(get(forView, null))
-    }
 
-    /**
-     * Get the current theme represented by a view state int[]
-     *
-     * @param forView
-     * @params frag If the parent PageFragment is known, pass it here. TODO this whole thing is a bloody hack, need to find a easier way to handle this.
-     * @return
-     */
-    fun getState(forView: View, frag: AbsNeverReaderFragment?): IntArray {
-        return getState(get(forView, frag))
-    }
 
     /**
      * Get the bg color for the current theme.
@@ -166,8 +147,6 @@ class Theme @Inject constructor(prefs: Preferences) {
         const val FLAG_ONLY_DARK: Int = 1
         const val FLAG_ONLY_LIGHT: Int = 2
 
-        val STATE_LIGHT: IntArray = intArrayOf(R.attr.state_light)
-        val STATE_DARK: IntArray = intArrayOf(R.attr.state_dark)
 
         private fun applyFlagsToTheme(theme: Int, flag: Int): Int {
             when (flag) {
@@ -186,32 +165,6 @@ class Theme @Inject constructor(prefs: Preferences) {
          */
         fun isDark(theme: Int): Boolean {
             return theme == DARK
-        }
-
-        /**
-         * Get the theme for the supplied int key, represented by a view state int[]
-         *
-         * @param theme
-         * @return
-         */
-        fun getState(theme: Int): IntArray {
-            when (theme) {
-                DARK -> return STATE_DARK
-                LIGHT -> return STATE_LIGHT
-                else -> return STATE_LIGHT
-            }
-        }
-
-        fun isDark(drawableState: IntArray): Boolean {
-            val len = drawableState.size
-            var state: Int
-            for (i in 0..<len) {
-                state = drawableState[i]
-                if (state == STATE_DARK[0]) {
-                    return true
-                }
-            }
-            return false
         }
 
         /**

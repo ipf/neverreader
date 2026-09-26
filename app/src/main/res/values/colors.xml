@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Light values; dark overrides are in values-night/colors.xml. -->
+    <color name="add_overlay_free_stroke">@color/nr_bg</color>
+    <color name="nr_rotation_lock">@color/white</color>
+    <color name="nr_rotation_lock_bg_base">@color/nr_grey_2</color>
+</resources>

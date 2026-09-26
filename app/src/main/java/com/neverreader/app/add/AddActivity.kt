@@ -9,7 +9,7 @@ import com.neverreader.app.R
 import com.neverreader.backend.repo.AccountManager
 import com.neverreader.backend.model.Bookmark
 import com.neverreader.sdk.util.AbsNeverReaderActivity
-import com.neverreader.ui.view.notification.AppSnackbar
+import android.widget.Toast
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
@@ -66,7 +66,7 @@ class AddActivity : AbsNeverReaderActivity() {
         }
 
         if (accountManager.activeCached == null) {
-            showToast(AppSnackbar.Type.DEFAULT_OUTSIDE, R.string.ts_add_logged_out)
+            showToast(R.string.ts_add_logged_out)
         } else {
             commitSave(IntentItemUtil.from(intent))
         }
@@ -82,16 +82,13 @@ class AddActivity : AbsNeverReaderActivity() {
         cancelTimeout()
     }
 
-    private fun showToast(
-        type: AppSnackbar.Type,
-        notificationText: Int,
-    ) {
-        AppSnackbar.make(
-            this,
-            type,
-            resources.getText(notificationText),
-            null,
-        ).show()
+    /**
+     * These are transient, auto-hiding messages on a transparent Activity that
+     * finishes on a timer, so a plain [Toast] is the right tool. The old
+     * AppSnackbar types were all `*_OUTSIDE`, meaning exactly that.
+     */
+    private fun showToast(notificationText: Int) {
+        Toast.makeText(this, notificationText, Toast.LENGTH_SHORT).show()
         startTimeout()
     }
 
@@ -103,21 +100,21 @@ class AddActivity : AbsNeverReaderActivity() {
                 saver.add(intentItem, this, AddItemFromIntentUtil.Callback(this@AddActivity::onSaved))
             }
         } else {
-            showToast(AppSnackbar.Type.ERROR_EXCLAIM_OUTSIDE, R.string.ts_add_invalid_url)
+            showToast(R.string.ts_add_invalid_url)
         }
     }
 
     private fun onSaved(item: Bookmark?, status: AddItemFromIntentUtil.ErrorStatus?) {
         // If there's an error we show a message and don't show any actions.
         if (status == AddItemFromIntentUtil.ErrorStatus.ADD_INVALID_URL) {
-            showToast(AppSnackbar.Type.ERROR_EXCLAIM_OUTSIDE, R.string.ts_add_invalid_url)
+            showToast(R.string.ts_add_invalid_url)
             return
         }
 
         if (status == AddItemFromIntentUtil.ErrorStatus.ADD_ALREADY_IN) {
-            showToast(AppSnackbar.Type.DEFAULT_OUTSIDE, R.string.ts_add_already_overlay)
+            showToast(R.string.ts_add_already_overlay)
         } else {
-            showToast(AppSnackbar.Type.DEFAULT_OUTSIDE, R.string.ts_add_saved_to_ril)
+            showToast(R.string.ts_add_saved_to_ril)
         }
     }
 

@@ -76,11 +76,6 @@ open class ResizeDetectRelativeLayout : RelativeLayout, ResizeDetectView,
         mFrag = frag
     }
 
-    override fun onCreateDrawableState(extraSpace: Int): IntArray? {
-        val state = super.onCreateDrawableState(extraSpace + 1)
-        mergeDrawableStates(state, from(getContext())!!.theme().getState(this, mFrag))
-        return state
-    }
 
     override fun getMaxWidth(): Int {
         return mMaxWidth.maxWidth

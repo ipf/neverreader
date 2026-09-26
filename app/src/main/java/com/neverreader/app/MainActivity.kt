@@ -23,7 +23,6 @@ import com.neverreader.app.reader.Reader
 import com.neverreader.app.settings.PrefsFragment
 import com.neverreader.sdk.util.AbsNeverReaderActivity
 import com.neverreader.sdk.util.AbsNeverReaderFragment
-import com.neverreader.ui.view.notification.AppSnackbar
 import com.neverreader.util.BackPressedUtil
 import com.neverreader.util.android.navigateSafely
 import dagger.hilt.android.AndroidEntryPoint
@@ -97,15 +96,13 @@ class MainActivity : AbsNeverReaderActivity() {
                 is MainViewModel.Event.OpenReader -> {
                     // handled by the list fragment navigating to the reader
                 }
-                is MainViewModel.Event.ShowBadCredentialsToast -> {
-                    val snackbar = AppSnackbar.make(
-                        this,
-                        AppSnackbar.Type.DEFAULT_DISMISSABLE,
-                        getString(R.string.dg_forced_logout_m),
-                        null,
+                is MainViewModel.Event.ShowBadCredentialsToast ->
+                    // Long and dismissable: the user has been logged out and has to
+                    // read this before signing in again.
+                    snack(
+                        message = getString(R.string.dg_forced_logout_m),
+                        long = true,
                     )
-                    snackbar.show()
-                }
             }
         }
     }
