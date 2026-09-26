@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_graph"
     app:startDestination="@id/saves"
     >
@@ -9,8 +8,7 @@
     <fragment
         android:id="@+id/saves"
         android:name="com.neverreader.app.list.MyListFragment"
-        android:label="MyListFragment"
-        tools:layout="@layout/frag_my_list">
+        android:label="MyListFragment">
         
         <action
             android:id="@+id/goToReader"
@@ -44,8 +42,7 @@
     <fragment
         android:id="@+id/reader"
         android:name="com.neverreader.app.reader.ReaderFragment"
-        android:label="ReaderFragment"
-        tools:layout="@layout/fragment_reader">
+        android:label="ReaderFragment">
         <argument android:name="url" app:argType="string"/>
     </fragment>
     

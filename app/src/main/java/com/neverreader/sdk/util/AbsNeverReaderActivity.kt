@@ -113,6 +113,12 @@ abstract class AbsNeverReaderActivity : AppCompatActivity(), Themed {
 
     private var mTheme = 0
 
+    /**
+     * The resolved app theme, so Compose screens can honour the in-app preference
+     * instead of falling back to the system setting.
+     */
+    fun currentTheme(): Int = mTheme
+
     protected var mViewsListeningForThemeChanges: ArrayList<WeakReference<ManuallyUpdateTheme?>> =
         ArrayList<WeakReference<ManuallyUpdateTheme?>>()
 

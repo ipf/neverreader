@@ -32,11 +32,13 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.painterResource
+import androidx.core.os.bundleOf
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -86,12 +88,18 @@ class MyListFragment : AbsNeverReaderFragment() {
                 viewModel.navigationEvents.collect { event ->
                     when (event) {
                         is MyListNavigationEvent.ShowAddUrl -> showAddUrl()
-                        // Reader navigation is handled by the nav graph.
-                        is MyListNavigationEvent.OpenReader -> Unit
+                        is MyListNavigationEvent.OpenReader -> openReader(event.url)
                     }
                 }
             }
         }
+    }
+
+    private fun openReader(url: String) {
+        // Tapping an article used to emit OpenReader into a no-op: both this
+        // fragment and MainActivity deferred to each other, so the reader was
+        // unreachable.
+        findNavController().navigate(R.id.goToReader, bundleOf("url" to url))
     }
 
     private fun showAddUrl() {

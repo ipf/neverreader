@@ -583,6 +583,7 @@
     <string name="auth_username" translatable="false">Username</string>
     <string name="auth_password" translatable="false">Password</string>
     <string name="auth_enter_code_in_browser" translatable="false">Enter this code in your browser:</string>
+    <string name="reader_load_failed">This article could not be loaded.</string>
     <string name="settings_title" translatable="false">Settings</string>
     <string name="settings_section_account" translatable="false">Account</string>
     <string name="settings_account" translatable="false">Account management</string>

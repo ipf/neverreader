@@ -1,27 +1,52 @@
 package com.neverreader.app.reader
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.WebResourceRequest
 import android.webkit.WebView
+import android.webkit.WebViewClient
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
-import dagger.hilt.android.AndroidEntryPoint
-import com.neverreader.app.databinding.FragmentReaderBinding
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.neverreader.app.R
+import com.neverreader.app.settings.Theme
+import com.neverreader.sdk.util.AbsNeverReaderActivity
 import com.neverreader.sdk.util.AbsNeverReaderFragment
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
+import com.neverreader.ui.compose.AppBar
+import com.neverreader.ui.theme.AppTheme
+import com.neverreader.ui.view.button.AppIconButton
+import com.neverreader.ui.view.button.UpIcon
+import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * The article reader: renders the backend's article HTML in a WebView.
+ *
+ * The WebView stays because it is the platform's HTML renderer; the surrounding
+ * chrome and theming are Compose. Pocket's own reader stylesheet
+ * (`assets/html/c/text.css`) is injected and driven by the body attributes it
+ * expects, so articles are centred and legible instead of raw page HTML.
  */
 @AndroidEntryPoint
 class ReaderFragment : AbsNeverReaderFragment() {
-
-    private var _binding: FragmentReaderBinding? = null
-    private val binding get() = _binding!!
 
     private val viewModel: ReaderViewModel by viewModels()
 
@@ -29,48 +54,180 @@ class ReaderFragment : AbsNeverReaderFragment() {
         inflater: LayoutInflater?,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? {
-        _binding = FragmentReaderBinding.inflate(inflater!!,  container, false)
-        return binding.root
-    }
-
-    @SuppressLint("SetJavaScriptEnabled")
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        binding.webView.settings.javaScriptEnabled = false
-        binding.webView.settings.textZoom = 100
-        binding.webView.webViewClient = object : android.webkit.WebViewClient() {}
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.state.collectLatest { state ->
-                when (state) {
-                    is ReaderViewModel.State.Content -> {
-                        binding.webView.loadDataWithBaseURL(
-                            state.url,
-                            state.html,
-                            "text/html",
-                            "utf-8",
-                            null,
-                        )
-                    }
-                    is ReaderViewModel.State.Error -> {
-                        binding.webView.loadData(
-                            "<html><body><h3>Could not load this article.</h3></body></html>",
-                            "text/html",
-                            "utf-8",
-                        )
-                    }
-                    is ReaderViewModel.State.Loading -> Unit
-                }
+    ): View = ComposeView(requireContext()).apply {
+        setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+        setContent {
+            val dark = isDarkTheme()
+            AppTheme(darkTheme = dark) {
+                ReaderScreen(
+                    viewModel = viewModel,
+                    darkTheme = dark,
+                    onBack = { requireActivity().onBackPressedDispatcher.onBackPressed() },
+                    onShare = ::share,
+                )
             }
         }
+    }
 
+    private fun isDarkTheme(): Boolean {
+        val activity = activity as? AbsNeverReaderActivity ?: return false
+        return Theme.isDark(activity.currentTheme())
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         arguments?.getString("url")?.let { viewModel.load(it) }
     }
 
-    override fun onDestroyView() {
-        binding.webView.destroy()
-        super.onDestroyView()
-        _binding = null
+    private fun share(url: String, title: String) {
+        val send = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_SUBJECT, title)
+            putExtra(Intent.EXTRA_TEXT, url)
+        }
+        startActivity(Intent.createChooser(send, null))
     }
 }
+
+@Composable
+private fun ReaderScreen(
+    viewModel: ReaderViewModel,
+    darkTheme: Boolean,
+    onBack: () -> Unit,
+    onShare: (String, String) -> Unit,
+) {
+    val current by viewModel.state.collectAsStateWithLifecycle()
+    val state = current
+    val bookmark = (state as? ReaderViewModel.State.Content)?.bookmark
+
+    AppBar(
+        navigationIcon = {
+            AppIconButton(onClick = onBack) { UpIcon() }
+        },
+        title = { Text(state.url.displayHost()) },
+        actions = {
+            val item = bookmark
+            if (item == null) return@AppBar
+            AppIconButton(onClick = { viewModel.toggleFavorite(item) }) {
+                Icon(
+                    painter = painterResource(
+                        if (item.favorite) {
+                            com.neverreader.ui.R.drawable.ic_nr_favorite_solid
+                        } else {
+                            com.neverreader.ui.R.drawable.ic_nr_favorite_line
+                        }
+                    ),
+                    contentDescription = stringResource(com.neverreader.ui.R.string.ic_favorite),
+                    tint = if (item.favorite) AppTheme.colors.amber3 else AppTheme.colors.grey3,
+                )
+            }
+            AppIconButton(onClick = { onShare(item.url, item.title) }) {
+                Icon(
+                    painter = painterResource(
+                        com.neverreader.ui.R.drawable.ic_nr_android_share_solid
+                    ),
+                    contentDescription = stringResource(com.neverreader.ui.R.string.ic_share),
+                    tint = AppTheme.colors.grey3,
+                )
+            }
+            AppIconButton(onClick = { viewModel.archive(item) }) {
+                Icon(
+                    painter = painterResource(com.neverreader.ui.R.drawable.ic_nr_archive_line),
+                    contentDescription = stringResource(com.neverreader.ui.R.string.ic_archive),
+                    tint = AppTheme.colors.grey3,
+                )
+            }
+        },
+    )
+
+    when (state) {
+        is ReaderViewModel.State.Loading -> Box(Modifier.fillMaxSize(), Alignment.Center) {
+            CircularProgressIndicator()
+        }
+
+        is ReaderViewModel.State.Error -> Box(Modifier.fillMaxSize(), Alignment.Center) {
+            Text(
+                text = stringResource(R.string.reader_load_failed),
+                style = AppTheme.typography.p3,
+                color = AppTheme.colors.textSecondary,
+            )
+        }
+
+        is ReaderViewModel.State.Content -> ArticleWebView(
+            html = state.html,
+            baseUrl = state.url,
+            darkTheme = darkTheme,
+            modifier = Modifier.fillMaxSize(),
+        )
+    }
+}
+
+/**
+ * The article itself. JavaScript stays off: article HTML comes from a server the
+ * user chose, and the reader stylesheet needs no scripting.
+ */
+@SuppressLint("SetJavaScriptEnabled")
+@Composable
+private fun ArticleWebView(
+    html: String,
+    baseUrl: String,
+    darkTheme: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    AndroidView(
+        factory = { context ->
+            WebView(context).apply {
+                settings.javaScriptEnabled = false
+                settings.domStorageEnabled = false
+                // Follow the system font scale. This was pinned to 100, so reader
+                // text ignored the user's font size setting entirely.
+                settings.textZoom = (context.resources.configuration.fontScale * 100).toInt()
+                webViewClient = object : WebViewClient() {
+                    override fun shouldOverrideUrlLoading(
+                        view: WebView,
+                        request: WebResourceRequest,
+                    ): Boolean {
+                        // Keep in-article navigation in the WebView; anything else
+                        // (ads, trackers) is dropped rather than launched.
+                        return request.url.host != Uri.parse(baseUrl).host
+                    }
+                }
+            }
+        },
+        update = { webView ->
+            webView.loadDataWithBaseURL(
+                baseUrl,
+                buildArticleHtml(webView.context, html, darkTheme),
+                "text/html",
+                "utf-8",
+                null,
+            )
+        },
+        modifier = modifier,
+        onRelease = { it.stopLoading(); it.destroy() },
+    )
+}
+
+/** Injects the reader stylesheet and the body attributes it keys off. */
+private fun buildArticleHtml(context: Context, article: String, darkTheme: Boolean): String {
+    val css = context.assets.open(READER_STYLESHEET).bufferedReader().use { it.readText() }
+    val resources = context.resources
+    return """
+        <html>
+        <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+        <style>$css</style>
+        </head>
+        <body textStyle="${if (darkTheme) 1 else 0}"
+              lineHeightSetting="${resources.getInteger(R.integer.article_default_line_height)}"
+              fontSizeSetting="${resources.getInteger(R.integer.article_default_font_size)}">
+        $article
+        </body>
+        </html>
+    """.trimIndent()
+}
+
+private const val READER_STYLESHEET = "html/c/text.css"
+
+private fun String.displayHost(): String =
+    runCatching { Uri.parse(this).host }.getOrNull().orEmpty()
