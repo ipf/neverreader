@@ -29,7 +29,9 @@ export JAVA_HOME=/usr/lib/jvm/java-1.21.0-openjdk-amd64
 - [`app/`](app) — the Android app (UI, previously `Pocket/`).
 - [`backend/`](backend) — backend abstraction: domain model, Room database,
   `Backend` interface, Readeck + Wallabag adapters, sync, account management.
-- [`ui/`](ui) — reusable UI components (previously `pocket-ui/`).
+- [`ui/`](ui) — the Compose design system and shared components (`ui/theme/` for
+  colour, type, shape and `AppTheme`; `ui/compose/` for `AppBar`, `ItemRow`,
+  `FilterChips`, `SettingsList`).
 - [`utils/`](utils), [`utils-android/`](utils-android) — shared utilities.
 
 ## Architecture
@@ -45,6 +47,17 @@ app (UI) → repositories → Room DB → WorkManager sync
 - **Domain model:** `Bookmark`, `Tag`, `Annotation`, `Account`. All backends map
   their entries into these types. UI code must only use the domain types, never
   backend-specific DTOs.
+- **UI:** Jetpack Compose with Material 3. Screens use
+  `ComposeView` + `setViewCompositionStrategy(DisposeOnViewTreeLifecycleDestroyed)`
+  inside the existing `AbsNeverReaderFragment` base classes. There is no XML
+  layout for screen content and none should be added.
+- **Design system:** `ui/theme/` is the only source of colour, type and shape.
+  Reach for `AppTheme.colors` / `AppTheme.typography` / `AppTheme.dimensions`,
+  never a raw hex or a `res/values` colour. `AppTheme(darkTheme = …)` takes the
+  mode as a parameter so the in-app preference wins over the system setting.
+- **Fonts:** the licensed brand faces (Graphik LCG, Doyle) are GPG-encrypted under
+  `secrets/fonts/`; run `secrets/decrypt.sh` to install them and they are picked up
+  automatically. The committed default is Inter (OFL), the open substitute.
 - **`Backend` interface** (`backend/…/Backend.kt`): auth, `fetchEntries(cursor)`,
   `fetchArticle(id)`, add/archive/favorite/delete, tags, annotations. Each adapter
   exposes a `BackendCapabilities` for what it does not support (e.g. highlights,
@@ -59,8 +72,11 @@ app (UI) → repositories → Room DB → WorkManager sync
 
 - Kotlin, official Kotlin style; checked-in Android Studio code style in
   `.idea/codeStyles/Project.xml` as a base.
-- New code uses coroutines/Flow. RxJava remains only in legacy TTS/UI paths —
-  do not add new Rx code.
+- New code uses coroutines/Flow. Do not add new Rx code. RxJava survives only in the
+  preference change-notification API (`utils-android/…/prefs/Store.kt` returns
+  `Observable`), which is typed in public interfaces across `:utils` →
+  `:utils-android` → `:ui` → `:app`. Replacing it with Flow is its own change;
+  it is not legacy TTS code, because there is no TTS in this repo.
 - Version catalog in [`gradle/libs.versions.toml`](gradle/libs.versions.toml);
   Renovate keeps it updated.
 - No DI framework additions; Hilt/kapt exists — use it or plain constructors.
