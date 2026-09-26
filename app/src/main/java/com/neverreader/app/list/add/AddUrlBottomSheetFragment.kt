@@ -39,7 +39,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.neverreader.app.R
 import com.neverreader.sdk.util.AbsNeverReaderBottomSheetDialogFragment
 import com.neverreader.ui.view.button.BoxButton
-import com.neverreader.ui.view.themed.AppTheme
+import com.neverreader.ui.theme.AppTheme
 import com.neverreader.util.android.repeatOnResumed
 import dagger.hilt.android.AndroidEntryPoint
 

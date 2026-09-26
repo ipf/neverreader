@@ -17,7 +17,7 @@ import com.neverreader.sdk.util.AbsNeverReaderFragment
 import com.neverreader.ui.compose.AppBar
 import com.neverreader.ui.view.button.AppIconButton
 import com.neverreader.ui.view.button.UpIcon
-import com.neverreader.ui.view.themed.AppTheme
+import com.neverreader.ui.theme.AppTheme
 
 @AndroidEntryPoint
 class OpenSourceLicensesFragment : AbsNeverReaderFragment() {

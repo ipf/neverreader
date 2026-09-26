@@ -14,7 +14,7 @@ import com.neverreader.ui.R
 import com.neverreader.ui.view.ThinDivider
 import com.neverreader.ui.view.button.AppIconButton
 import com.neverreader.ui.view.button.UpIcon
-import com.neverreader.ui.view.themed.AppTheme
+import com.neverreader.ui.theme.AppTheme
 
 @Composable
 fun AppBar(

@@ -8,7 +8,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.neverreader.ui.R
-import com.neverreader.ui.view.themed.AppTheme
+import com.neverreader.ui.theme.AppTheme
 
 @Composable
 fun ThinDivider(modifier: Modifier = Modifier) {

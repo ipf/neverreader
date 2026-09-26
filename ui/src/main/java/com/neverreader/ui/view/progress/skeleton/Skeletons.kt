@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
-import com.neverreader.ui.view.themed.AppTheme
+import com.neverreader.ui.theme.AppTheme
 
 @Composable
 fun Skeleton(
