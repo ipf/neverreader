@@ -16,7 +16,7 @@ interface Themed {
     fun getThemeState(view: View): IntArray?
 
     fun getThemeColors(context: Context): ThemeColors
-    fun getThemeColorsChanges(context: Context): Observable<ThemeColors>
+    fun getThemeColorsChanges(context: Context): Observable<ThemeColors?>
 }
 
 enum class ThemeColors {

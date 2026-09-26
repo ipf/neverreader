@@ -14,7 +14,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed"
-        app:visualMargin_top="@dimen/pkt_space_md">
+        app:visualMargin_top="@dimen/nr_space_md">
 
         <!--  Wrapper view to vertically center these two pieces to each other regardless of which ends up being taller -->
 
@@ -22,7 +22,7 @@
             android:id="@+id/meta"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/pkt_side_grid"
+            android:layout_marginStart="@dimen/nr_side_grid"
             app:layout_constraintEnd_toStartOf="@+id/splitGuide"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -32,11 +32,11 @@
             android:id="@+id/thumbnail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/pkt_space_sm"
+            android:layout_marginEnd="@dimen/nr_space_sm"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="@id/splitGuide"
-            tools:src="@drawable/pkt_title_logo"/>
+            tools:src="@drawable/nr_title_logo"/>
         
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/splitGuide"
@@ -54,17 +54,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@+id/centeringVisualMargin"
-        app:visualMargin_top="@dimen/pkt_space_md"
+        app:visualMargin_top="@dimen/nr_space_md"
         />
 
     <com.neverreader.ui.view.themed.ThemedView
         android:id="@+id/divider"
-        style="@style/Pkt_ThinDivider"
+        style="@style/App_ThinDivider"
         android:layout_width="0dp"
-        android:layout_marginEnd="@dimen/pkt_side_grid"
-        android:layout_marginLeft="@dimen/pkt_side_grid"
-        android:layout_marginRight="@dimen/pkt_side_grid"
-        android:layout_marginStart="@dimen/pkt_side_grid"
+        android:layout_marginEnd="@dimen/nr_side_grid"
+        android:layout_marginLeft="@dimen/nr_side_grid"
+        android:layout_marginRight="@dimen/nr_side_grid"
+        android:layout_marginStart="@dimen/nr_side_grid"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

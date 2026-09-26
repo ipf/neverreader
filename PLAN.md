@@ -52,3 +52,21 @@ pocket-ui / utils / utils-android (kept, analytics stripped)
 - Pocket-export import via Readeck's `/bookmarks/import/pocket-file`.
 - Multiple accounts/profiles.
 - Old Pocket app data migration (Pocket is dead; none).
+
+## Status: builds green
+
+`./gradlew :app:assembleDebug :backend:test :app:lintDebug` all pass (JDK 21 required).
+
+Core flows working: list (Room paging), reader (WebView on backend article HTML),
+add via a share sheet, auth (Readeck device flow / Wallabag password), settings
+(logout, licenses), background sync via WorkManager.
+
+## Dropped in v1 (re-add when needed)
+
+- **Listen/TTS** — the Pocket audio pipeline was deleted; rebuild on Android TTS
+  reading article text from the backend.
+- **Tag editor UI** (chip views) — tagging still works via the backend API.
+- **Highlights/annotations UI** — the data layer supports them
+  (`HighlightRepository`); the reader UI for them needs a rebuild.
+- **Text settings / display settings** — reader typography prefs.
+- **Old Pocket data migration** — none.

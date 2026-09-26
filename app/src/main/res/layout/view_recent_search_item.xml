@@ -19,12 +19,12 @@
         android:maxLines="1"
         android:textStyle="bold"
         android:textSize="14sp"
-        android:textColor="@color/pkt_text_primary"
+        android:textColor="@color/nr_text_primary"
         tools:text="my recent search text"/>
     
     <com.neverreader.ui.view.themed.ThemedView
         android:id="@+id/divider"
-        style="@style/Pkt_ThinDivider"
+        style="@style/App_ThinDivider"
         android:layout_width="match_parent"
         android:layout_marginStart="18dp"
         android:layout_marginEnd="18dp"

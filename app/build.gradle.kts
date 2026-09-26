@@ -1,16 +1,16 @@
 import utils.*
-import utils.pocket.BuildTypes
+import utils.neverreader.BuildTypes
 
 plugins {
-    pocketAndroidApp()
-    kotlinKapt()
+    id("com.android.application")
+    neverReaderAndroidApp()
+    kotlinKsp()
     kotlinCompose()
     hilt()
     safeArgsKotlin()
     kotlinSerialization()
     licensee()
     aboutLibraries()
-    alias(libs.plugins.kotlin.compose)
 }
 
 val versionMajor = 1
@@ -19,6 +19,7 @@ val versionPatch = 0
 
 android {
     namespace = "com.neverreader.app"
+
     defaultConfig {
         applicationId = "com.neverreader"
 
@@ -60,6 +61,7 @@ android {
     lint {
         checkReleaseBuilds = false
         checkDependencies = true
+        disable += "UnusedResources"
     }
     buildFeatures {
         viewBinding = true
@@ -75,6 +77,7 @@ licensee {
     allow("Apache-2.0")
     allow("MIT")
     allowUrl("https://jsoup.org/license") { because("self-hosted MIT") }
+    allowUrl("https://github.com/facebook/shimmer-android/blob/master/LICENSE") { because("self-hosted BSD") }
     allow("BSD-2-Clause")
     allowUrl("http://opensource.org/licenses/BSD-2-Clause")
     allowUrl("https://raw.githubusercontent.com/ThreeTen/threetenbp/master/LICENSE.txt") { because("self-hosted BSD") }
@@ -109,6 +112,7 @@ dependencies {
     implementation(libs.androidx.media)
     implementation(libs.androidx.work)
 
+    implementation(Deps.AndroidX.SwipeRefreshLayout.swipeRefresh)
     implementation(Deps.AndroidX.Lifecycle.viewmodel)
     implementation(Deps.AndroidX.Lifecycle.viewmodelKtx)
     implementation(Deps.AndroidX.Lifecycle.viewmodelCompose)
@@ -116,7 +120,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
 
     implementation(libs.dagger.hilt)
-    kapt(libs.dagger.hilt.compiler)
+    ksp(libs.dagger.hilt.compiler)
 
     implementation(libs.okhttp)
     implementation(libs.okhttp.logginginterceptor)
@@ -129,7 +133,6 @@ dependencies {
 
     implementation(libs.aboutlibraries)
 
-    debugImplementation(libs.leakcanary)
 
     testImplementation(Deps.Mockito.core)
     testImplementation(Deps.AssertJ.core)
@@ -148,10 +151,3 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 }
 
-kapt {
-    arguments {
-        arg("dagger.fastInit", "enabled")
-        arg("dagger.useBindingGraphFix", "ENABLED")
-        arg("dagger.ignoreProvisionKeyWildcards", "ENABLED")
-    }
-}

@@ -7,16 +7,16 @@
 
     <com.neverreader.ui.view.themed.ThemedTextView
         android:id="@+id/text"
-        style="@style/Pkt_Text_Mini_Medium"
+        style="@style/App_Text_Mini_Medium"
         app:typeface="doyle_medium"
         android:gravity="center"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/pkt_space_md"
-        android:paddingLeft="@dimen/pkt_side_grid"
-        android:paddingStart="@dimen/pkt_side_grid"
-        android:paddingRight="@dimen/pkt_side_grid"
-        android:paddingEnd="@dimen/pkt_side_grid"
+        android:layout_marginTop="@dimen/nr_space_md"
+        android:paddingLeft="@dimen/nr_side_grid"
+        android:paddingStart="@dimen/nr_side_grid"
+        android:paddingRight="@dimen/nr_side_grid"
+        android:paddingEnd="@dimen/nr_side_grid"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -27,12 +27,12 @@
         android:id="@+id/animation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/pkt_space_lg"
+        android:layout_marginTop="@dimen/nr_space_lg"
         app:lottie_loop="false"
         app:lottie_autoPlay="false"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="@dimen/pkt_space_md" />
+        android:layout_marginBottom="@dimen/nr_space_md" />
 </merge>

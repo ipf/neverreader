@@ -33,11 +33,11 @@
     <string name="ic_brightness_up">화면 밝기 증가</string>
     <string name="ic_brightness_control">화면 밝기</string>
     <string name="ic_settings">설정</string>
-    <string name="ic_premium">Pocket Premium</string>
-    <string name="ic_pocket_menu">Pocket 메뉴</string>
+    <string name="ic_premium">NeverReader Premium</string>
+    <string name="ic_menu">Menu</string>
 
     <string name="ac_save">저장</string>
-    <string name="ac_save_to_pocket">Pocket에 저장</string>
+    <string name="ac_save_long">NeverReader에 저장</string>
     <string name="ac_previous">이전</string>
     <string name="ac_next">다음</string>
     

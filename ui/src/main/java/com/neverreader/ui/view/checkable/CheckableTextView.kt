@@ -13,18 +13,18 @@ import androidx.databinding.BindingAdapter
 open class CheckableTextView : ThemedTextView, CheckableHelper.Checkable {
     private val checkableHelper: CheckableHelper? = CheckableHelper(this)
 
-    constructor(context: Context?, attrs: AttributeSet?, defStyle: Int) : super(context,
+    constructor(context: Context?, attrs: AttributeSet?, defStyle: Int) : super(context!!,
         attrs,
         defStyle) {
-        checkableHelper?.initAttributes(context, attrs)
+        checkableHelper?.initAttributes(context!!, attrs)
     }
 
-    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {
-        checkableHelper?.initAttributes(context, attrs)
+    constructor(context: Context?, attrs: AttributeSet?) : super(context!!, attrs) {
+        checkableHelper?.initAttributes(context!!, attrs)
     }
 
-    constructor(context: Context?) : super(context) {
-        checkableHelper?.initAttributes(context, null)
+    constructor(context: Context?) : super(context!!) {
+        checkableHelper?.initAttributes(context!!, null)
     }
 
     override fun setChecked(checked: Boolean) {
@@ -56,13 +56,13 @@ open class CheckableTextView : ThemedTextView, CheckableHelper.Checkable {
 
     override fun onCreateDrawableState(extraSpace: Int): IntArray {
         val drawableState = super.onCreateDrawableState(extraSpace + 2)
-        if (isChecked) {
+        if (isChecked()) {
             mergeDrawableStates(drawableState, CheckableHelper.CHECKED_STATE_SET)
         }
-        if (isCheckable) {
+        if (isCheckable()) {
             mergeDrawableStates(drawableState, CheckableHelper.CHECKABLE_STATE_SET)
         }
-        return drawableState
+        return drawableState ?: IntArray(0)
     }
 
     override fun setOnCheckedChangeListener(listener: CheckableHelper.OnCheckedChangeListener?) {
@@ -70,7 +70,6 @@ open class CheckableTextView : ThemedTextView, CheckableHelper.Checkable {
     }
 
     companion object {
-        @JvmStatic
         @BindingAdapter("checked")
         fun isChecked(view: CheckableTextView, isChecked: Boolean) {
             view.isChecked = isChecked

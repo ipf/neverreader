@@ -34,7 +34,6 @@ open class ThemedEditText @JvmOverloads constructor(
         }
     }
 
-    @Deprecated("Use setTextAppearance(int) instead")
     override fun setTextAppearance(context: Context, resid: Int) {
         super.setTextAppearance(context, resid)
         val a = getContext().obtainStyledAttributes(resid, R.styleable.ThemedEditText)

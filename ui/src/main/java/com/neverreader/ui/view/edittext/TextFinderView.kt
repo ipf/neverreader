@@ -16,7 +16,7 @@ class TextFinderView @JvmOverloads constructor(
     attrs: AttributeSet?,
     defStyleAttr: Int = 0
 ) : ThemedConstraintLayout(
-    context,
+    context!!,
     attrs,
     defStyleAttr
 ), TextFinderLayout {
@@ -25,7 +25,7 @@ class TextFinderView @JvmOverloads constructor(
         LayoutInflater.from(context),
         this,
     ).also {
-        setBackgroundResource(R.drawable.cl_pkt_bg)
+        setBackgroundResource(R.drawable.cl_nr_bg)
         isClickable = true
     }
 
@@ -55,7 +55,6 @@ class TextFinderView @JvmOverloads constructor(
 
     companion object {
 
-        @JvmStatic
         @BindingAdapter("count")
         fun setCountText(view: TextFinderView, text: String) {
             view.binding.count.text = text

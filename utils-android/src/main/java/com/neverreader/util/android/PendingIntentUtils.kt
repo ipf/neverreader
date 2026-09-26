@@ -12,7 +12,6 @@ object PendingIntentUtils {
      * Note that prior to API 31, pending intents are mutable unless they contain the
      * [PendingIntent.FLAG_IMMUTABLE] flag
      */
-    @JvmStatic
     fun addMutableFlag(flags: Int): Int = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         flags or PendingIntent.FLAG_MUTABLE
     } else {

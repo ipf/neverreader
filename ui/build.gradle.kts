@@ -1,31 +1,23 @@
 plugins {
-    pocketAndroidLib()
-    kotlinKapt()
+    neverReaderAndroidLib()
     kotlinCompose()
-    alias(libs.plugins.kotlin.compose)
 }
 
 android {
     namespace = "com.neverreader.ui"
-    android {
-        testOptions.unitTests.isIncludeAndroidResources = true
-        defaultConfig.vectorDrawables.useSupportLibrary = true
-    }
+    testOptions.unitTests.isIncludeAndroidResources = true
+    defaultConfig.vectorDrawables.useSupportLibrary = true
     buildFeatures {
         viewBinding = true
         compose = true
-    }
-    kotlinOptions {
-        freeCompilerArgs += "-opt-in=androidx.compose.ui.text.ExperimentalTextApi"
     }
     dataBinding {
         enable = true
     }
 }
-composeCompiler {
-    includeSourceInformation = true
-}
+
 dependencies {
+    implementation(libs.androidx.room.ktx)
     implementation(projects.utilsAndroid)
 
     api(Deps.AirBnb.Lottie.lottie)

@@ -2,7 +2,7 @@ package com.neverreader.app
 
 import android.app.Activity
 import android.content.Context
-import com.neverreader.sdk.util.AbsPocketActivity
+import com.neverreader.sdk.util.AbsNeverReaderActivity
 import android.content.Intent
 import android.content.res.Configuration
 
@@ -22,23 +22,30 @@ interface AppLifecycle {
      */
     fun onUserPresent() {}
 
+    fun onActivityCreated(activity: Activity?) {}
+    fun onActivityRestarted(activity: Activity?) {}
+    fun onActivityStarted(activity: Activity?) {}
+    fun onActivityStopped(activity: Activity?) {}
+    fun onActivityDestroyed(activity: Activity?) {}
+    fun onRequestPermissionsResult(activity: Activity?, requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {}
+
     /**
-     * Invoked when a Pocket activity resumes.
+     * Invoked when a NeverReader activity resumes.
      */
     fun onActivityResumed(activity: Activity?) {}
 
     /**
-     * Invoked when the current Pocket activity has an [Activity.onActivityResult].
+     * Invoked when the current NeverReader activity has an [Activity.onActivityResult].
      */
     fun onActivityResult(
-        activity: AbsPocketActivity?,
+        activity: AbsNeverReaderActivity?,
         requestCode: Int,
         resultCode: Int,
         data: Intent?
     ) {}
 
     /**
-     * Invoked when a Pocket activity pauses.
+     * Invoked when a NeverReader activity pauses.
      */
     fun onActivityPaused(activity: Activity?) {}
 
@@ -56,8 +63,8 @@ interface AppLifecycle {
     fun onUserGone(context: Context?) {}
 
     /**
-     * Invoked off the ui thread after the user has successfully logged into (or signed up) the [Pocket] instance,
-     * but before the log in progress ui goes away. This is provided as an opportunity to do a blocking operation
+     * Invoked off the ui thread after the user has successfully logged into (or signed up) the [NeverReader] instance,
+     * but before the login progress ui goes away. This is provided as an opportunity to do a blocking operation
      * that is ideally completed before the app ui moves into the logged in experience.
      *
      *
@@ -110,7 +117,7 @@ interface AppLifecycle {
         fun stopModifyingUserData()
 
         /**
-         * Remove any user specific state in variables, caches, files, databases etc that you control.
+         * Remove any user-specific state in variables, caches, files, databases etc that you control.
          * You should not interact with other components during this step.
          * Block this thread until complete.
          * If you created a preference using a forUser() like method, that state will be cleared for

@@ -33,11 +33,11 @@
     <string name="ic_brightness_up">Zwiększ jasność ekranu</string>
     <string name="ic_brightness_control">Jasność ekranu</string>
     <string name="ic_settings">Ustawienia</string>
-    <string name="ic_premium">Pocket Premium</string>
-    <string name="ic_pocket_menu">Menu Pocket</string>
+    <string name="ic_premium">NeverReader Premium</string>
+    <string name="ic_menu">Menu</string>
 
     <string name="ac_save">Zapisz</string>
-    <string name="ac_save_to_pocket">Zapisz w Pockecie</string>
+    <string name="ac_save_long">Zapisz w Pockecie</string>
     <string name="ac_previous">Poprzedni</string>
     <string name="ac_next">Następny</string>
     

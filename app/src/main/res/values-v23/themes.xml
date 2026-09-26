@@ -2,21 +2,21 @@
 <resources>
 
     <!-- Overrides to get the holo theme as the base -->
-    <style name="Theme.PocketBase.Dark" parent="Theme.AppCompat.NoActionBar">
+    <style name="Theme.NeverReaderBase.Dark" parent="Theme.AppCompat.NoActionBar">
 
-        <!-- NOTE! These values should be duplicated in the Theme.PocketBase.Light theme. -->
+        <!-- NOTE! These values should be duplicated in the Theme.NeverReaderBase.Light theme. -->
         <!-- NOTE! Using default Android colors for primary, primary dark and accent and overriding specific view themes when needed. -->
 
-        <item name="android:statusBarColor">@color/pkt_dm_base_bg</item>
+        <item name="android:statusBarColor">@color/nr_dm_base_bg</item>
         <item name="android:windowContentOverlay">@null</item> <!-- This removes the status bar drop shadow. It is unclear why this needs to be set here and why the setting in themes.xml doesn't work for Material. -->
 
         <!-- Dark mode still uses white status bar icons.  Specifying the default for clarity. -->
         <item name="android:windowLightStatusBar">false</item>
     </style>
 
-    <style name="Theme.PocketBase.Light" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="Theme.NeverReaderBase.Light" parent="Theme.AppCompat.Light.NoActionBar">
 
-        <!-- NOTE! These values should be duplicated in the Theme.PocketBase.Dark theme. -->
+        <!-- NOTE! These values should be duplicated in the Theme.NeverReaderBase.Dark theme. -->
         <!-- NOTE! Using default Android colors for primary, primary dark and accent and overriding specific view themes when needed. -->
 
         <item name="android:statusBarColor">@color/white</item>

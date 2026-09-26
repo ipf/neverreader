@@ -3,6 +3,7 @@ package com.neverreader.repository
 import android.content.Context
 import androidx.paging.PagingData
 import com.neverreader.backend.DataGraph
+import dagger.hilt.android.qualifiers.ApplicationContext
 import com.neverreader.backend.model.Annotation
 import com.neverreader.backend.model.Bookmark
 import com.neverreader.backend.model.ListFilter

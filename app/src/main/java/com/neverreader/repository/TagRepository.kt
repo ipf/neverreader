@@ -1,6 +1,7 @@
 package com.neverreader.repository
 
 import com.neverreader.backend.DataGraph
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -12,7 +13,7 @@ class TagRepository @Inject constructor(
 
     private val repo by lazy { DataGraph.bookmarkRepository(context) }
 
-    fun tags(): Flow<List<TagCount>> = repo.tags()
+    fun tags(): Flow<List<TagCount>> = repo.tags().map { list -> list.map { TagCount(it.name, it.count) } }
 
     suspend fun addTags(bookmarkId: String, names: List<String>) = repo.addTags(bookmarkId, names)
 

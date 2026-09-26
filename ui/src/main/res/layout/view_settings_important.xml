@@ -6,18 +6,18 @@
 
     <com.neverreader.ui.view.themed.ThemedView
         android:id="@+id/top_divider"
-        style="@style/Pkt_ThickDivider"
+        style="@style/App_ThickDivider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.neverreader.ui.view.themed.ThemedTextView
         android:id="@+id/text"
-        style="@style/Pkt_Text_Link"
-        app:compatTextColor="@color/pkt_themed_coral_2"
+        style="@style/App_Text_Link"
+        app:compatTextColor="@color/nr_themed_coral_2"
         android:layout_width="0dp"
-        android:layout_height="@dimen/pkt_menu_option_height"
-        android:background="@drawable/cl_pkt_touchable_area"
+        android:layout_height="@dimen/nr_menu_option_height"
+        android:background="@drawable/cl_nr_touchable_area"
         android:clickable="false"
         android:textAllCaps="true"
         app:layout_constraintBottom_toBottomOf="parent"

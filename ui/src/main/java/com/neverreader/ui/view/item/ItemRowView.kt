@@ -19,7 +19,7 @@ class ItemRowView : CheckableConstraintLayout, VisualMargin {
     private val binder: Binder = Binder()
 
     constructor(context: Context?) : super(context)
-    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
+    constructor(context: Context?, attrs: AttributeSet?) : super(context!!, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(
         context,
         attrs,
@@ -33,7 +33,7 @@ class ItemRowView : CheckableConstraintLayout, VisualMargin {
 
     init {
         bind().clear()
-        setBackgroundResource(R.drawable.cl_pkt_touchable_area)
+        setBackgroundResource(R.drawable.cl_nr_touchable_area)
         engageable.uiEntityType = UiEntityable.Type.CARD
         engageable.uiEntityComponentDetail = "item_row"
     }

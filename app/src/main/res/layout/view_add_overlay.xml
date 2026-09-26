@@ -10,26 +10,26 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginLeft="@dimen/pkt_space_sm"
-        android:layout_marginStart="@dimen/pkt_space_sm"
-        android:layout_marginEnd="@dimen/pkt_space_sm"
-        android:layout_marginRight="@dimen/pkt_space_sm">
+        android:layout_marginLeft="@dimen/nr_space_sm"
+        android:layout_marginStart="@dimen/nr_space_sm"
+        android:layout_marginEnd="@dimen/nr_space_sm"
+        android:layout_marginRight="@dimen/nr_space_sm">
         <com.neverreader.ui.view.themed.ThemedLinearLayout
             android:id="@+id/saved"
-            android:background="@drawable/pkt_ripple_borderless"
+            android:background="@drawable/nr_ripple_borderless"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="horizontal"
-            android:layout_marginTop="@dimen/pkt_space_md"
-            android:layout_marginBottom="@dimen/pkt_space_md"
-            android:layout_marginLeft="@dimen/pkt_side_grid"
-            android:layout_marginStart="@dimen/pkt_side_grid"
-            android:layout_marginEnd="@dimen/pkt_side_grid"
-            android:layout_marginRight="@dimen/pkt_side_grid">
+            android:layout_marginTop="@dimen/nr_space_md"
+            android:layout_marginBottom="@dimen/nr_space_md"
+            android:layout_marginLeft="@dimen/nr_side_grid"
+            android:layout_marginStart="@dimen/nr_side_grid"
+            android:layout_marginEnd="@dimen/nr_side_grid"
+            android:layout_marginRight="@dimen/nr_side_grid">
             <com.neverreader.ui.view.button.IconButton
                 android:id="@+id/save_icon"
-                style="@style/Pkt_IconButton_Save"
+                style="@style/App_IconButton_Save"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@null"
@@ -41,29 +41,29 @@
 
             <com.neverreader.ui.view.checkable.CheckableTextView
                 android:id="@+id/save_label"
-                style="@style/Pkt_Text_LightTitle"
+                style="@style/App_Text_LightTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/pkt_space_sm"
+                android:layout_marginLeft="@dimen/nr_space_sm"
                 android:clickable="false"
                 android:duplicateParentState="true"
                 android:focusable="false"
                 android:longClickable="false"
-                app:compatTextColor="@color/pkt_nst_clickable_grey_3"
+                app:compatTextColor="@color/nr_nst_clickable_grey_3"
                 app:paddingVerticalCenter="true"/>
         </com.neverreader.ui.view.themed.ThemedLinearLayout>
 
         <com.neverreader.ui.view.themed.ThemedView
-            style="@style/Pkt_ThinDivider"
+            style="@style/App_ThinDivider"
             android:id="@+id/divider"
-            android:layout_width="@dimen/pkt_thin_divider_height"
+            android:layout_width="@dimen/nr_thin_divider_height"
             android:layout_height="match_parent"
             android:layout_marginTop="13dp"
             android:layout_marginBottom="13dp" />
 
         <com.neverreader.ui.view.button.IconButton
             android:id="@+id/tag"
-            style="@style/Pkt_IconButton_AddTags"
+            style="@style/App_IconButton_AddTags"
             android:layout_height="match_parent" />
     </com.neverreader.ui.view.themed.ThemedLinearLayout>
 

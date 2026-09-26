@@ -8,7 +8,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 interface ItemRepository {
-    suspend fun getItem(url: String): Bookmark?
+    suspend fun getItemByUrl(url: String): Bookmark?
     suspend fun getItem(id: String): Bookmark?
     fun getItemFlow(id: String): Flow<Bookmark?>
     suspend fun toggleFavorite(item: Bookmark)
@@ -32,7 +32,7 @@ class NeverReaderItemRepository @Inject constructor(
 
     private val repo by lazy { DataGraph.bookmarkRepository(context) }
 
-    override suspend fun getItem(url: String): Bookmark? = repo.bookmarkByUrlOnce(url)
+    override suspend fun getItemByUrl(url: String): Bookmark? = repo.bookmarkByUrlOnce(url)
 
     override suspend fun getItem(id: String): Bookmark? = repo.bookmarkOnce(id)
 

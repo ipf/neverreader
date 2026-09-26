@@ -33,11 +33,11 @@
     <string name="ic_brightness_up">Повысить яркость экрана</string>
     <string name="ic_brightness_control">Яркость экрана</string>
     <string name="ic_settings">Настройки</string>
-    <string name="ic_premium">Pocket Premium</string>
-    <string name="ic_pocket_menu">Меню Pocket</string>
+    <string name="ic_premium">NeverReader Premium</string>
+    <string name="ic_menu">Menu</string>
 
     <string name="ac_save">Сохранить</string>
-    <string name="ac_save_to_pocket">Сохранить в Pocket</string>
+    <string name="ac_save_long">Сохранить в NeverReader</string>
     <string name="ac_previous">Назад</string>
     <string name="ac_next">Вперед</string>
     

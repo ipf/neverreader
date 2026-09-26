@@ -5,17 +5,35 @@ import com.neverreader.backend.TokenCrypto
 import com.neverreader.backend.db.NeverReaderDatabase
 import com.neverreader.backend.model.Account
 import com.neverreader.backend.model.BackendType
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
 data class SyncState(val lastSyncAt: Long, val lastFullSyncAt: Long)
 
-class AccountManager(
-    private val context: Context,
+@javax.inject.Singleton
+class AccountManager @javax.inject.Inject constructor(
+    @dagger.hilt.android.qualifiers.ApplicationContext private val context: Context,
     private val db: NeverReaderDatabase,
 ) {
 
     private val aead by lazy { TokenCrypto.aead(context) }
+
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
+    // Quick sync access for UI checks; kept fresh by observe() collection.
+    @Volatile
+    var activeCached: Account? = null
+        private set
+
+    init {
+        scope.launch {
+            observe().collect { activeCached = it }
+        }
+    }
 
     fun observe(): Flow<Account?> = db.accountDao().observe().map { it?.toAccount() }
 

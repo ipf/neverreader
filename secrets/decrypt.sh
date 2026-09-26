@@ -16,8 +16,8 @@ fi
 decrypt "secrets/secret.properties"
 
 FONTS_SECRETS=secrets/fonts/
-FONTS_ASSETS=pocket-ui/src/main/assets/
-FONTS_RES=Pocket/src/main/res/font/
+FONTS_ASSETS=ui/src/main/assets/
+FONTS_RES=app/src/main/res/font/
 decrypt "blanco_osf_bold.otf" "$FONTS_SECRETS" "$FONTS_ASSETS"
 decrypt "blanco_osf_bold_italic.otf" "$FONTS_SECRETS" "$FONTS_ASSETS"
 decrypt "blanco_osf_italic.otf" "$FONTS_SECRETS" "$FONTS_ASSETS"

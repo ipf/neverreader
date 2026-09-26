@@ -1,15 +1,12 @@
-import com.android.build.gradle.BaseExtension
-import com.android.build.gradle.LibraryExtension
-import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
+import com.android.build.api.dsl.CommonExtension
 import org.gradle.api.JavaVersion
-import org.jetbrains.kotlin.gradle.dsl.HasConfigurableKotlinCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
+import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 
 object AndroidConfigs {
-    const val CompileSdkVersion = 35
-    const val MinSdkVersion = 23
-    const val TargetSdkVersion = 34
+    const val CompileSdkVersion = "android-37.1"
+    const val MinSdkVersion = 26
 }
 
 object KotlinConfigs {
@@ -22,23 +19,24 @@ object JavaConfigs {
 }
 
 /**
- * Set android configurations for a [BaseExtension].
- * [BaseExtension] is a parent class of [LibraryExtension] and [BaseAppModuleExtension] so this
- * method can be used within an 'android {}' block from an android app and an android library.
+ * Set android configurations for a [CommonExtension] (the AGP 9+ extension used by
+ * android app and library modules).
  */
-fun BaseExtension.setDefaultConfigs() {
+fun CommonExtension.setDefaultConfigs() {
     compileSdkVersion(AndroidConfigs.CompileSdkVersion)
-    defaultConfig {
-        minSdk = AndroidConfigs.MinSdkVersion
-        targetSdk = AndroidConfigs.TargetSdkVersion
-    }
-    compileOptions {
-        sourceCompatibility = JavaConfigs.javaVersion
-        targetCompatibility = JavaConfigs.javaVersion
+    defaultConfig.minSdk = AndroidConfigs.MinSdkVersion
+    compileOptions.sourceCompatibility = JavaConfigs.javaVersion
+    compileOptions.targetCompatibility = JavaConfigs.javaVersion
+}
+
+fun KotlinAndroidProjectExtension.setDefaultConfigs() {
+    compilerOptions {
+        jvmTarget.set(KotlinConfigs.jvmTarget)
+        freeCompilerArgs.add(KotlinConfigs.FreeCompilerArgs)
     }
 }
 
-fun HasConfigurableKotlinCompilerOptions<KotlinJvmCompilerOptions>.setDefaultConfigs() {
+fun KotlinJvmProjectExtension.setDefaultConfigs() {
     compilerOptions {
         jvmTarget.set(KotlinConfigs.jvmTarget)
         freeCompilerArgs.add(KotlinConfigs.FreeCompilerArgs)

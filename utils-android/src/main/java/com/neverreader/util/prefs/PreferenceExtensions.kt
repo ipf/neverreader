@@ -28,5 +28,5 @@ operator fun StringSetPreference.getValue(owner: Any?, property: KProperty<*>): 
     return get()
 }
 operator fun StringSetPreference.setValue(owner: Any?, property: KProperty<*>, ss: Set<String?>?) {
-    set(ss)
+    set(ss?.toMutableSet())
 }

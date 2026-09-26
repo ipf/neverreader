@@ -25,8 +25,8 @@ object UrlUtil {
             return false
         }
 
-        for (i in 0 until httpUrl1.pathSegments.size) {
-            if (httpUrl1.pathSegments[i] != httpUrl2.pathSegments[i]) {
+        for ((i, element) in httpUrl1.pathSegments.withIndex()) {
+            if (element != httpUrl2.pathSegments[i]) {
                 return false
             }
         }

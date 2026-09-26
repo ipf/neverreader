@@ -17,7 +17,7 @@
 
     <com.neverreader.ui.view.themed.ThemedTextView
         android:id="@+id/message"
-        style="@style/Pkt_Text_Small_Medium"
+        style="@style/App_Text_Small_Medium"
         app:layout_constraintTop_toBottomOf="@id/progress_circle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

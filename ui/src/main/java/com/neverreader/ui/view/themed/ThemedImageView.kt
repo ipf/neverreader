@@ -19,18 +19,18 @@ import com.neverreader.ui.analytics.UiEntityable
 
 open class ThemedImageView
 @JvmOverloads constructor(
-    context: Context,
+    context: Context?,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
     val engageable: EngageableHelper = EngageableHelper(), // TODO: This should be private
-): AppCompatImageView(context, attrs, defStyleAttr), Engageable by engageable {
+): AppCompatImageView(context!!, attrs, defStyleAttr), Engageable by engageable {
     private var mColors: ColorStateList? = null
     private var mHeightRatio = 0f
     private var mDrawableColorOverride: ColorOverride? = null
 
     init {
         if (attrs != null) {
-            val a = context.obtainStyledAttributes(attrs, R.styleable.ThemedImageView)
+            val a = context!!.obtainStyledAttributes(attrs, R.styleable.ThemedImageView)
 
             // Something in NestedColorStateList trips up layout preview so skip it when in preview.
             if (!isInEditMode) {
@@ -134,12 +134,11 @@ open class ThemedImageView
         super.setOnClickListener(engageable.getWrappedClickListener(listener))
     }
 
-    interface ColorOverride {
+    fun interface ColorOverride {
         fun getColor(state: IntArray?, color: Int): Int
     }
 
     companion object {
-        @JvmStatic
         @BindingAdapter("drawable")
         fun setDrawable(view: ThemedImageView, drawable: Drawable) {
             view.setImageDrawable(drawable)

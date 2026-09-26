@@ -25,19 +25,12 @@ class BadgeLayout(
     private val staged: MutableList<View> = mutableListOf()
     private var overflow: ThemedTextView? = null
     private val tags: MutableList<BadgeView> = mutableListOf()
-    private val spacing = resources.getDimensionPixelSize(R.dimen.pkt_space_sm);
+    private val spacing = resources.getDimensionPixelSize(R.dimen.nr_space_sm);
 
     init {
         overflow = ThemedTextView(getContext())
         overflow?.layoutParams = generateDefaultLayoutParams()
-        overflow?.setTextAppearance(getContext(), R.style.Pkt_Text_Small_LightTitle)
-    }
-
-    fun setBadges(badges: List<BadgeView>) {
-        tags.clear()
-        tags.addAll(badges)
-        invalidate()
-        requestLayout()
+        overflow?.setTextAppearance(getContext(), R.style.App_Text_Small_LightTitle)
     }
 
     @Suppress("LongMethod", "NestedBlockDepth")

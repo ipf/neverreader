@@ -11,7 +11,7 @@ import com.neverreader.ui.util.NestedColorStateList
 import com.neverreader.ui.view.themed.AppThemeUtil
 
 /**
- * A [SwitchCompat] pre-styled for Pocket.
+ * A [SwitchCompat] pre-styled for NeverReader.
  */
 class ThemedSwitch
 private constructor(
@@ -34,9 +34,9 @@ private constructor(
 
     init {
         DrawableCompat.setTintList(thumbDrawable, NestedColorStateList.get(
-            context, R.color.pkt_switch_thumb))
+            context, R.color.nr_switch_thumb))
         DrawableCompat.setTintList(trackDrawable, NestedColorStateList.get(
-            context, R.color.pkt_switch_track))
+            context, R.color.nr_switch_track))
     }
 
     override fun onCreateDrawableState(extraSpace: Int): IntArray {
@@ -56,6 +56,5 @@ private constructor(
         }
 
     override fun setOnClickListener(l: OnClickListener?) {
-        super.setOnClickListener(engageable.getWrappedClickListener(l))
     }
 }

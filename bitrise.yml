@@ -66,8 +66,8 @@ workflows:
             set -x
             java -jar project-tools/tools.jar updateBuildVersionForRelease $BITRISE_GIT_BRANCH
 
-            versionName=$(java -jar project-tools/legacyTools.jar -printVersionName Pocket/build.gradle.kts)
-            versionCode=$(java -jar project-tools/legacyTools.jar -printVersionCode Pocket/build.gradle.kts)
+            versionName=$(java -jar project-tools/legacyTools.jar -printVersionName app/build.gradle.kts)
+            versionCode=$(java -jar project-tools/legacyTools.jar -printVersionCode app/build.gradle.kts)
 
             echo $versionName
             echo $versionCode
@@ -95,16 +95,16 @@ workflows:
         - content: |-
             set -e
             set -x
-            curl -F "input=@./Pocket/build/outputs/apk/play/unsignedRelease/Pocket-play-unsignedRelease-unsigned.apk" -o ./Pocket/build/outputs/apk/play/unsignedRelease/signed.apk -H "Authorization: $EDGE_API_KEY" https://edge.prod.autograph.services.mozaws.net/sign
+            curl -F "input=@./app/build/outputs/apk/play/unsignedRelease/app-play-unsignedRelease-unsigned.apk" -o ./app/build/outputs/apk/play/unsignedRelease/signed.apk -H "Authorization: $EDGE_API_KEY" https://edge.prod.autograph.services.mozaws.net/sign
     - deploy-to-bitrise-io@2:
         inputs:
         - notify_user_groups: none
-        - deploy_path: ./Pocket/build/outputs/apk/play/unsignedRelease/signed.apk
+        - deploy_path: ./app/build/outputs/apk/play/unsignedRelease/signed.apk
     - google-play-deploy:
         inputs:
         - service_account_json_key_path: $BITRISEIO_GOOGLE_SERVICE_ACCOUNT_JSON_URL
-        - package_name: com.ideashower.readitlater.pro
-        - app_path: ./Pocket/build/outputs/apk/play/unsignedRelease/signed.apk
+        - package_name: com.neverreader
+        - app_path: ./app/build/outputs/apk/play/unsignedRelease/signed.apk
         - track: internal
         - status: completed
     - script:

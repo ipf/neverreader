@@ -7,15 +7,15 @@
     android:layout_height="wrap_content"
     tools:parentTag="com.neverreader.ui.view.themed.ThemedLinearLayout"
     >
-    <!-- root layout params are set in the view class PocketChip.kt -->
+    <!-- root layout params are set in the view class AppChip.kt -->
     
     <com.neverreader.ui.view.themed.ThemedImageView
         android:id="@+id/icon"
         android:layout_width="22dp"
         android:layout_height="22dp"
         android:layout_gravity="center_vertical"
-        app:tint="@color/pkt_chip_foreground"
-        tools:src="@drawable/ic_pkt_list_line"
+        app:tint="@color/nr_chip_foreground"
+        tools:src="@drawable/ic_nr_list_line"
         />
     
     <Space
@@ -29,7 +29,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="16sp"
-        android:textColor="@color/pkt_chip_foreground"
+        android:textColor="@color/nr_chip_foreground"
         android:layout_gravity="center_vertical"
         android:maxLines="1"
         tools:text="My List"
@@ -40,7 +40,7 @@
         android:layout_width="6dp"
         android:layout_height="6dp"
         android:src="@drawable/ic_circle"
-        android:tint="@color/pkt_themed_coral_2"
+        android:tint="@color/nr_themed_coral_2"
         android:layout_gravity="center_vertical"
         android:layout_marginStart="6dp"
         />
@@ -49,8 +49,8 @@
         android:id="@+id/close"
         android:layout_width="14dp"
         android:layout_height="14dp"
-        android:src="@drawable/ic_pkt_close_x_circle"
-        android:tint="@color/pkt_chip_foreground"
+        android:src="@drawable/ic_nr_close_x_circle"
+        android:tint="@color/nr_chip_foreground"
         android:layout_gravity="center_vertical"
         android:layout_marginStart="12dp"
         />

@@ -33,11 +33,11 @@
     <string name="ic_brightness_up">Increase Screen Brightness</string>
     <string name="ic_brightness_control">Screen Brightness</string>
     <string name="ic_settings">Settings</string>
-    <string name="ic_premium">Pocket Premium</string>
-    <string name="ic_pocket_menu">Pocket Menu</string>
+    <string name="ic_premium">Premium</string>
+    <string name="ic_menu">Menu</string>
 
     <string name="ac_save">Save</string>
-    <string name="ac_save_to_pocket">Save to Pocket</string>
+    <string name="ac_save_long">Save</string>
     <string name="ac_previous">Previous</string>
     <string name="ac_next">Next</string>
     

@@ -15,23 +15,23 @@
 
             <com.neverreader.ui.view.item.ItemThumbnailView
                 android:id="@+id/item_thumbnail"
-                android:layout_marginLeft="@dimen/pkt_side_grid"
-                app:layout_goneMarginStart="@dimen/pkt_side_grid"
+                android:layout_marginLeft="@dimen/nr_side_grid"
+                app:layout_goneMarginStart="@dimen/nr_side_grid"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/pkt_side_grid"
-                android:layout_marginRight="@dimen/pkt_side_grid"
+                android:layout_marginEnd="@dimen/nr_side_grid"
+                android:layout_marginRight="@dimen/nr_side_grid"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
 
             <com.neverreader.ui.view.themed.ThemedImageView
                 android:id="@+id/icon_mini"
-                app:drawableColor="@color/pkt_themed_teal_2"
+                app:drawableColor="@color/nr_themed_teal_2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/pkt_side_grid"
-                android:layout_marginStart="@dimen/pkt_side_grid"
+                android:layout_marginLeft="@dimen/nr_side_grid"
+                android:layout_marginStart="@dimen/nr_side_grid"
                 android:layout_marginRight="5dp"
                 android:layout_marginEnd="5dp"
                 android:layout_marginTop="2dp"
@@ -43,15 +43,15 @@
 
             <com.neverreader.ui.view.themed.ThemedTextView
                 android:id="@+id/feature_title"
-                style="@style/Pkt_Text_Small_LightTitle"
-                app:compatTextColor="@color/pkt_themed_teal_2"
+                style="@style/App_Text_Small_LightTitle"
+                app:compatTextColor="@color/nr_themed_teal_2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_goneMarginStart="@dimen/pkt_side_grid"
-                app:layout_goneMarginLeft="@dimen/pkt_side_grid"
-                android:layout_marginRight="@dimen/pkt_space_sm"
-                android:layout_marginEnd="@dimen/pkt_space_sm"
-                app:visualMargin_top="@dimen/pkt_space_md"
+                app:layout_goneMarginStart="@dimen/nr_side_grid"
+                app:layout_goneMarginLeft="@dimen/nr_side_grid"
+                android:layout_marginRight="@dimen/nr_space_sm"
+                android:layout_marginEnd="@dimen/nr_space_sm"
+                app:visualMargin_top="@dimen/nr_space_md"
                 app:layout_constraintVertical_chainStyle="packed"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toTopOf="@+id/item_meta"
@@ -62,13 +62,13 @@
                 android:id="@+id/item_meta"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/pkt_space_sm"
-                android:layout_marginLeft="@dimen/pkt_side_grid"
-                android:layout_marginRight="@dimen/pkt_space_sm"
-                android:layout_marginStart="@dimen/pkt_side_grid"
+                android:layout_marginEnd="@dimen/nr_space_sm"
+                android:layout_marginLeft="@dimen/nr_side_grid"
+                android:layout_marginRight="@dimen/nr_space_sm"
+                android:layout_marginStart="@dimen/nr_side_grid"
                 app:layout_constraintVertical_chainStyle="packed"
-                app:visualMargin_top="@dimen/pkt_space_sm"
-                android:layout_marginBottom="@dimen/pkt_space_md"
+                app:visualMargin_top="@dimen/nr_space_sm"
+                android:layout_marginBottom="@dimen/nr_space_md"
                 app:layout_constraintTop_toBottomOf="@+id/feature_title"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/item_thumbnail"
@@ -76,7 +76,7 @@
 
             <com.neverreader.ui.view.button.IconButton
                 android:id="@+id/icon_chevron"
-                style="@style/Pkt_IconButton_Chevron_Next"
+                style="@style/App_IconButton_Chevron_Next"
                 android:clickable="false"
                 android:focusable="false"
                 android:contentDescription="@null"
@@ -85,8 +85,8 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginEnd="@dimen/pkt_side_grid"
-                android:layout_marginRight="@dimen/pkt_side_grid" />
+                android:layout_marginEnd="@dimen/nr_side_grid"
+                android:layout_marginRight="@dimen/nr_side_grid" />
 
         </com.neverreader.ui.view.visualmargin.VisualMarginConstraintLayout>
     </com.neverreader.ui.view.themed.ThemedCardView>

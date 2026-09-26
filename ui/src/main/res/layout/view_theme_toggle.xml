@@ -10,12 +10,12 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:minHeight="@dimen/min_touch_target"
-        android:layout_margin="@dimen/pkt_side_grid"
+        android:layout_margin="@dimen/nr_side_grid"
         android:layout_weight="1"
-        android:background="@drawable/pkt_ripple_borderless"
+        android:background="@drawable/nr_ripple_borderless"
         android:gravity="center"
         android:scaleType="center"
-        app:srcCompat="@drawable/ic_pkt_theme_light" />
+        app:srcCompat="@drawable/ic_nr_theme_light" />
 
     <com.neverreader.ui.view.checkable.CheckableImageView
         android:id="@+id/theme_dark"
@@ -23,12 +23,12 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:minHeight="@dimen/min_touch_target"
-        android:layout_margin="@dimen/pkt_side_grid"
+        android:layout_margin="@dimen/nr_side_grid"
         android:layout_weight="1"
-        android:background="@drawable/pkt_ripple_borderless"
+        android:background="@drawable/nr_ripple_borderless"
         android:gravity="center"
         android:scaleType="center"
-        app:srcCompat="@drawable/ic_pkt_theme_dark" />
+        app:srcCompat="@drawable/ic_nr_theme_dark" />
 
     <com.neverreader.ui.view.checkable.CheckableImageView
         android:id="@+id/theme_auto"
@@ -36,11 +36,11 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:minHeight="@dimen/min_touch_target"
-        android:layout_margin="@dimen/pkt_side_grid"
+        android:layout_margin="@dimen/nr_side_grid"
         android:layout_weight="1"
-        android:background="@drawable/pkt_ripple_borderless"
+        android:background="@drawable/nr_ripple_borderless"
         android:gravity="center"
         android:scaleType="center"
-        app:srcCompat="@drawable/ic_pkt_theme_auto" />
+        app:srcCompat="@drawable/ic_nr_theme_auto" />
 
 </merge>

@@ -7,11 +7,10 @@ import android.content.Context
 import android.os.Build
 import android.view.textclassifier.TextClassifier
 import android.widget.Toast
-import com.ideashower.readitlater.R
+import com.neverreader.app.R
 import com.neverreader.app.AppLifecycle
 import com.neverreader.app.AppLifecycleEventDispatcher
 import com.neverreader.app.AppMode
-import com.neverreader.sdk.dev.ErrorHandler
 import com.neverreader.util.java.UrlFinder
 import com.neverreader.util.prefs.IntPreference
 import com.neverreader.util.prefs.Preferences
@@ -26,7 +25,6 @@ import javax.inject.Singleton
 class Clipboard @Inject constructor(
     @ApplicationContext private val context: Context,
     private val mode: AppMode,
-    private val errorReporter: ErrorHandler,
     prefs: Preferences,
     dispatcher: AppLifecycleEventDispatcher
 ) : AppLifecycle {
@@ -76,11 +74,8 @@ class Clipboard @Inject constructor(
             clipData = manager.primaryClip
         } catch (t: Throwable) {
             // Looks like just checking clipboard contents can crash the app on some devices.
-            // https://appcenter.ms/orgs/pocket-app/apps/Android-Production-Google-Play-Amazon-App-Store/crashes/errors/4025504882u/overview
             if (mode.isForInternalCompanyOnly) {
                 throw t
-            } else {
-                errorReporter.reportError(t)
             }
         }
 

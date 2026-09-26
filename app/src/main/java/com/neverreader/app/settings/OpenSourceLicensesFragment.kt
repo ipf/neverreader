@@ -10,25 +10,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.fragment.compose.content
 import androidx.navigation.fragment.findNavController
-import com.ideashower.readitlater.R
+import dagger.hilt.android.AndroidEntryPoint
+import com.neverreader.app.R
 import com.mikepenz.aboutlibraries.ui.compose.m3.LibrariesContainer
-import com.neverreader.sdk.util.AbsPocketFragment
-import com.neverreader.ui.view.AppBar
-import com.neverreader.ui.view.button.PocketIconButton
+import com.neverreader.sdk.util.AbsNeverReaderFragment
+import com.neverreader.ui.compose.AppBar
+import com.neverreader.ui.view.button.AppIconButton
 import com.neverreader.ui.view.button.UpIcon
-import com.neverreader.ui.view.themed.PocketTheme
+import com.neverreader.ui.view.themed.AppTheme
 
-class OpenSourceLicensesFragment : AbsPocketFragment() {
+@AndroidEntryPoint
+class OpenSourceLicensesFragment : AbsNeverReaderFragment() {
     override fun onCreateViewImpl(
         inflater: LayoutInflater?,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ) = content {
-        PocketTheme {
+        AppTheme {
             Column {
                 AppBar(
                     navigationIcon = {
-                        PocketIconButton(onClick = { findNavController().navigateUp() }) {
+                        AppIconButton(onClick = { findNavController().navigateUp() }) {
                             UpIcon()
                         }
                     },

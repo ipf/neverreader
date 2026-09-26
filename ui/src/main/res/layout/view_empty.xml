@@ -28,7 +28,7 @@
             android:layout_height="wrap_content">
             <com.neverreader.ui.view.visualmargin.VisualMarginConstraintLayout
                 android:id="@+id/message_info"
-                android:padding="@dimen/pkt_space_lg"
+                android:padding="@dimen/nr_space_lg"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintStart_toStartOf="parent"
@@ -37,7 +37,7 @@
 
                 <com.neverreader.ui.view.themed.ThemedTextView
                     android:id="@+id/title"
-                    style="@style/Pkt_Text_Title"
+                    style="@style/App_Text_Title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
@@ -49,7 +49,7 @@
 
                 <com.neverreader.ui.view.themed.ThemedTextView
                     android:id="@+id/message"
-                    style="@style/Pkt_Text_Small_Medium"
+                    style="@style/App_Text_Small_Medium"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
@@ -57,7 +57,7 @@
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/title"
-                    app:visualMargin_top="@dimen/pkt_space_md"
+                    app:visualMargin_top="@dimen/nr_space_md"
                     tools:text="There are no items in your list"/>
 
                 <com.neverreader.ui.view.button.BoxButton
@@ -68,7 +68,7 @@
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/message"
-                    app:visualMargin_top="@dimen/pkt_space_md"
+                    app:visualMargin_top="@dimen/nr_space_md"
                     tools:text="Learn More"/>
 
                 <com.neverreader.ui.view.button.ErrorButton
@@ -79,7 +79,7 @@
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/message"
-                    app:visualMargin_top="@dimen/pkt_space_md"
+                    app:visualMargin_top="@dimen/nr_space_md"
                     tools:text="Learn More"/>
 
                 <androidx.constraintlayout.widget.Barrier
@@ -91,15 +91,15 @@
 
                 <com.neverreader.ui.view.themed.ThemedView
                     android:id="@+id/detail_divider"
-                    style="@style/Pkt_ThinDivider"
+                    style="@style/App_ThinDivider"
                     app:layout_constraintEnd_toEndOf="@+id/details"
                     app:layout_constraintStart_toStartOf="@+id/details"
                     app:layout_constraintTop_toBottomOf="@+id/content_barrier"
-                    app:visualMargin_top="@dimen/pkt_space_lg"/>
+                    app:visualMargin_top="@dimen/nr_space_lg"/>
 
                 <com.neverreader.ui.view.themed.ThemedTextView
                     android:id="@+id/details"
-                    style="@style/Pkt_Text_Mini_Medium"
+                    style="@style/App_Text_Mini_Medium"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
@@ -107,7 +107,7 @@
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/detail_divider"
-                    app:visualMargin_top="@dimen/pkt_space_lg"/>
+                    app:visualMargin_top="@dimen/nr_space_lg"/>
 
             </com.neverreader.ui.view.visualmargin.VisualMarginConstraintLayout>
 
@@ -116,7 +116,7 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintWidth_max="@dimen/pkt_rec_tile_width_max"
+                app:layout_constraintWidth_max="@dimen/nr_rec_tile_width_max"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/message_info" />

@@ -11,10 +11,10 @@
         />
     <com.neverreader.ui.view.themed.ThemedView
         android:id="@+id/divider"
-        style="@style/Pkt_ThinDivider"
-        android:layout_marginLeft="@dimen/pkt_side_grid"
-        android:layout_marginRight="@dimen/pkt_side_grid"
-        android:layout_marginStart="@dimen/pkt_side_grid"
-        android:layout_marginEnd="@dimen/pkt_side_grid"
+        style="@style/App_ThinDivider"
+        android:layout_marginLeft="@dimen/nr_side_grid"
+        android:layout_marginRight="@dimen/nr_side_grid"
+        android:layout_marginStart="@dimen/nr_side_grid"
+        android:layout_marginEnd="@dimen/nr_side_grid"
         />
 </com.neverreader.ui.view.themed.ThemedLinearLayout>

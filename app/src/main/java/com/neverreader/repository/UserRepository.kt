@@ -2,6 +2,7 @@ package com.neverreader.repository
 
 import android.content.Context
 import com.neverreader.backend.DataGraph
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject

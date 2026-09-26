@@ -17,7 +17,7 @@ class BottomFeedAnimationView @JvmOverloads constructor(
     private var hasPlayed = false
 
     override fun asset(): String {
-        return "pkt_feed_footer_anim.json"
+        return "nr_feed_footer_anim.json"
     }
 
     override fun light() : List<ColorChange> {

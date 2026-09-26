@@ -1,193 +1,141 @@
 package com.neverreader.app.auth
 
 import androidx.lifecycle.ViewModel
-import com.neverreader.analytics.Tracker
-import com.neverreader.analytics.appevents.AuthenticationEvents
-import com.neverreader.app.AdjustSdkComponent
-import com.neverreader.app.AppMode
-import com.neverreader.app.UserManager
-import com.neverreader.sdk.Pocket
-import com.neverreader.sdk.http.HttpClientDelegate
-import com.neverreader.sdk.http.NetworkStatus
-import com.neverreader.util.edit
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import androidx.lifecycle.viewModelScope
+import com.neverreader.backend.model.Account
+import com.neverreader.backend.model.BackendType
+import com.neverreader.backend.readeck.ReadeckAuth
+import com.neverreader.backend.repo.AccountManager
+import com.neverreader.backend.sync.SyncWorker
+import com.neverreader.backend.wallabag.WallabagAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import okhttp3.HttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
-import java.net.URL
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.OkHttpClient
+import javax.inject.Inject
 
-@HiltViewModel(assistedFactory = AuthenticationViewModel.Factory::class)
-class AuthenticationViewModel @AssistedInject constructor(
-    private val httpClientDelegate: HttpClientDelegate,
-    private val fxaFeature: FxaFeature,
-    private val userManager: UserManager,
-    private val adjustSdkComponent: AdjustSdkComponent,
-    private val tracker: Tracker,
-    private val mode: AppMode,
-    @Assisted val skipOnboarding: Boolean,
+@HiltViewModel
+class AuthenticationViewModel @Inject constructor(
+    private val accountManager: AccountManager,
+    @dagger.hilt.android.qualifiers.ApplicationContext private val appContext: android.content.Context,
 ) : ViewModel() {
 
-    @AssistedFactory interface Factory {
-        fun create(skipOnboarding: Boolean): AuthenticationViewModel
+    private val http = OkHttpClient()
+
+    val state: StateFlow<State>
+        field = MutableStateFlow<State>(State.EnterServerUrl())
+
+    // replay=1: Success is emitted while the user is still in the browser (fragment stopped,
+    // collector cancelled) — it must replay when they return.
+    val events: SharedFlow<Event>
+        field = MutableSharedFlow<Event>(replay = 1)
+
+    fun onServerUrlChange(url: String) {
+        state.value = State.EnterServerUrl(url = url.trim())
     }
 
-    private val _uiState = MutableStateFlow(UiState())
-    val uiState: StateFlow<UiState> = _uiState
-
-    private val _events = MutableSharedFlow<Authentication.Event>(extraBufferCapacity = 1)
-    val events: SharedFlow<Authentication.Event> = _events
-
-    private var initialEventCollectionStarted = false
-    private var networkStatusListener: NetworkStatus.Listener? = null
-
-    suspend fun onEventCollectionStarted(flowCollector: FlowCollector<Authentication.Event>) {
-        if (skipOnboarding) {
-            if (!initialEventCollectionStarted) {
-                // This is first time this screen starts.
-                // Skip past onboarding straight to authentication.
-                flowCollector.emit(Authentication.Event.Authenticate)
-            } else if (_uiState.value.screenState == ScreenState.Loading) {
-                // Authentication was successful and we received credentials.
-                // Let authentication proceed.
-            } else {
-                // They must've backed out of authentication.
-                // Skip past onboarding to the previous screen
-                flowCollector.emit(Authentication.Event.GoBack)
-            }
-        }
-        if (userManager.hasDeletedAccount()) {
-            flowCollector.emit(Authentication.Event.ShowDeletedAccountToast)
-        }
-        initialEventCollectionStarted = true
+    fun onBackendTypeChange(type: BackendType) {
+        state.value = State.EnterServerUrl(url = state.value.url, backendType = type)
     }
 
-    fun onShowedDeletedAccountToast() {
-        userManager.onShowedDeletedAccountToast()
-    }
-
-    fun onAuthenticateClicked() {
-        tracker.track(AuthenticationEvents.continueButtonClicked())
-        if (!checkForInternet()) return
-        _events.tryEmit(Authentication.Event.Authenticate)
-    }
-
-    fun onAuthenticateLongClicked(): Boolean {
-        if (mode.isForInternalCompanyOnly) {
-            _events.tryEmit(Authentication.Event.OpenTeamTools)
-            return true
-        }
-
-        return false
-    }
-
-    fun onContinueSignedOutClicked() {
-        userManager.enableSignedOutExperience()
-        _events.tryEmit(Authentication.Event.DisableCredentialsCallbackIntentFilter)
-        _events.tryEmit(Authentication.Event.GoToDefaultScreen)
-    }
-
-    fun onOfflineCloseButtonClicked() {
-        hideOfflineView()
-    }
-
-    fun onFragmentDestroyed() {
-        httpClientDelegate.status().removeListener(networkStatusListener)
-    }
-
-    fun onCredentialsReceived(authUri: String) {
-        _uiState.edit { copy(
-            screenState = ScreenState.Loading
-        ) }
-        // can't parse the url if it uses the pocket:// scheme.  Just replace with http
-        val httpUrl: HttpUrl? = URL(
-            authUri.replace("pocket://", "http://")
-        ).toHttpUrlOrNull()
-        val authKey = httpUrl?.queryParameter("access_token")
-        val fxaMigration = httpUrl?.queryParameter("fxa_migration")
-        val type = httpUrl?.queryParameter("type")
-        fxaFeature.shouldShowMigrationMessage = fxaMigration != null && fxaMigration == "1"
-        userManager.authenticate(
-            { userApi: Pocket.UserApi, extras: Pocket.AuthenticationExtras? ->
-                // Avoiding a race condition where the api doesn't recognize the access token yet
-                // and returns a 401.  This method is called from within an async thread, so
-                // this shouldn't block the main thread.
-                Thread.sleep(1000)
-                userApi.loginWithAccessToken(authKey, extras)
-            },
-            {
-                val isSignUp = type != null && type == "signup"
-                if (isSignUp) {
-                    tracker.track(AuthenticationEvents.signupComplete())
-                    adjustSdkComponent.trackSignUp()
-                } else {
-                    tracker.track(AuthenticationEvents.loginComplete())
+    /**
+     * Readeck: register a client, start the device flow, and poll for the token.
+     */
+    fun startReadeckDeviceFlow() {
+        val serverUrl = state.value.url
+        if (serverUrl.isBlank()) return
+        state.value = State.Authorizing(serverUrl, BackendType.READECK, message = "Contacting server…")
+        viewModelScope.launch {
+            try {
+                val clientId = withContext(Dispatchers.IO) {
+                    ReadeckAuth.registerClient(serverUrl, http)
                 }
-
-                // Make sure that when they log out they skip this screen
-                // and see the signed out experience.
-                userManager.enableSignedOutExperience()
-
-                _events.tryEmit(Authentication.Event.DisableCredentialsCallbackIntentFilter)
-                _events.tryEmit(Authentication.Event.GoToDefaultScreen)
+                val session = withContext(Dispatchers.IO) {
+                    ReadeckAuth.startDeviceFlow(serverUrl, clientId, http)
+                }
+                state.value = State.DeviceFlow(serverUrl, session)
+                val token = withContext(Dispatchers.IO) {
+                    ReadeckAuth.awaitToken(serverUrl, clientId, session, http = http)
+                }
+                save(Account(BackendType.READECK, serverUrl, accessToken = token, clientId = clientId))
+            } catch (t: Throwable) {
+                fail(t.message ?: "Authorization failed")
             }
-        ) {
-            _uiState.edit { copy(
-                screenState = ScreenState.Default
-            ) }
-            _events.tryEmit(Authentication.Event.ShowErrorToast)
         }
     }
 
     /**
-     * return true if user has internet connection
+     * Wallabag: OAuth2 password grant.
      */
-    private fun checkForInternet(): Boolean {
-        if (!httpClientDelegate.status().isOnline) {
-            _uiState.edit { copy(
-                screenState = ScreenState.Offline
-            ) }
-            networkStatusListener = NetworkStatus.Listener { status: NetworkStatus ->
-                if (status.isOnline) {
-                    hideOfflineView()
-                }
-            }
-            httpClientDelegate.status().addListener(networkStatusListener)
-            return false
+    fun loginWallabag(username: String, password: String, clientId: String, clientSecret: String) {
+        val serverUrl = state.value.url
+        if (serverUrl.isBlank() || username.isBlank() || password.isBlank() || clientId.isBlank() || clientSecret.isBlank()) {
+            fail("All fields are required")
+            return
         }
-        return true
+        state.value = State.Authorizing(serverUrl, BackendType.WALLABAG, message = "Signing in…")
+        viewModelScope.launch {
+            try {
+                val result = withContext(Dispatchers.IO) {
+                    WallabagAuth.login(serverUrl, username, password, clientId, clientSecret, http)
+                }
+                save(
+                    Account(
+                        BackendType.WALLABAG,
+                        serverUrl,
+                        username = username,
+                        accessToken = result.accessToken,
+                        refreshToken = result.refreshToken,
+                        clientId = clientId,
+                        clientSecret = clientSecret,
+                    ),
+                )
+            } catch (t: Throwable) {
+                fail(t.message ?: "Login failed")
+            }
+        }
     }
 
-    private fun hideOfflineView() {
-        httpClientDelegate.status().removeListener(networkStatusListener)
-        _uiState.edit { copy(
-            screenState = ScreenState.Default
-        ) }
+    private suspend fun save(account: Account) {
+        accountManager.save(account)
+        SyncWorker.enqueueNow(appContext)
+        events.emit(Event.Success)
     }
 
-    data class UiState(
-        val screenState: ScreenState = ScreenState.Default,
-    )
+    private fun fail(message: String) {
+        state.value = State.EnterServerUrl(url = state.value.url, error = message)
+    }
 
-    sealed class ScreenState(
-        val loadingVisible: Boolean = false,
-        val offlineVisible: Boolean = false,
-        val mainLayoutVisible: Boolean = false,
-    ) {
-        data object Loading : ScreenState(
-            loadingVisible = true
-        )
-        data object Offline : ScreenState(
-            offlineVisible = true
-        )
-        data object Default : ScreenState(
-            mainLayoutVisible = true
-        )
+    sealed class State {
+        abstract val url: String
+        abstract val error: String?
+
+        data class EnterServerUrl(
+            override val url: String = "",
+            val backendType: BackendType = BackendType.READECK,
+            override val error: String? = null,
+        ) : State()
+
+        data class Authorizing(
+            override val url: String,
+            val backendType: BackendType,
+            val message: String,
+            override val error: String? = null,
+        ) : State()
+
+        data class DeviceFlow(
+            override val url: String,
+            val session: com.neverreader.backend.readeck.DeviceSession,
+            override val error: String? = null,
+        ) : State()
+    }
+
+    sealed class Event {
+        data object Success : Event()
     }
 }

@@ -8,16 +8,16 @@
     <com.neverreader.ui.view.themed.ThemedNestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/cl_pkt_bg">
+        android:background="@drawable/cl_nr_bg">
 
         <com.neverreader.ui.view.visualmargin.VisualMarginConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/pkt_space_lg">
+            android:layout_margin="@dimen/nr_space_lg">
 
             <com.neverreader.ui.view.themed.ThemedTextView
                 android:id="@+id/title"
-                style="@style/Pkt_Text_Title"
+                style="@style/App_Text_Title"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
@@ -29,7 +29,7 @@
 
             <com.neverreader.ui.view.themed.ThemedTextView
                 android:id="@+id/message"
-                style="@style/Pkt_Text_Medium"
+                style="@style/App_Text_Medium"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -37,7 +37,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/title"
-                app:visualMargin_top="@dimen/pkt_space_md"
+                app:visualMargin_top="@dimen/nr_space_md"
                 />
 
             <com.neverreader.ui.view.button.BoxButton
@@ -49,22 +49,22 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/message"
                 app:layout_constraintWidth_default="wrap"
-                app:visualMargin_top="@dimen/pkt_space_md"
+                app:visualMargin_top="@dimen/nr_space_md"
                 tools:text="Primary"
                 />
 
             <com.neverreader.ui.view.themed.ThemedTextView
                 android:id="@+id/button_secondary"
-                style="@style/Pkt_Text_Medium"
+                style="@style/App_Text_Medium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/pkt_ripple_borderless"
-                app:compatTextColor="@color/pkt_themed_grey_3"
+                android:background="@drawable/nr_ripple_borderless"
+                app:compatTextColor="@color/nr_themed_grey_3"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/button_primary"
-                app:visualMargin_top="@dimen/pkt_space_md"
+                app:visualMargin_top="@dimen/nr_space_md"
                 />
 
         </com.neverreader.ui.view.visualmargin.VisualMarginConstraintLayout>

@@ -1,178 +1,178 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Pkt_IconButton">
+    <style name="App_IconButton">
         <item name="android:focusable">true</item>
         <item name="android:clickable">true</item>
         <item name="android:scaleType">center</item>
-        <item name="android:background">@drawable/pkt_ripple_borderless</item>
-        <item name="android:layout_width">@dimen/pkt_icon_button_width</item>
+        <item name="android:background">@drawable/nr_ripple_borderless</item>
+        <item name="android:layout_width">@dimen/nr_icon_button_width</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_gravity">center</item>
-        <item name="drawableColor">@color/pkt_nst_disableable_grey_3</item>
+        <item name="drawableColor">@color/nr_nst_disableable_grey_3</item>
         <item name="isCheckable">false</item>
     </style>
-    <style name="Pkt_IconButton_CoralChecked" parent="Pkt_IconButton">
+    <style name="App_IconButton_CoralChecked" parent="App_IconButton">
         <item name="isCheckable">true</item>
-        <item name="drawableColor">@color/pkt_nst_clickable_grey_3_coral_checked</item>
+        <item name="drawableColor">@color/nr_nst_clickable_grey_3_coral_checked</item>
     </style>
-    <style name="Pkt_IconButton_AmberChecked" parent="Pkt_IconButton">
+    <style name="App_IconButton_AmberChecked" parent="App_IconButton">
         <item name="isCheckable">true</item>
-        <item name="drawableColor">@color/pkt_nst_clickable_grey_3_amber_checked</item>
+        <item name="drawableColor">@color/nr_nst_clickable_grey_3_amber_checked</item>
     </style>
-    <style name="Pkt_IconButton_Overflow" parent="Pkt_IconButton">
+    <style name="App_IconButton_Overflow" parent="App_IconButton">
         <item name="android:contentDescription">@string/ic_overflow</item>
-        <item name="srcCompat">@drawable/ic_pkt_android_overflow_solid</item>
+        <item name="srcCompat">@drawable/ic_nr_android_overflow_solid</item>
     </style>
-    <style name="Pkt_IconButton_Up" parent="Pkt_IconButton">
+    <style name="App_IconButton_Up" parent="App_IconButton">
         <item name="android:contentDescription">@string/ic_up</item>
-        <item name="srcCompat">@drawable/ic_pkt_back_arrow_line</item>
+        <item name="srcCompat">@drawable/ic_nr_back_arrow_line</item>
     </style>
-    <style name="Pkt_IconButton_Previous" parent="Pkt_IconButton">
+    <style name="App_IconButton_Previous" parent="App_IconButton">
         <item name="android:contentDescription">@string/ac_previous</item>
-        <item name="srcCompat">@drawable/ic_pkt_back_arrow_line</item>
+        <item name="srcCompat">@drawable/ic_nr_back_arrow_line</item>
     </style>
-    <style name="Pkt_IconButton_Next" parent="Pkt_IconButton">
+    <style name="App_IconButton_Next" parent="App_IconButton">
         <item name="android:contentDescription">@string/ac_next</item>
-        <item name="srcCompat">@drawable/ic_pkt_back_arrow_line</item>
+        <item name="srcCompat">@drawable/ic_nr_back_arrow_line</item>
         <item name="android:rotation">180</item>
     </style>
-    <style name="Pkt_IconButton_X" parent="Pkt_IconButton">
+    <style name="App_IconButton_X" parent="App_IconButton">
         <item name="android:contentDescription">@string/ic_cancel</item>
-        <item name="srcCompat">@drawable/ic_pkt_close_x_line</item>
+        <item name="srcCompat">@drawable/ic_nr_close_x_line</item>
     </style>
-    <style name="Pkt_IconButton_Close" parent="Pkt_IconButton">
+    <style name="App_IconButton_Close" parent="App_IconButton">
         <item name="android:contentDescription">@string/ic_close</item>
-        <item name="srcCompat">@drawable/ic_pkt_close_x_line</item>
+        <item name="srcCompat">@drawable/ic_nr_close_x_line</item>
     </style>
-    <style name="Pkt_IconButton_Close_Mini" parent="Pkt_IconButton">
+    <style name="App_IconButton_Close_Mini" parent="App_IconButton">
         <item name="android:contentDescription">@string/ic_close</item>
-        <item name="srcCompat">@drawable/ic_pkt_close_x_mini</item>
+        <item name="srcCompat">@drawable/ic_nr_close_x_mini</item>
     </style>
     
-    <style name="Pkt_IconButton_Listen" parent="Pkt_IconButton">
+    <style name="App_IconButton_Listen" parent="App_IconButton">
         <item name="android:contentDescription">@string/ic_listen</item>
-        <item name="srcCompat">@drawable/ic_pkt_listen_line</item>
+        <item name="srcCompat">@drawable/ic_nr_listen_line</item>
     </style>
-    <style name="Pkt_IconButton_Archive" parent="Pkt_IconButton">
+    <style name="App_IconButton_Archive" parent="App_IconButton">
         <item name="android:contentDescription">@string/ic_archive</item>
-        <item name="srcCompat">@drawable/ic_pkt_archive_checked</item>
+        <item name="srcCompat">@drawable/ic_nr_archive_checked</item>
     </style>
-    <style name="Pkt_IconButton_Readd" parent="Pkt_IconButton">
+    <style name="App_IconButton_Readd" parent="App_IconButton">
         <item name="android:contentDescription">@string/ic_readd</item>
-        <item name="srcCompat">@drawable/ic_pkt_re_add_checked</item>
+        <item name="srcCompat">@drawable/ic_nr_re_add_checked</item>
     </style>
     
-    <style name="Pkt_IconButton_Share" parent="Pkt_IconButton">
+    <style name="App_IconButton_Share" parent="App_IconButton">
         <item name="android:contentDescription">@string/ic_share</item>
-        <item name="srcCompat">@drawable/ic_pkt_android_share_solid</item>
+        <item name="srcCompat">@drawable/ic_nr_android_share_solid</item>
     </style>
     
-    <style name="Pkt_IconButton_Favorite" parent="Pkt_IconButton_AmberChecked">
+    <style name="App_IconButton_Favorite" parent="App_IconButton_AmberChecked">
         <item name="android:contentDescription">@string/ic_favorite</item>
-        <item name="srcCompat">@drawable/ic_pkt_favorite_checked</item>
+        <item name="srcCompat">@drawable/ic_nr_favorite_checked</item>
     </style>
-    <style name="Pkt_IconButton_Premium" parent="Pkt_IconButton">
+    <style name="App_IconButton_Premium" parent="App_IconButton">
         <item name="android:contentDescription">@string/ic_premium</item>
-        <item name="srcCompat">@drawable/ic_pkt_premium_line</item>
+        <item name="srcCompat">@drawable/ic_nr_premium_line</item>
     </style>
-    <style name="Pkt_IconButton_Premium_Teal" parent="Pkt_IconButton_Premium">
-        <item name="drawableColor">@color/pkt_themed_teal_2_clickable</item>
+    <style name="App_IconButton_Premium_Teal" parent="App_IconButton_Premium">
+        <item name="drawableColor">@color/nr_themed_teal_2_clickable</item>
     </style>
-    <style name="Pkt_IconButton_Save" parent="Pkt_IconButton_CoralChecked">
+    <style name="App_IconButton_Save" parent="App_IconButton_CoralChecked">
         <item name="android:contentDescription">@string/ic_save</item>
-        <item name="srcCompat">@drawable/ic_pkt_save_checked</item>
+        <item name="srcCompat">@drawable/ic_nr_save_checked</item>
     </style>
     
-    <style name="Pkt_IconButton_AddTags" parent="Pkt_IconButton">
+    <style name="App_IconButton_AddTags" parent="App_IconButton">
         <item name="android:contentDescription">@string/ic_add_tags</item>
-        <item name="srcCompat">@drawable/ic_pkt_tag_checked</item>
+        <item name="srcCompat">@drawable/ic_nr_tag_checked</item>
     </style>
     
-    <style name="Pkt_IconButton_Listen_Previous" parent="Pkt_IconButton">
+    <style name="App_IconButton_Listen_Previous" parent="App_IconButton">
         <item name="android:contentDescription">@string/ac_previous</item>
-        <item name="srcCompat">@drawable/ic_pkt_prev_line</item>
+        <item name="srcCompat">@drawable/ic_nr_prev_line</item>
     </style>
-    <style name="Pkt_IconButton_Listen_Next" parent="Pkt_IconButton">
+    <style name="App_IconButton_Listen_Next" parent="App_IconButton">
         <item name="android:contentDescription">@string/ac_next</item>
-        <item name="srcCompat">@drawable/ic_pkt_next_line</item>
+        <item name="srcCompat">@drawable/ic_nr_next_line</item>
     </style>
-    <style name="Pkt_IconButton_Chevron_Prev" parent="Pkt_IconButton">
+    <style name="App_IconButton_Chevron_Prev" parent="App_IconButton">
         <item name="android:contentDescription">@string/ac_previous</item>
-        <item name="srcCompat">@drawable/ic_pkt_back_chevron_line</item>
+        <item name="srcCompat">@drawable/ic_nr_back_chevron_line</item>
     </style>
-    <style name="Pkt_IconButton_Chevron_Next" parent="Pkt_IconButton">
+    <style name="App_IconButton_Chevron_Next" parent="App_IconButton">
         <item name="android:contentDescription">@string/ac_next</item>
-        <item name="srcCompat">@drawable/ic_pkt_forward_chevron_line</item>
+        <item name="srcCompat">@drawable/ic_nr_forward_chevron_line</item>
     </style>
-    <style name="Pkt_IconButton_Chevron_Prev_Shadow" parent="Pkt_IconButton_Chevron_Prev">
-        <item name="srcCompat">@drawable/ic_pkt_back_chevron_shadow</item>
+    <style name="App_IconButton_Chevron_Prev_Shadow" parent="App_IconButton_Chevron_Prev">
+        <item name="srcCompat">@drawable/ic_nr_back_chevron_shadow</item>
     </style>
-    <style name="Pkt_IconButton_Chevron_Next_Shadow" parent="Pkt_IconButton_Chevron_Next">
-        <item name="srcCompat">@drawable/ic_pkt_forward_chevron_shadow</item>
+    <style name="App_IconButton_Chevron_Next_Shadow" parent="App_IconButton_Chevron_Next">
+        <item name="srcCompat">@drawable/ic_nr_forward_chevron_shadow</item>
     </style>
-    <style name="Pkt_IconButton_Skip" parent="Pkt_IconButton">
+    <style name="App_IconButton_Skip" parent="App_IconButton">
         <item name="android:contentDescription">@string/ic_skip</item>
-        <item name="srcCompat">@drawable/ic_pkt_skip_line</item>
+        <item name="srcCompat">@drawable/ic_nr_skip_line</item>
     </style>
-    <style name="Pkt_IconButton_SkipBack" parent="Pkt_IconButton">
+    <style name="App_IconButton_SkipBack" parent="App_IconButton">
         <item name="android:contentDescription">@string/ic_back</item>
-        <item name="srcCompat">@drawable/ic_pkt_skip_back_line</item>
+        <item name="srcCompat">@drawable/ic_nr_skip_back_line</item>
     </style>
-    <style name="Pkt_IconButton_Settings" parent="Pkt_IconButton">
+    <style name="App_IconButton_Settings" parent="App_IconButton">
         <item name="android:contentDescription">@string/ic_settings</item>
-        <item name="srcCompat">@drawable/ic_pkt_settings_line</item>
+        <item name="srcCompat">@drawable/ic_nr_settings_line</item>
     </style>
     
-    <style name="Pkt_IconButton_Plus" parent="Pkt_IconButton">
+    <style name="App_IconButton_Plus" parent="App_IconButton">
         <item name="android:contentDescription">@string/ic_plus</item>
-        <item name="srcCompat">@drawable/ic_pkt_plus_line</item>
+        <item name="srcCompat">@drawable/ic_nr_plus_line</item>
     </style>
-    <style name="Pkt_IconButton_Plus_Mini" parent="Pkt_IconButton">
+    <style name="App_IconButton_Plus_Mini" parent="App_IconButton">
         <item name="android:contentDescription">@string/ic_plus</item>
-        <item name="srcCompat">@drawable/ic_pkt_plus_mini</item>
+        <item name="srcCompat">@drawable/ic_nr_plus_mini</item>
     </style>
-    <style name="Pkt_IconButton_Minus_Mini" parent="Pkt_IconButton">
+    <style name="App_IconButton_Minus_Mini" parent="App_IconButton">
         <item name="android:contentDescription">@string/ic_minus</item>
-        <item name="srcCompat">@drawable/ic_pkt_minus_mini</item>
+        <item name="srcCompat">@drawable/ic_nr_minus_mini</item>
     </style>
-    <style name="Pkt_IconButton_Brightness_Up" parent="Pkt_IconButton">
+    <style name="App_IconButton_Brightness_Up" parent="App_IconButton">
         <item name="android:contentDescription">@string/ic_brightness_up</item>
-        <item name="srcCompat">@drawable/ic_pkt_sun_line</item>
+        <item name="srcCompat">@drawable/ic_nr_sun_line</item>
     </style>
-    <style name="Pkt_IconButton_Brightness_Down" parent="Pkt_IconButton">
+    <style name="App_IconButton_Brightness_Down" parent="App_IconButton">
         <item name="android:contentDescription">@string/ic_brightness_down</item>
-        <item name="srcCompat">@drawable/ic_pkt_sun_mini</item>
+        <item name="srcCompat">@drawable/ic_nr_sun_mini</item>
     </style>
     
-    <style name="Pkt_ThinDivider">
-        <item name="android:background">@drawable/cl_pkt_themed_grey_6</item>
+    <style name="App_ThinDivider">
+        <item name="android:background">@drawable/cl_nr_themed_grey_6</item>
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">@dimen/pkt_thin_divider_height</item>
+        <item name="android:layout_height">@dimen/nr_thin_divider_height</item>
     </style>
-    <style name="Pkt_ThickDivider">
-        <item name="android:background">@drawable/cl_pkt_themed_grey_6</item>
+    <style name="App_ThickDivider">
+        <item name="android:background">@drawable/cl_nr_themed_grey_6</item>
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">@dimen/pkt_thick_divider_height</item>
+        <item name="android:layout_height">@dimen/nr_thick_divider_height</item>
     </style>
     
     <!-- New design system text styles. -->
-    <style name="Pkt_Text_H5" parent="android:Widget.TextView">
+    <style name="App_Text_H5" parent="android:Widget.TextView">
         <item name="android:textSize">23sp</item>
         <item name="lineHeight">28sp</item>
         <item name="typeface">graphik_lcg_medium</item>
-        <item name="compatTextColor">@color/pkt_text_primary</item>
+        <item name="compatTextColor">@color/nr_text_primary</item>
     </style>
-    <style name="Pkt_Text_P3" parent="android:Widget.TextView">
-        <item name="android:textSize">@dimen/pkt_medium_text</item>
+    <style name="App_Text_P3" parent="android:Widget.TextView">
+        <item name="android:textSize">@dimen/nr_medium_text</item>
         <item name="lineHeight">24sp</item>
         <item name="typeface">graphik_lcg_regular</item>
-        <item name="compatTextColor">@color/pkt_text_primary</item>
+        <item name="compatTextColor">@color/nr_text_primary</item>
     </style>
-    <style name="Pkt_Text_P4" parent="android:Widget.TextView">
+    <style name="App_Text_P4" parent="android:Widget.TextView">
         <item name="android:textSize">14sp</item>
         <item name="lineHeight">20sp</item>
         <item name="typeface">graphik_lcg_regular</item>
-        <item name="compatTextColor">@color/pkt_text_primary</item>
+        <item name="compatTextColor">@color/nr_text_primary</item>
     </style>
     <!--
         The design team does not yet have official named text styles yet,
@@ -182,173 +182,173 @@
         exact same text styles. So, just be careful and talk with the design team.
         Ideally the design team will have named and reusable text styles at some point.
     -->
-    <style name="Pkt_Text_Extra_Large_Title">
-        <item name="android:textSize">@dimen/pkt_extra_large_text</item>
+    <style name="App_Text_Extra_Large_Title">
+        <item name="android:textSize">@dimen/nr_extra_large_text</item>
         <item name="lineHeight">32sp</item>
         <item name="typeface">doyle_medium</item>
-        <item name="compatTextColor">@color/pkt_themed_grey_1</item>
+        <item name="compatTextColor">@color/nr_themed_grey_1</item>
     </style>
-    <style name="Pkt_Text_Large_Title">
-        <item name="android:textSize">@dimen/pkt_large_text</item>
+    <style name="App_Text_Large_Title">
+        <item name="android:textSize">@dimen/nr_large_text</item>
         <item name="lineHeight">30sp</item>
         <item name="typeface">graphik_lcg_medium</item>
-        <item name="compatTextColor">@color/pkt_themed_grey_1</item>
+        <item name="compatTextColor">@color/nr_themed_grey_1</item>
     </style>
-    <style name="Pkt_Text_Title">
-        <item name="android:textSize">@dimen/pkt_medium_text</item>
-        <item name="lineHeight">@dimen/pkt_line_height_default</item>
+    <style name="App_Text_Title">
+        <item name="android:textSize">@dimen/nr_medium_text</item>
+        <item name="lineHeight">@dimen/nr_line_height_default</item>
         <item name="typeface">graphik_lcg_medium</item>
-        <item name="compatTextColor">@color/pkt_nst_activateable_grey_1</item>
+        <item name="compatTextColor">@color/nr_nst_activateable_grey_1</item>
     </style>
-    <style name="Pkt_Text_LightTitle">
-        <item name="android:textSize">@dimen/pkt_medium_text</item>
+    <style name="App_Text_LightTitle">
+        <item name="android:textSize">@dimen/nr_medium_text</item>
         <item name="lineHeight">22sp</item>
         <item name="typeface">graphik_lcg_medium</item>
-        <item name="compatTextColor">@color/pkt_themed_grey_3</item>
+        <item name="compatTextColor">@color/nr_themed_grey_3</item>
     </style>
     
-    <style name="Pkt_Text_Medium">
-        <item name="android:textSize">@dimen/pkt_medium_text</item>
+    <style name="App_Text_Medium">
+        <item name="android:textSize">@dimen/nr_medium_text</item>
         <item name="lineHeight">22sp</item>
         <item name="typeface">graphik_lcg_regular</item>
-        <item name="compatTextColor">@color/pkt_themed_grey_1</item>
+        <item name="compatTextColor">@color/nr_themed_grey_1</item>
     </style>
-    <style name="Pkt_Text_Light">
-        <item name="android:textSize">@dimen/pkt_medium_text</item>
+    <style name="App_Text_Light">
+        <item name="android:textSize">@dimen/nr_medium_text</item>
         <item name="lineHeight">22sp</item>
         <item name="typeface">graphik_lcg_regular</item>
-        <item name="compatTextColor">@color/pkt_nst_disableable_grey_3</item>
+        <item name="compatTextColor">@color/nr_nst_disableable_grey_3</item>
     </style>
-    <style name="Pkt_Text_Link">
+    <style name="App_Text_Link">
         <item name="android:clickable">true</item>
-        <item name="android:textSize">@dimen/pkt_medium_text</item>
+        <item name="android:textSize">@dimen/nr_medium_text</item>
         <item name="lineHeight">24sp</item>
         <item name="typeface">graphik_lcg_regular</item>
-        <item name="compatTextColor">@color/pkt_themed_teal_2_clickable</item>
-        <item name="android:background">@drawable/pkt_ripple_borderless</item>
+        <item name="compatTextColor">@color/nr_themed_teal_2_clickable</item>
+        <item name="android:background">@drawable/nr_ripple_borderless</item>
         <item name="android:minHeight">42dp</item>
         <item name="android:minWidth">42dp</item>
         <item name="android:gravity">center</item>
     </style>
     
-    <style name="Pkt_Text_Small_LightTitle">
-        <item name="android:textSize">@dimen/pkt_small_text</item>
+    <style name="App_Text_Small_LightTitle">
+        <item name="android:textSize">@dimen/nr_small_text</item>
         <item name="lineHeight">16sp</item>
         <item name="typeface">graphik_lcg_medium</item>
-        <item name="compatTextColor">@color/pkt_nst_disableable_grey_3</item>
+        <item name="compatTextColor">@color/nr_nst_disableable_grey_3</item>
     </style>
-    <style name="Pkt_Text_Small_Medium">
-        <item name="android:textSize">@dimen/pkt_small_text</item>
-        <item name="lineHeight">@dimen/pkt_line_height_default</item>
+    <style name="App_Text_Small_Medium">
+        <item name="android:textSize">@dimen/nr_small_text</item>
+        <item name="lineHeight">@dimen/nr_line_height_default</item>
         <item name="typeface">graphik_lcg_regular</item>
-        <item name="compatTextColor">@color/pkt_themed_grey_1</item>
+        <item name="compatTextColor">@color/nr_themed_grey_1</item>
     </style>
-    <style name="Pkt_Text_Small_Light">
-        <item name="android:textSize">@dimen/pkt_small_text</item>
+    <style name="App_Text_Small_Light">
+        <item name="android:textSize">@dimen/nr_small_text</item>
         <item name="lineHeight">22dp</item>
         <item name="typeface">graphik_lcg_regular</item>
-        <item name="compatTextColor">@color/pkt_nst_disableable_grey_3</item>
+        <item name="compatTextColor">@color/nr_nst_disableable_grey_3</item>
     </style>
     
-    <style name="Pkt_Text_Small_Link">
+    <style name="App_Text_Small_Link">
         <item name="android:clickable">true</item>
-        <item name="android:textSize">@dimen/pkt_small_text</item>
+        <item name="android:textSize">@dimen/nr_small_text</item>
         <item name="lineHeight">22sp</item>
         <item name="typeface">graphik_lcg_regular</item>
-        <item name="compatTextColor">@color/pkt_themed_teal_2_clickable</item>
-        <item name="android:background">@drawable/pkt_ripple_borderless</item>
+        <item name="compatTextColor">@color/nr_themed_teal_2_clickable</item>
+        <item name="android:background">@drawable/nr_ripple_borderless</item>
     </style>
-    <style name="Pkt_Text_Small_Link_Bold" parent="Pkt_Text_Small_Link">
+    <style name="App_Text_Small_Link_Bold" parent="App_Text_Small_Link">
         <item name="typeface">graphik_lcg_medium</item>
     </style>
-    <style name="Pkt_Text_Mini_Medium">
-        <item name="android:textSize">@dimen/pkt_mini_text</item>
+    <style name="App_Text_Mini_Medium">
+        <item name="android:textSize">@dimen/nr_mini_text</item>
         <item name="lineHeight">17sp</item>
         <item name="typeface">graphik_lcg_regular</item>
-        <item name="compatTextColor">@color/pkt_themed_grey_1</item>
+        <item name="compatTextColor">@color/nr_themed_grey_1</item>
     </style>
-    <style name="Pkt_Text_Mini_Light">
-        <item name="android:textSize">@dimen/pkt_mini_text</item>
+    <style name="App_Text_Mini_Light">
+        <item name="android:textSize">@dimen/nr_mini_text</item>
         <item name="lineHeight">17sp</item>
         <item name="typeface">graphik_lcg_regular</item>
-        <item name="compatTextColor">@color/pkt_themed_grey_3</item>
+        <item name="compatTextColor">@color/nr_themed_grey_3</item>
     </style>
-    <style name="Pkt_Text_Teeny_Tiny_Light">
-        <item name="android:textSize">@dimen/pkt_teeny_tiny_text</item>
+    <style name="App_Text_Teeny_Tiny_Light">
+        <item name="android:textSize">@dimen/nr_teeny_tiny_text</item>
         <item name="lineHeight">14sp</item>
         <item name="typeface">graphik_lcg_regular</item>
-        <item name="compatTextColor">@color/pkt_themed_grey_3</item>
+        <item name="compatTextColor">@color/nr_themed_grey_3</item>
     </style>
 
-    <style name="Pkt_Text_AppBarTitle" parent="Pkt_Text_Title" >
+    <style name="App_Text_AppBarTitle" parent="App_Text_Title" >
         <item name="android:maxLines">1</item>
         <item name="android:singleLine">true</item>
         <item name="android:ellipsize">end</item>
         <item name="android:gravity">left|center_vertical</item>
-        <item name="android:paddingLeft">@dimen/pkt_side_grid</item>
-        <item name="android:paddingStart">@dimen/pkt_side_grid</item>
-        <item name="android:paddingRight">@dimen/pkt_side_grid</item>
-        <item name="android:paddingEnd">@dimen/pkt_side_grid</item>
+        <item name="android:paddingLeft">@dimen/nr_side_grid</item>
+        <item name="android:paddingStart">@dimen/nr_side_grid</item>
+        <item name="android:paddingRight">@dimen/nr_side_grid</item>
+        <item name="android:paddingEnd">@dimen/nr_side_grid</item>
     </style>
     
     <!-- Style for general input fields -->
-    <style name="Pkt_Text_EditText" parent="Pkt_Text_Medium">
-        <item name="compatEditTextColor">@color/pkt_themed_grey_1</item>
-        <item name="compatEditTextHintColor">@color/pkt_themed_grey_3</item>
+    <style name="App_Text_EditText" parent="App_Text_Medium">
+        <item name="compatEditTextColor">@color/nr_themed_grey_1</item>
+        <item name="compatEditTextHintColor">@color/nr_themed_grey_3</item>
     </style>
 
     <!-- Style for single line search input fields -->
     
-    <style name="Pkt_Text_Button_Borderless" parent="Pkt_Text_LightTitle">
-        <item name="android:background">@drawable/pkt_ripple_borderless</item>
-        <item name="compatTextColor">@color/pkt_nst_disableable_grey_3</item>
+    <style name="App_Text_Button_Borderless" parent="App_Text_LightTitle">
+        <item name="android:background">@drawable/nr_ripple_borderless</item>
+        <item name="compatTextColor">@color/nr_nst_disableable_grey_3</item>
     </style>
     
-    <style name="Pkt_TextFloatingLabelAppearance" parent="TextAppearance.Design.Hint">
-        <item name="android:textColor">@color/pkt_themed_grey_1</item>
-        <item name="android:textSize">@dimen/pkt_medium_text</item>
+    <style name="App_TextFloatingLabelAppearance" parent="TextAppearance.Design.Hint">
+        <item name="android:textColor">@color/nr_themed_grey_1</item>
+        <item name="android:textSize">@dimen/nr_medium_text</item>
     </style>
 
-    <style name="Pkt_EditTextAppearance">
+    <style name="App_EditTextAppearance">
         <item name="android:paddingTop">11dp</item>
         <item name="android:paddingBottom">11dp</item>
-        <item name="android:textSize">@dimen/pkt_medium_text</item>
+        <item name="android:textSize">@dimen/nr_medium_text</item>
         <item name="typeface">graphik_lcg_regular</item>
-        <item name="compatEditTextColor">@color/pkt_edittext_text</item>
-        <item name="compatEditTextHintColor">@color/pkt_themed_grey_4</item>
-        <item name="colorControlActivated">@color/pkt_themed_teal_2</item>
+        <item name="compatEditTextColor">@color/nr_edittext_text</item>
+        <item name="compatEditTextHintColor">@color/nr_themed_grey_4</item>
+        <item name="colorControlActivated">@color/nr_themed_teal_2</item>
     </style>
 
-    <style name="Pkt_SkeletonImage">
+    <style name="App_SkeletonImage">
         <item name="cornerRadius">4dp</item>
-        <item name="compatBackgroundColor">@color/pkt_themed_grey_6</item>
+        <item name="compatBackgroundColor">@color/nr_themed_grey_6</item>
     </style>
 
 
-    <style name="Pkt_BottomDrawerDialog">
+    <style name="App_BottomDrawerDialog">
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowBackground">@color/transparent</item>
     </style>
     
     <style name="SimpleDrawerRow">
-        <item name="android:background">@drawable/cl_pkt_touchable_area</item>
+        <item name="android:background">@drawable/cl_nr_touchable_area</item>
     </style>
     
-    <style name="Subheader" parent="Pkt_Text_P3">
-        <item name="android:paddingTop">@dimen/pkt_space_md</item>
-        <item name="android:paddingBottom">@dimen/pkt_space_sm</item>
-        <item name="compatTextColor">@color/pkt_themed_grey_5</item>
+    <style name="Subheader" parent="App_Text_P3">
+        <item name="android:paddingTop">@dimen/nr_space_md</item>
+        <item name="android:paddingBottom">@dimen/nr_space_sm</item>
+        <item name="compatTextColor">@color/nr_themed_grey_5</item>
     </style>
     
-    <style name="TitleRowStyle" parent="Pkt_Text_Title">
+    <style name="TitleRowStyle" parent="App_Text_Title">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">50dp</item>
-        <item name="android:background">@drawable/cl_pkt_touchable_area</item>
+        <item name="android:background">@drawable/cl_nr_touchable_area</item>
         <item name="android:gravity">center_vertical</item>
-        <item name="android:paddingStart">@dimen/pkt_side_grid</item>
-        <item name="android:paddingLeft">@dimen/pkt_side_grid</item>
-        <item name="android:paddingEnd">@dimen/pkt_side_grid</item>
-        <item name="android:paddingRight">@dimen/pkt_side_grid</item>
+        <item name="android:paddingStart">@dimen/nr_side_grid</item>
+        <item name="android:paddingLeft">@dimen/nr_side_grid</item>
+        <item name="android:paddingEnd">@dimen/nr_side_grid</item>
+        <item name="android:paddingRight">@dimen/nr_side_grid</item>
     </style>
     
     <style name="TransparentBottomSheetDialogTheme" parent="Theme.Design.BottomSheetDialog">

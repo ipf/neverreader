@@ -33,11 +33,11 @@
     <string name="ic_brightness_up">Helderheid scherm verhogen</string>
     <string name="ic_brightness_control">Helderheid scherm</string>
     <string name="ic_settings">Instellingen</string>
-    <string name="ic_premium">Pocket Premium</string>
-    <string name="ic_pocket_menu">Pocketmenu</string>
+    <string name="ic_premium">NeverReader Premium</string>
+    <string name="ic_menu">Menu</string>
 
     <string name="ac_save">Opslaan</string>
-    <string name="ac_save_to_pocket">Opslaan naar Pocket</string>
+    <string name="ac_save_long">Opslaan naar NeverReader</string>
     <string name="ac_previous">Vorige</string>
     <string name="ac_next">Volgende</string>
     

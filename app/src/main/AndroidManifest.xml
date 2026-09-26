@@ -35,7 +35,7 @@
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/nm_icon"
-        android:theme="@style/Theme.PocketDefault"
+        android:theme="@style/Theme.NeverReaderDefault"
         android:localeConfig="@xml/locale_config"
         android:networkSecurityConfig="@xml/network_security_config">
 
@@ -44,7 +44,13 @@
             android:name="com.neverreader.app.MainActivity"
             android:configChanges="keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
             android:launchMode="singleTask"
-            android:windowSoftInputMode="adjustPan|stateAlwaysHidden"/>
+            android:windowSoftInputMode="adjustPan|stateAlwaysHidden"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name="com.neverreader.app.auth.AuthenticationActivity"
             android:configChanges="keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
@@ -52,28 +58,6 @@
             android:launchMode="singleTask"
             android:exported="true"
             />
-        <activity
-            android:name="com.neverreader.app.tags.ItemsTaggingActivity"
-            android:configChanges="keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
-            android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
-        <activity
-            android:name="com.neverreader.app.tags.StandaloneItemsTaggingActivity"
-            android:configChanges="keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
-            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"
-            android:launchMode="singleTask"
-            android:theme="@style/Theme.Transparent.StandaloneDialogActivity2"
-            android:hardwareAccelerated="false" />
-        <activity
-            android:name="com.neverreader.app.reader.internal.article.image.ImageViewerActivity"
-            android:configChanges="keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode" />
-        <activity
-            android:name="com.neverreader.app.settings.account.AccountManagementActivity"
-            android:configChanges="keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
-            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"
-            />
-        <activity
-            android:name="com.neverreader.app.listen.ListenSettingsActivity"
-            android:configChanges="keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode" />
 
         <!-- Media && TTS -->
         <service android:name="com.neverreader.sdk.util.wakelock.WakefulAppService" />

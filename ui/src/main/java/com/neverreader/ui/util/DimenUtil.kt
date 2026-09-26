@@ -4,7 +4,6 @@ import android.content.Context
 import android.util.TypedValue
 
 object DimenUtil {
-    @JvmStatic
     fun dpToPx(context: Context, dp: Float): Float =
         TypedValue.applyDimension(
             TypedValue.COMPLEX_UNIT_DIP,
@@ -18,10 +17,8 @@ object DimenUtil {
     // use convertDpToPixel to get the density ratio.  Using context.resources.displayMetrics.density
     // explicitly could give an incorrect value on some devices because of custom scaling built into
     // some vendors' OS
-    @JvmStatic
     fun pxToDp(context: Context, px: Float): Float = px / dpToPx(context, 1F)
 
-    @JvmStatic
     fun pxToDpInt(context: Context, px: Float): Int = pxToDp(context, px).toInt()
 }
 

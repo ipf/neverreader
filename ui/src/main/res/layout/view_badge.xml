@@ -13,7 +13,7 @@
         android:layout_width="12dp"
         android:layout_height="12dp"
         android:layout_gravity="center_vertical"
-        tools:src="@drawable/ic_pkt_tag_line"
+        tools:src="@drawable/ic_nr_tag_line"
         />
     
     <com.neverreader.ui.view.themed.ThemedTextView

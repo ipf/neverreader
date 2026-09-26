@@ -7,7 +7,7 @@
 
     <com.neverreader.ui.view.checkable.CheckableTextView
         android:id="@+id/title"
-        style="@style/Pkt_Text_Title"
+        style="@style/App_Text_Title"
         android:clickable="false"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -19,7 +19,7 @@
 
     <com.neverreader.ui.view.themed.ThemedTextView
         android:id="@+id/domain"
-        style="@style/Pkt_Text_Small_Light"
+        style="@style/App_Text_Small_Light"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ellipsize="end"
@@ -30,12 +30,12 @@
         app:layout_constraintStart_toStartOf="@+id/title"
         app:layout_constraintTop_toBottomOf="@+id/title"
         app:layout_constrainedWidth="true"
-        app:visualMargin_top="@dimen/pkt_space_sm"
-        tools:text="pocket.com"/>
+        app:visualMargin_top="@dimen/nr_space_sm"
+        tools:text="neverreader.app"/>
 
     <com.neverreader.ui.view.themed.ThemedTextView
         android:id="@+id/time_estimate"
-        style="@style/Pkt_Text_Small_Light"
+        style="@style/App_Text_Small_Light"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toStartOf="@+id/indicator"
@@ -47,9 +47,9 @@
         android:id="@+id/indicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/pkt_space_sm"
+        android:layout_marginEnd="@dimen/nr_space_sm"
         android:layout_marginLeft="5dp"
-        android:layout_marginRight="@dimen/pkt_space_sm"
+        android:layout_marginRight="@dimen/nr_space_sm"
         android:layout_marginStart="5dp"
         android:baselineAlignBottom="true"
         app:layout_constraintBaseline_toBaselineOf="@+id/domain"

@@ -3,7 +3,7 @@
                 <plugin version="0">
                 <feature>htcReadLater</feature>
                 <class>com.ideashower.readitlater.pro</class>
-                <description>Pocket</description>
+                <description>NeverReader</description>
                 <plugin_meta>com.ideashower.readitlater.pro</plugin_meta> 
         </plugin>
 </pluginpackage>

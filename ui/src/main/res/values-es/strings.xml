@@ -33,11 +33,11 @@
     <string name="ic_brightness_up">Aumentar el brillo de pantalla</string>
     <string name="ic_brightness_control">Brillo de pantalla</string>
     <string name="ic_settings">Configuración</string>
-    <string name="ic_premium">Pocket Premium</string>
-    <string name="ic_pocket_menu">Menú de Pocket</string>
+    <string name="ic_premium">NeverReader Premium</string>
+    <string name="ic_menu">Menu</string>
 
     <string name="ac_save">Guardar</string>
-    <string name="ac_save_to_pocket">Guardar en Pocket</string>
+    <string name="ac_save_long">Guardar en NeverReader</string>
     <string name="ac_previous">Anterior</string>
     <string name="ac_next">Siguiente</string>
     

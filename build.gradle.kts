@@ -1,6 +1,5 @@
 plugins {
     versions()
-    alias(libs.plugins.kotlin.compose) apply false
 }
 
 allprojects {
@@ -10,7 +9,7 @@ allprojects {
             filter {
                 includeGroupByRegex("^androidx\\..*")
                 includeGroupByRegex("^com\\.android\\..*")
-                includeGroupByRegex("^com\\.google\\.(android\\.|firebase|testing\\.platform).*")
+                includeGroupByRegex("^com\\.google\\.(android\\.|testing\\.platform).*")
             }
         }
         mavenCentral()

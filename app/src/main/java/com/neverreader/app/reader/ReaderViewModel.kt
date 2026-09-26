@@ -2,135 +2,63 @@ package com.neverreader.app.reader
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.neverreader.analytics.Tracker
-import com.neverreader.analytics.appevents.ReaderEvents
-import com.neverreader.app.list.list.ListManager
-import com.neverreader.app.reader.queue.*
+import com.neverreader.backend.model.Bookmark
+import com.neverreader.repository.ArticleRepository
+import com.neverreader.repository.BookmarkRepository
 import com.neverreader.repository.ItemRepository
-import com.neverreader.util.Stack
-import com.neverreader.util.edit
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ReaderViewModel @Inject constructor(
+    private val articleRepository: ArticleRepository,
+    private val bookmarks: BookmarkRepository,
     private val itemRepository: ItemRepository,
-    private val reader: Reader,
-    private val listManager: ListManager,
-    private val tracker: Tracker,
-    private val destinationHelper: DestinationHelper,
-) : ViewModel(),
-    Reader.PreviousNextInteractions,
-    Reader.Initializer,
-    Reader.NavigationInteractions {
+) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(UiState())
-    val uiState: StateFlow<UiState> = _uiState
+    private val _state = MutableStateFlow<State>(State.Loading(""))
+    val state: StateFlow<State> get() = _state
 
-    private val _navigationEvents = MutableSharedFlow<Reader.NavigationEvent>(extraBufferCapacity = 1)
-    val navigationEvents: SharedFlow<Reader.NavigationEvent> = _navigationEvents
-
-    /**
-     * A stack of queue managers for the previous and next feature within the reader.
-     * A stack is required because the user can enter a collection queue from within another queue.
-     */
-    private val queueManagerStack = Stack<QueueManager>()
-
-    val hasNext: Boolean
-        get() = queueManagerStack.peek()?.hasNext() ?: false
-    val hasPrevious: Boolean
-        get() = queueManagerStack.peek()?.hasPrevious() ?: false
-
-    override fun onInitialized(
-        url: String,
-        initialQueueType: InitialQueueType,
-        queueStartingIndex: Int,
-    ) {
-        openUrl(
-            url = url,
-            queueManager = when (initialQueueType) {
-                InitialQueueType.SavesList -> {
-                    SavesListQueueManager(
-                        listManager,
-                        queueStartingIndex,
-                    )
-                }
-                InitialQueueType.Empty -> {
-                    EmptyQueueManager()
-                }
-            }
-        )
-    }
-
-    override fun onPreviousClicked() {
-        queueManagerStack.peek()?.getPreviousUrl()?.let { url ->
-            tracker.track(ReaderEvents.previousClicked(url))
-            openUrl(url)
-        }
-    }
-
-    override fun onNextClicked() {
-        queueManagerStack.peek()?.getNextUrl()?.let { url ->
-            tracker.track(ReaderEvents.nextClicked(url))
-            openUrl(url)
-        }
-    }
-
-    override fun onBackstackPopped() {
-        queueManagerStack.pop()
-        updatePreviousNextState()
-    }
-
-    private fun updatePreviousNextState() {
-        _uiState.edit { copy(
-            previousVisible = queueManagerStack.peek()?.hasPrevious() ?: false,
-            nextVisible = queueManagerStack.peek()?.hasNext() ?: false,
-            previousAndNextBarVisible = queueManagerStack.peek() != null
-                    && (queueManagerStack.peek()?.hasPrevious() ?: false
-                        || queueManagerStack.peek()?.hasNext() ?: false)
-                    && reader.isPreviousAndNextOn
-        ) }
-    }
-
-    /**
-     * @param url the url to open
-     * @param queueManager the queue manager to add to the queue manager stack.  If this is not null,
-     * the current page will be kept on the backstack
-     * @param forceOpenInWebView if we want to open the article in web view no matter what
-     */
-    fun openUrl(
-        url: String,
-        queueManager: QueueManager? = null,
-        forceOpenInWebView: Boolean = false,
-    ) {
+    fun load(url: String) {
+        _state.value = State.Loading(url)
         viewModelScope.launch {
-            val destination = destinationHelper.getDestination(
-                url = url,
-                forceOpenInWebView = forceOpenInWebView,
-            )
-
-            when (destination) {
-                Destination.ARTICLE ->
-                    _navigationEvents.tryEmit(Reader.NavigationEvent.GoToArticle(url, queueManager != null))
-                Destination.ORIGINAL_WEB ->
-                    _navigationEvents.tryEmit(Reader.NavigationEvent.GoToOriginalWeb(url, queueManager != null))
-                Destination.COLLECTION ->
-                    _navigationEvents.tryEmit(Reader.NavigationEvent.GoToCollection(url, queueManager != null))
+            val bookmark = runCatching { bookmarks.bookmarkByUrlOnce(url) }.getOrNull()
+            val html = runCatching {
+                if (bookmark != null) articleRepository.getArticleHtml(bookmark.id) else null
+            }.getOrNull()
+            _state.value = if (html != null) {
+                State.Content(url, bookmark, html)
+            } else {
+                State.Error(url)
             }
-            itemRepository.markAsViewed(url)
-            queueManager?.let { queueManagerStack.push(it) }
-            updatePreviousNextState()
         }
     }
 
-    data class UiState(
-        val previousAndNextBarVisible: Boolean = false,
-        val previousVisible: Boolean = true,
-        val nextVisible: Boolean = true,
-    )
+    fun toggleFavorite(bookmark: Bookmark) {
+        viewModelScope.launch { itemRepository.toggleFavorite(bookmark) }
+    }
+
+    fun archive(bookmark: Bookmark) {
+        viewModelScope.launch { itemRepository.archive(bookmark) }
+    }
+
+    fun delete(bookmark: Bookmark) {
+        viewModelScope.launch { itemRepository.delete(bookmark) }
+    }
+
+    sealed class State {
+        abstract val url: String
+
+        data class Loading(override val url: String) : State()
+        data class Content(
+            override val url: String,
+            val bookmark: Bookmark?,
+            val html: String,
+        ) : State()
+
+        data class Error(override val url: String) : State()
+    }
 }

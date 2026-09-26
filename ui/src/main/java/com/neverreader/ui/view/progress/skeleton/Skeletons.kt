@@ -11,12 +11,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
-import com.neverreader.ui.view.themed.PocketTheme
+import com.neverreader.ui.view.themed.AppTheme
 
 @Composable
 fun Skeleton(
     modifier: Modifier = Modifier,
-    color: Color = PocketTheme.colors.grey6,
+    color: Color = AppTheme.colors.grey6,
 ) {
     Box(modifier.background(color, CircleShape))
 }
@@ -25,7 +25,7 @@ fun Skeleton(
 fun TextSkeleton(
     modifier: Modifier = Modifier,
     style: TextStyle = LocalTextStyle.current,
-    color: Color = PocketTheme.colors.grey6,
+    color: Color = AppTheme.colors.grey6,
 ) = with(LocalDensity.current) {
     Skeleton(
         modifier

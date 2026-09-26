@@ -22,9 +22,9 @@
         app:layout_constraintTop_toBottomOf="@id/image">
         <com.neverreader.ui.view.themed.ThemedTextView
             android:id="@+id/title"
-            style="@style/Pkt_Text_Title"
+            style="@style/App_Text_Title"
             android:layout_width="0dp"
-            app:visualMargin_top="@dimen/pkt_space_md"
+            app:visualMargin_top="@dimen/nr_space_md"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             app:layout_constraintEnd_toEndOf="parent"
@@ -33,10 +33,10 @@
 
         <com.neverreader.ui.view.themed.ThemedTextView
             android:id="@+id/text"
-            style="@style/Pkt_Text_Small_Medium"
+            style="@style/App_Text_Small_Medium"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:visualMargin_top="@dimen/pkt_space_md"
+            app:visualMargin_top="@dimen/nr_space_md"
             android:gravity="center_horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

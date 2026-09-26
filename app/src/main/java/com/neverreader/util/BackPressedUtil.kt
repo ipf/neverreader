@@ -3,21 +3,21 @@ package com.neverreader.util
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.fragment.NavHostFragment
-import com.neverreader.sdk.util.AbsPocketFragment
+import com.neverreader.sdk.util.AbsNeverReaderFragment
 
 object BackPressedUtil {
 
     /**
      * Allows fragments to intercept back button presses in a similar fashion to how views
      * intercept touch events.  The back pressed event will propagate downwards into the fragment
-     * hierarchy, breadth first, until a fragment intercepts the event via [AbsPocketFragment.onInterceptBackPressed],
+     * hierarchy, breadth first, until a fragment intercepts the event via [AbsNeverReaderFragment.onInterceptBackPressed],
      * or until the bottom is reached.  The event then moves back upwards until consumed
-     * via [AbsPocketFragment.onBackPressed].
+     * via [AbsNeverReaderFragment.onBackPressed].
      * @return true if the even was consumed by a fragment, or false if it was not.
      */
     fun onBackPressed(fragmentManager: FragmentManager): Boolean {
 
-        val fragments: List<AbsPocketFragment> = createBreadthFirstFragmentList(fragmentManager)
+        val fragments: List<AbsNeverReaderFragment> = createBreadthFirstFragmentList(fragmentManager)
 
         // Traverse down the list until a fragment intercepts the back button press.
         // It's okay if nothing intercepts.
@@ -42,8 +42,8 @@ object BackPressedUtil {
     /**
      * Create breadth first list of fragments
      */
-    private fun createBreadthFirstFragmentList(fragmentManager: FragmentManager): List<AbsPocketFragment> {
-        val fragmentList: MutableList<AbsPocketFragment> = mutableListOf()
+    private fun createBreadthFirstFragmentList(fragmentManager: FragmentManager): List<AbsNeverReaderFragment> {
+        val fragmentList: MutableList<AbsNeverReaderFragment> = mutableListOf()
         addChildren(fragmentList, fragmentManager.fragments)
         return fragmentList
     }
@@ -54,7 +54,7 @@ object BackPressedUtil {
      * @param parentFragments all fragments from the previous level
      */
     private fun addChildren(
-        fragmentList: MutableList<AbsPocketFragment>,
+        fragmentList: MutableList<AbsNeverReaderFragment>,
         parentFragments: List<Fragment>
     ) {
         if (parentFragments.isEmpty()) {
@@ -65,7 +65,7 @@ object BackPressedUtil {
             for (childFragment in fragment.childFragmentManager.fragments
                 .filter { it.isVisible }
             ) {
-                if (childFragment is AbsPocketFragment) {
+                if (childFragment is AbsNeverReaderFragment) {
                     fragmentList.add(childFragment)
                 }
                 childFragments.add(childFragment)

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="NewApi">
     
-    <item android:id="@+id/checked" android:state_checked="true" android:drawable="@drawable/ic_pkt_settings_solid" />
-    <item android:id="@+id/selected" android:state_selected="true" android:drawable="@drawable/ic_pkt_settings_solid" />
-    <item android:id="@+id/default_state" android:drawable="@drawable/ic_pkt_settings_line" />
+    <item android:id="@+id/checked" android:state_checked="true" android:drawable="@drawable/ic_nr_settings_solid" />
+    <item android:id="@+id/selected" android:state_selected="true" android:drawable="@drawable/ic_nr_settings_solid" />
+    <item android:id="@+id/default_state" android:drawable="@drawable/ic_nr_settings_line" />
 </animated-selector>

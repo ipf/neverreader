@@ -1,5 +1,5 @@
 plugins {
-    pocketAndroidLib()
+    neverReaderAndroidLib()
 }
 android {
     namespace = "com.neverreader.utils.android"

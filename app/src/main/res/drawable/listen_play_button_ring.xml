@@ -9,7 +9,7 @@
 		<vector
 			android:width="64dp"
 			android:height="64dp"
-			android:tint="@color/pkt_themed_grey_3"
+			android:tint="@color/nr_themed_grey_3"
 			android:viewportWidth="64"
 			android:viewportHeight="64">
 			

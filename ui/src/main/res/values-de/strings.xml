@@ -33,11 +33,11 @@
     <string name="ic_brightness_up">Bildschirmhelligkeit erhöhen</string>
     <string name="ic_brightness_control">Bildschirmhelligkeit</string>
     <string name="ic_settings">Einstellungen</string>
-    <string name="ic_premium">Pocket Premium</string>
-    <string name="ic_pocket_menu">Pocket-Menü</string>
+    <string name="ic_premium">NeverReader Premium</string>
+    <string name="ic_menu">Menu</string>
 
     <string name="ac_save">Speichern</string>
-    <string name="ac_save_to_pocket">In Pocket speichern</string>
+    <string name="ac_save_long">In NeverReader speichern</string>
     <string name="ac_previous">Zurück</string>
     <string name="ac_next">Weiter</string>
     

@@ -33,11 +33,11 @@
     <string name="ic_brightness_up">画面の明るさを上げる</string>
     <string name="ic_brightness_control">画面の明るさ</string>
     <string name="ic_settings">設定</string>
-    <string name="ic_premium">Pocket Premium</string>
-    <string name="ic_pocket_menu">Pocket メニュー</string>
+    <string name="ic_premium">NeverReader Premium</string>
+    <string name="ic_menu">Menu</string>
 
     <string name="ac_save">保存</string>
-    <string name="ac_save_to_pocket">Pocket に保存</string>
+    <string name="ac_save_long">NeverReader に保存</string>
     <string name="ac_previous">前へ</string>
     <string name="ac_next">次へ</string>
     

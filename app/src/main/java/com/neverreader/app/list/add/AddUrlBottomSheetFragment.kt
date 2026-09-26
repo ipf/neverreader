@@ -36,15 +36,15 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.viewModels
 import androidx.fragment.compose.content
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.ideashower.readitlater.R
-import com.neverreader.sdk.util.AbsPocketBottomSheetDialogFragment
+import com.neverreader.app.R
+import com.neverreader.sdk.util.AbsNeverReaderBottomSheetDialogFragment
 import com.neverreader.ui.view.button.BoxButton
-import com.neverreader.ui.view.themed.PocketTheme
+import com.neverreader.ui.view.themed.AppTheme
 import com.neverreader.util.android.repeatOnResumed
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class AddUrlBottomSheetFragment : AbsPocketBottomSheetDialogFragment() {
+class AddUrlBottomSheetFragment : AbsNeverReaderBottomSheetDialogFragment() {
     companion object {
         fun newInstance() = AddUrlBottomSheetFragment()
     }
@@ -56,7 +56,7 @@ class AddUrlBottomSheetFragment : AbsPocketBottomSheetDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ) = content {
-        PocketTheme {
+        AppTheme {
             AddUrlBottomSheet()
         }
     }
@@ -98,19 +98,19 @@ fun AddUrlBottomSheet(
     ) {
         Column(
             Modifier.padding(
-                horizontal = PocketTheme.dimensions.sideGrid,
-                vertical = dimensionResource(com.neverreader.ui.R.dimen.pkt_space_md)
+                horizontal = AppTheme.dimensions.sideGrid,
+                vertical = dimensionResource(com.neverreader.ui.R.dimen.nr_space_md)
             ),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(Modifier.height(dimensionResource(com.neverreader.ui.R.dimen.pkt_space_md)))
+            Spacer(Modifier.height(dimensionResource(com.neverreader.ui.R.dimen.nr_space_md)))
             Text(
                 stringResource(R.string.add_url_title),
-                style = PocketTheme.typography.h5,
+                style = AppTheme.typography.h5,
             )
-            Spacer(Modifier.height(dimensionResource(com.neverreader.ui.R.dimen.pkt_space_lg)))
+            Spacer(Modifier.height(dimensionResource(com.neverreader.ui.R.dimen.nr_space_lg)))
             AddUrlTextField(textFieldValue, onTextFieldValueChange, isError)
-            Spacer(Modifier.height(dimensionResource(com.neverreader.ui.R.dimen.pkt_space_md)))
+            Spacer(Modifier.height(dimensionResource(com.neverreader.ui.R.dimen.nr_space_md)))
             BoxButton(
                 text = stringResource(R.string.mu_read_later),
                 onClick = onSaveButtonClick,
@@ -152,7 +152,7 @@ private fun AddUrlTextField(
 @Preview
 @Composable
 private fun AddUrlBottomSheetPreview() {
-    PocketTheme {
+    AppTheme {
         Box(
             Modifier
                 .background(Color.Gray)
@@ -173,7 +173,7 @@ private fun AddUrlBottomSheetPreview() {
 @Preview
 @Composable
 private fun AddUrlBottomSheetErrorPreview() {
-    PocketTheme {
+    AppTheme {
         Box(
             Modifier
                 .background(Color.Gray)

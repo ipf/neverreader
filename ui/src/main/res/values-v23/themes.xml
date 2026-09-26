@@ -12,7 +12,7 @@
     </style>
     <style name="Theme.PktBase.Dark" parent="Theme.AppCompat.NoActionBar">
         <!-- NOTE! These values should be duplicated in the Theme.PktBase.Light theme. -->
-        <item name="android:statusBarColor">@color/pkt_dm_base_bg</item>
+        <item name="android:statusBarColor">@color/nr_dm_base_bg</item>
         <item name="android:windowContentOverlay">@null</item>
 
         <!-- Dark mode still uses white status bar icons.  Specifying the default for clarity. -->

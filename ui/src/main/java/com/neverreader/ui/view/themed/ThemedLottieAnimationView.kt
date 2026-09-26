@@ -80,7 +80,7 @@ abstract class ThemedLottieAnimationView @JvmOverloads constructor(
 
     override fun drawableStateChanged() {
         super.drawableStateChanged()
-        when (AppThemeUtil.getState(this).firstOrNull()) {
+        when (AppThemeUtil.getState(this)?.firstOrNull()) {
             R.attr.state_light -> {
                 updateTheme(light())
             }

@@ -1,6 +1,6 @@
 plugins {
-    pocketAndroidLib()
-    kotlinKapt()
+    neverReaderAndroidLib()
+    kotlinKsp()
     kotlinSerialization()
 }
 
@@ -17,10 +17,11 @@ dependencies {
     api(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.room.paging)
-    kapt(libs.androidx.room.compiler)
+    ksp(libs.androidx.room.compiler)
     api(libs.androidx.paging)
     api(libs.androidx.work.runtime.ktx)
     implementation(libs.tink)
+    implementation(libs.dagger.hilt)
 
     testImplementation(libs.okhttp.mockwebserver)
     testImplementation(libs.kotlin.test)

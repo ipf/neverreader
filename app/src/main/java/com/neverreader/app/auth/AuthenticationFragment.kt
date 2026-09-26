@@ -1,216 +1,109 @@
 package com.neverreader.app.auth
 
-import android.content.ComponentName
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.browser.customtabs.CustomTabsIntent
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.ideashower.readitlater.R
-import com.ideashower.readitlater.databinding.FragmentAuthenticationBinding
-import com.neverreader.analytics.ImpressionComponent
-import com.neverreader.analytics.ImpressionRequirement
-import com.neverreader.analytics.ImpressionableInfoPageAdapter
-import com.neverreader.analytics.Tracker
-import com.neverreader.analytics.UiEntityType
-import com.neverreader.app.settings.account.DeletedAccountConfirmationSnackbar
-import com.neverreader.sdk.Pocket
-import com.neverreader.sdk.api.PocketServer
-import com.neverreader.sdk.api.generated.enums.CxtView
-import com.neverreader.sdk.api.generated.enums.UiEntityIdentifier
-import com.neverreader.sdk.build.AppVersion
-import com.neverreader.sdk.dev.TeamTools
-import com.neverreader.sdk.util.AbsPocketFragment
-import com.neverreader.ui.view.info.InfoPage
-import com.neverreader.util.android.FormFactor
+import com.neverreader.app.R
+import androidx.core.widget.doAfterTextChanged
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.lifecycle.withCreationCallback
-import kotlinx.coroutines.flow.onSubscription
+import androidx.fragment.app.viewModels
+import com.neverreader.app.databinding.FragmentAuthenticationBinding
+import com.neverreader.app.MainActivity
+import com.neverreader.backend.model.BackendType
+import com.neverreader.sdk.util.AbsNeverReaderFragment
+import com.neverreader.sdk.util.AbsNeverReaderActivity
 import kotlinx.coroutines.launch
-import okhttp3.HttpUrl
-import javax.inject.Inject
 
+/**
+ * The server setup flow: pick a backend (Readeck or Wallabag), enter the server URL,
+ * then authorize via the Readeck device flow or the Wallabag password grant.
+ */
 @AndroidEntryPoint
-class AuthenticationFragment : AbsPocketFragment() {
-
-    @Inject lateinit var tracker: Tracker
-    @Inject lateinit var pocketServer: PocketServer
-    @Inject lateinit var appVersion: AppVersion
-    @Inject lateinit var pocket: Pocket
-
-    private val viewModel: AuthenticationViewModel by viewModels(
-        extrasProducer = {
-            defaultViewModelCreationExtras.withCreationCallback<AuthenticationViewModel.Factory> {
-                it.create(requireArguments().getBoolean(ARG_SKIP_ONBOARDING))
-            }
-        }
-    )
+class AuthenticationFragment : AbsNeverReaderFragment() {
 
     private var _binding: FragmentAuthenticationBinding? = null
-    private val binding: FragmentAuthenticationBinding
-        get() = _binding!!
+    private val binding get() = _binding!!
 
-    override fun getActionViewName(): CxtView {
-        return CxtView.MOBILE
-    }
+    private val viewModel: AuthenticationViewModel by viewModels()
 
     override fun onCreateViewImpl(
-        inflater: LayoutInflater,
+        inflater: LayoutInflater?,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentAuthenticationBinding.inflate(inflater, container, false)
-        binding.lifecycleOwner = viewLifecycleOwner
-        binding.viewModel = viewModel
+        savedInstanceState: Bundle?,
+    ): View? {
+        _binding = FragmentAuthenticationBinding.inflate(inflater!!,  container, false)
         return binding.root
     }
 
-    override fun onViewCreatedImpl(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreatedImpl(view, savedInstanceState)
-        setupIntroPager()
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                setupEventListener()
-            }
-        }
-        setCredentialsReceiverIntentFilterEnabled(true)
-    }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        viewModel.onFragmentDestroyed()
-        _binding = null
-    }
+        binding.backendTypeReadeck.setOnClickListener { viewModel.onBackendTypeChange(BackendType.READECK) }
+        binding.backendTypeWallabag.setOnClickListener { viewModel.onBackendTypeChange(BackendType.WALLABAG) }
+        binding.serverUrl.doAfterTextChanged { viewModel.onServerUrlChange(it?.toString().orEmpty()) }
+        binding.authorize.setOnClickListener { viewModel.startReadeckDeviceFlow() }
 
-    private suspend fun setupEventListener() {
-        viewModel.events
-            .onSubscription { viewModel.onEventCollectionStarted(this) }
-            .collect { event ->
-                when (event) {
-                    Authentication.Event.Authenticate -> authenticate()
-                    Authentication.Event.GoToDefaultScreen -> {
-                        absPocketActivity.startDefaultActivity()
-                        finish()
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.state.collect { state ->
+                        // Only sync from state when it differs, otherwise every keystroke
+                        // (state update -> setText) resets the cursor to position 0.
+                        if (binding.serverUrl.text?.toString() != state.url) {
+                            binding.serverUrl.setText(state.url)
+                        }
+                        binding.error.text = state.error ?: ""
+                        when (state) {
+                            is AuthenticationViewModel.State.EnterServerUrl -> {
+                                binding.status.text = ""
+                                binding.deviceCode.text = ""
+                            }
+                            is AuthenticationViewModel.State.Authorizing -> {
+                                binding.status.text = state.message
+                            }
+                            is AuthenticationViewModel.State.DeviceFlow -> {
+                                binding.status.text = getString(R.string.auth_enter_code_in_browser)
+                                binding.deviceCode.text = state.session.userCode
+                                openVerificationUrl(state.session.verificationUriComplete ?: state.session.verificationUri)
+                            }
+                        }
                     }
-                    Authentication.Event.GoBack -> finish()
-                    Authentication.Event.ShowErrorToast -> {
-                        Toast.makeText(
-                            activity,
-                            R.string.dg_unexpected_m,
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
-                    Authentication.Event.DisableCredentialsCallbackIntentFilter -> {
-                        setCredentialsReceiverIntentFilterEnabled(false)
-                    }
-                    Authentication.Event.OpenTeamTools -> {
-                        TeamTools(absPocketActivity).show()
-                    }
-                    Authentication.Event.ShowDeletedAccountToast -> {
-                        activity?.let { activity ->
-                            DeletedAccountConfirmationSnackbar.make(activity).show()
-                            viewModel.onShowedDeletedAccountToast()
+                }
+                launch {
+                    viewModel.events.collect { event ->
+                        when (event) {
+                            is AuthenticationViewModel.Event.Success -> {
+                                // Login done: go to the main screen.
+                                (activity as? AbsNeverReaderActivity)?.let { activity ->
+                                    activity.startActivity(Intent(activity, MainActivity::class.java))
+                                    activity.finish()
+                                }
+                            }
                         }
                     }
                 }
             }
+        }
     }
 
-    private fun setupIntroPager() {
-        binding.intro.bind().clear()
-            .adapter(
-                ImpressionableInfoPageAdapter(
-                    requireContext(),
-                    FormFactor.getWindowWidthPx(activity),
-                    listOf(
-                        InfoPage(
-                            R.drawable.pkt_onboarding_pocket,
-                            getString(R.string.onboarding_learn_more_1_title),
-                            getString(R.string.onboarding_learn_more_1_text)
-                        ),
-                        InfoPage(
-                            R.drawable.pkt_onboarding_treasure,
-                            getString(R.string.onboarding_learn_more_2_title),
-                            getString(R.string.onboarding_learn_more_2_text)
-                        ),
-                        InfoPage(
-                            R.drawable.pkt_onboarding_quiet,
-                            getString(R.string.onboarding_learn_more_3_title),
-                            getString(R.string.onboarding_learn_more_3_text)
-                        )
-                    )
-                )
-            )
-            .header(R.drawable.pkt_onboarding_logo)
-        tracker.bindUiEntityType(binding.intro, UiEntityType.SCREEN)
-        tracker.bindUiEntityIdentifier(binding.intro, UiEntityIdentifier.LOGGED_OUT_HOME.value)
-        trackScreenImpression(binding.intro)
-    }
-
-    private fun authenticate() {
-        CustomTabsIntent.Builder()
-            .build()
-            .launchUrl(
-                requireContext(),
-                Uri.parse(
-                    HttpUrl.Builder()
-                        .scheme("https")
-                        .host(
-                            pocketServer.api()
-                                .replace("https://", "")
-                                .replace("api.", "")
-                        )
-                        .addPathSegment("login")
-                        .addQueryParameter("redirect_uri", POCKET_AUTH_SCHEME)
-                        .addQueryParameter("consumer_key", appVersion.consumerKey)
-                        .addQueryParameter("force_logout", "1")
-                        .addQueryParameter("utm_source", "android")
-                        .build()
-                        .toString()
-                )
-            )
-    }
-
-    private fun setCredentialsReceiverIntentFilterEnabled(enabled: Boolean) {
-        val context = context ?: return
-        context.packageManager
-            ?.setComponentEnabledSetting(
-                ComponentName(context, "com.neverreader.app.auth.AuthCallbackReceiverActivity"),
-                if (enabled) PackageManager.COMPONENT_ENABLED_STATE_ENABLED
-                else PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
-                PackageManager.DONT_KILL_APP,
-            )
+    private fun openVerificationUrl(url: String) {
+        runCatching {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+        }
     }
 
     fun onNewIntent(intent: Intent?) {
-        if (intent?.data.toString().startsWith(POCKET_AUTH_SCHEME)) {
-            viewModel.onCredentialsReceived(intent?.data.toString())
-        }
+        // nothing to handle here yet
     }
 
-    private fun trackScreenImpression(view: View) {
-        tracker.trackImpression(view,
-            ImpressionComponent.SCREEN,
-            ImpressionRequirement.INSTANT)
-    }
-
-    companion object {
-        const val ARG_SKIP_ONBOARDING = "skipOnboarding"
-        private const val POCKET_AUTH_SCHEME = "pocket://auth"
-        @JvmStatic fun newInstance(skipOnboarding: Boolean): AuthenticationFragment {
-            return AuthenticationFragment().apply {
-                arguments = Bundle().apply {
-                    putBoolean(ARG_SKIP_ONBOARDING, skipOnboarding)
-                }
-            }
-        }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.neverreader.ui.view.themed.PocketTheme
+import com.neverreader.ui.view.themed.AppTheme
 
 @Composable
 fun BoxButton(
@@ -24,8 +24,8 @@ fun BoxButton(
     ) {
         Text(
             text,
-            style = PocketTheme.typography.h7,
-            color = PocketTheme.colors.onTeal,
+            style = AppTheme.typography.h7,
+            color = AppTheme.colors.onTeal,
         )
     }
 }

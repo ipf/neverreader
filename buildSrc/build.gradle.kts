@@ -32,4 +32,5 @@ dependencies {
     implementation(libs.plugin.versions)
     implementation(libs.plugin.dagger)
     implementation(libs.plugin.androidx.navigation.safeargs)
+    implementation(libs.plugin.ksp)
 }

@@ -13,7 +13,7 @@
 		<attr name="prem_imageHeight" format="dimension" />
     </declare-styleable>
 	
-    <declare-styleable name="PocketTheme">
+    <declare-styleable name="NeverReaderTheme">
     	<attr name="maxHeight" format="dimension" />
     	<attr name="drawableColor" format="color" />
     	<attr name="heightRatio" format="float" />
@@ -141,7 +141,7 @@
     	<attr name="chiptext_flowStyle" format="reference" />
     </declare-styleable>
     
-    <declare-styleable name="PocketSeekBar">
+    <declare-styleable name="NeverReaderSeekBar">
     	<attr name="progressColor" format="enum">
     		<enum name="regular" value="0"/>
             <enum name="blue" value="1"/>

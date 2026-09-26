@@ -21,7 +21,7 @@
     android:viewportWidth="32"
     android:height="32dp"
     android:viewportHeight="32"
-    android:tint="@color/pkt_themed_teal_2">
+    android:tint="@color/nr_themed_teal_2">
     <group
         android:name="btn_radio_to_on_mtrl_0"
         android:translateX="16"

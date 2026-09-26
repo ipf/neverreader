@@ -33,11 +33,11 @@
     <string name="ic_brightness_up">提高屏幕亮度</string>
     <string name="ic_brightness_control">屏幕亮度</string>
     <string name="ic_settings">设置</string>
-    <string name="ic_premium">Pocket Premium</string>
-    <string name="ic_pocket_menu">Pocket 菜单</string>
+    <string name="ic_premium">NeverReader Premium</string>
+    <string name="ic_menu">Menu</string>
 
     <string name="ac_save">保存</string>
-    <string name="ac_save_to_pocket">保存到 Pocket</string>
+    <string name="ac_save_long">保存到 NeverReader</string>
     <string name="ac_previous">上一步</string>
     <string name="ac_next">下一步</string>
     

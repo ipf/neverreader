@@ -26,7 +26,7 @@ class AppLifecycleEventDispatcher @Inject constructor() {
             dispatch?.dispatch(it)
         }
     }
-    interface Dispatch {
+    fun interface Dispatch {
         /**
          * Invoke your event on the provided component. This is called on every registered observer separately.
          * @param appLifecycle The observer to invoke your method on.

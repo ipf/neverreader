@@ -35,7 +35,7 @@ make this simple change for signed out…
         android:layout_marginTop="55dp"
         android:gravity="center_horizontal"
         android:text="@string/empty_list_all_title"
-        android:textColor="@color/pkt_text_primary"
+        android:textColor="@color/nr_text_primary"
         android:textSize="28sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"

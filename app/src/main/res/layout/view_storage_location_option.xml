@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:padding="@dimen/pkt_space_sm">
+    android:padding="@dimen/nr_space_sm">
 
     <com.neverreader.ui.view.menu.RadioButton
         android:id="@+id/radio"
@@ -15,7 +15,7 @@
 
     <com.neverreader.ui.view.themed.ThemedTextView
         android:id="@+id/label"
-        style="@style/Pkt_Text_Title"
+        style="@style/App_Text_Title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/radio"
@@ -23,7 +23,7 @@
 
     <com.neverreader.ui.view.themed.ThemedTextView
         android:id="@+id/sub_label"
-        style="@style/Pkt_Text_Small_LightTitle"
+        style="@style/App_Text_Small_LightTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@id/label"
@@ -32,7 +32,7 @@
 
     <com.neverreader.ui.view.themed.ThemedTextView
         android:id="@+id/bullets"
-        style="@style/Pkt_Text_Small_Medium"
+        style="@style/App_Text_Small_Medium"
         app:lineHeight="20sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

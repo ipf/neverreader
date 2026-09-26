@@ -1,26 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Self-hosted backends (Readeck/Wallabag) may run without TLS on the local network. -->
 <network-security-config>
     <base-config cleartextTrafficPermitted="true">
         <trust-anchors>
             <certificates src="system" />
+            <certificates src="user" />
         </trust-anchors>
     </base-config>
-    <domain-config cleartextTrafficPermitted="false">
-        <!-- v3 -->
-        <domain includeSubdomains="false">api.getpocket.com</domain>
-        <!-- Parser -->
-        <domain includeSubdomains="false">text.getpocket.com</domain>
-        <!-- Snowplow collector -->
-        <domain includeSubdomains="false">d.getpocket.com</domain>
-        <!-- Image cache -->
-        <domain includeSubdomains="true">pocket-image-cache.com</domain>
-        <trust-anchors>
-            <certificates src="system" />
-        </trust-anchors>
-    </domain-config>
-    <debug-overrides>
-        <trust-anchors>
-            <certificates src="user"/> <!-- user certs are allowed for team and debug builds to allow additional debugging -->
-        </trust-anchors>
-    </debug-overrides>
 </network-security-config>

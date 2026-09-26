@@ -9,3 +9,5 @@ local.properties
 captures
 
 gradle.deps
+/app/merged_manifests/
+/utils/bin/

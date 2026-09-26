@@ -1,126 +1,76 @@
 package com.neverreader.app.reader
 
+import android.annotation.SuppressLint
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
+import android.webkit.WebView
 import androidx.fragment.app.viewModels
-import androidx.navigation.NavController
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
-import com.ideashower.readitlater.R
-import com.ideashower.readitlater.databinding.FragmentReaderBinding
-import com.neverreader.app.reader.queue.EmptyQueueManager
-import com.neverreader.app.reader.queue.QueueManager
-import com.neverreader.sdk.util.AbsPocketFragment
-import com.neverreader.sdk.util.view.UpDownAnimator
-import com.neverreader.util.collectWhenResumed
+import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
+import com.neverreader.app.databinding.FragmentReaderBinding
+import com.neverreader.sdk.util.AbsNeverReaderFragment
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
+/**
+ * The article reader: renders the backend's article HTML in a WebView.
+ */
 @AndroidEntryPoint
-class ReaderFragment : AbsPocketFragment() {
+class ReaderFragment : AbsNeverReaderFragment() {
+
+    private var _binding: FragmentReaderBinding? = null
+    private val binding get() = _binding!!
 
     private val viewModel: ReaderViewModel by viewModels()
 
-    private var _binding: FragmentReaderBinding? = null
-    private val binding: FragmentReaderBinding
-        get() = _binding!!
-
-    private val args: ReaderFragmentArgs by navArgs()
-
-    private val navHostFragment: NavHostFragment?
-        get() = childFragmentManager.findFragmentById(R.id.fragmentContainer) as? NavHostFragment
-
-    private val navController: NavController?
-        get() = navHostFragment?.navController
-
-    private val currentFragment: Fragment?
-        get() = navHostFragment?.childFragmentManager?.primaryNavigationFragment
-
-    var previousNextAnimator: UpDownAnimator? = null
-
-    val hasNext: Boolean
-        get() = viewModel.hasNext
-
-    val hasPrevious: Boolean
-        get() = viewModel.hasPrevious
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        showsDialog = false
-    }
-
     override fun onCreateViewImpl(
-        inflater: LayoutInflater,
+        inflater: LayoutInflater?,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View {
-        _binding = FragmentReaderBinding.inflate(inflater, container, false)
-        binding.lifecycleOwner = viewLifecycleOwner
-        binding.viewModel = viewModel
+    ): View? {
+        _binding = FragmentReaderBinding.inflate(inflater!!,  container, false)
         return binding.root
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupEventObserver()
-        if (savedInstanceState == null) {
-            // post to make sure navigation component is ready
-            Handler(Looper.getMainLooper()).post {
-                viewModel.onInitialized(args.url, args.queueType, args.queueStartingIndex)
+        binding.webView.settings.javaScriptEnabled = false
+        binding.webView.settings.textZoom = 100
+        binding.webView.webViewClient = object : android.webkit.WebViewClient() {}
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.state.collectLatest { state ->
+                when (state) {
+                    is ReaderViewModel.State.Content -> {
+                        binding.webView.loadDataWithBaseURL(
+                            state.url,
+                            state.html,
+                            "text/html",
+                            "utf-8",
+                            null,
+                        )
+                    }
+                    is ReaderViewModel.State.Error -> {
+                        binding.webView.loadData(
+                            "<html><body><h3>Could not load this article.</h3></body></html>",
+                            "text/html",
+                            "utf-8",
+                        )
+                    }
+                    is ReaderViewModel.State.Loading -> Unit
+                }
             }
-        } else {
-            // Android will restore the correct child fragment for us.
         }
-        previousNextAnimator = UpDownAnimator(binding.previousNextLayout, UpDownAnimator.Direction.DOWN)
+
+        arguments?.getString("url")?.let { viewModel.load(it) }
     }
 
     override fun onDestroyView() {
+        binding.webView.destroy()
         super.onDestroyView()
         _binding = null
-    }
-
-    override fun onBackPressed(): Boolean {
-        Log.d("Navigation", "ReaderFragment onBackPressed")
-        viewModel.onBackstackPopped()
-        // internal nav controller
-        if (navController?.popBackStack() != true) {
-            // external nav controller
-            findNavController().popBackStack()
-        }
-        return true
-    }
-
-    private fun setupEventObserver() {
-        viewModel.navigationEvents.collectWhenResumed(viewLifecycleOwner) { event ->
-            Log.d(
-                "Navigation",
-                "Navigation event collected.  Current Fragment:" +
-                        " ${currentFragment?.let { it::class.simpleName } ?: "null"}"
-            )
-            (currentFragment as? Reader.NavigationEventHandler)?.handleNavigationEvent(event)
-            previousNextAnimator?.show()
-        }
-    }
-
-    fun openUrl(
-        url: String,
-        queueManager: QueueManager? = EmptyQueueManager(),
-        forceOpenInWebView: Boolean = false,
-    ) {
-        viewModel.openUrl(url, queueManager, forceOpenInWebView)
-    }
-
-    fun onPreviousClicked() {
-        viewModel.onPreviousClicked()
-    }
-
-    fun onNextClicked() {
-        viewModel.onNextClicked()
     }
 }

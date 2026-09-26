@@ -5,7 +5,7 @@
     tools:parentTag="com.neverreader.ui.view.menu.SettingIncrementor">
     <com.neverreader.ui.view.button.IconButton
         android:id="@+id/setting_down"
-        style="@style/Pkt_IconButton_Minus_Mini"
+        style="@style/App_IconButton_Minus_Mini"
         android:layout_height="0dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -18,7 +18,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:scaleType="center"
-        app:drawableColor="@color/pkt_themed_grey_1"
+        app:drawableColor="@color/nr_themed_grey_1"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/setting_down"
@@ -28,7 +28,7 @@
 
     <com.neverreader.ui.view.button.IconButton
         android:id="@+id/setting_up"
-        style="@style/Pkt_IconButton_Plus_Mini"
+        style="@style/App_IconButton_Plus_Mini"
         android:layout_height="0dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -127,7 +127,7 @@
         <attr name="labelText" format="string"/>
     </declare-styleable>
     
-    <declare-styleable name="PocketChip">
+    <declare-styleable name="NeverReaderChip">
         <attr name="chipText" format="string"/>
         <attr name="chipIcon" format="reference"/>
         <attr name="chipIconUnselected" format="reference"/>

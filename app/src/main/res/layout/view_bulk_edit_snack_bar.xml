@@ -17,7 +17,7 @@
         android:layout_weight="1"
         android:layout_marginStart="35dp"
         android:textSize="14sp"
-        android:textColor="@color/pkt_snackbar_text"
+        android:textColor="@color/nr_snackbar_text"
         android:textStyle="bold"
         android:text="@string/ac_select_all"
         />
@@ -29,8 +29,8 @@
         android:layout_gravity="center_vertical"
         android:paddingStart="10dp"
         android:paddingEnd="10dp"
-        app:tint="@color/pkt_themed_grey_1"
-        android:src="@drawable/ic_pkt_re_add_line"
+        app:tint="@color/nr_themed_grey_1"
+        android:src="@drawable/ic_nr_re_add_line"
         />
     
     <com.neverreader.ui.view.themed.ThemedImageView
@@ -40,8 +40,8 @@
         android:layout_gravity="center_vertical"
         android:paddingStart="10dp"
         android:paddingEnd="10dp"
-        app:tint="@color/pkt_themed_grey_1"
-        android:src="@drawable/ic_pkt_archive_line"
+        app:tint="@color/nr_themed_grey_1"
+        android:src="@drawable/ic_nr_archive_line"
         />
     
     <com.neverreader.ui.view.themed.ThemedImageView
@@ -51,8 +51,8 @@
         android:layout_gravity="center_vertical"
         android:paddingStart="10dp"
         android:paddingEnd="10dp"
-        app:tint="@color/pkt_themed_grey_1"
-        android:src="@drawable/ic_pkt_delete_line"
+        app:tint="@color/nr_themed_grey_1"
+        android:src="@drawable/ic_nr_delete_line"
         />
     
     <com.neverreader.ui.view.themed.ThemedImageView
@@ -62,8 +62,8 @@
         android:layout_gravity="center_vertical"
         android:paddingStart="17dp"
         android:paddingEnd="17dp"
-        app:tint="@color/pkt_themed_grey_1"
-        android:src="@drawable/ic_pkt_android_overflow_solid"
+        app:tint="@color/nr_themed_grey_1"
+        android:src="@drawable/ic_nr_android_overflow_solid"
         />
 
 </merge>

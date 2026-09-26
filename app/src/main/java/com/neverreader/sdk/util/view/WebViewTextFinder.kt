@@ -7,7 +7,7 @@ import android.view.inputmethod.EditorInfo
 import android.webkit.WebView
 import android.widget.EditText
 import android.widget.TextView
-import com.ideashower.readitlater.R
+import com.neverreader.app.R
 import com.neverreader.ui.view.edittext.TextFinderLayout
 import com.neverreader.util.android.SimpleTextWatcher
 import com.neverreader.util.android.ViewUtil
@@ -18,12 +18,12 @@ class WebViewTextFinder(
 ) {
 
     private val context: Context = webView.context
-    private val root: View = textFinderLayout.root()
-    private val cancel: View = textFinderLayout.cancel()
-    private val input: EditText = textFinderLayout.input()
-    private val count: TextView = textFinderLayout.count()
-    private val back: View = textFinderLayout.back()
-    private val forward: View = textFinderLayout.forward()
+    private val root: View = textFinderLayout.root()!!
+    private val cancel: View = textFinderLayout.cancel()!!
+    private val input: EditText = textFinderLayout.input()!!
+    private val count: TextView = textFinderLayout.count()!!
+    private val back: View = textFinderLayout.back()!!
+    private val forward: View = textFinderLayout.forward()!!
 
     init {
         webView.setFindListener { active, matches, _ ->
@@ -34,7 +34,7 @@ class WebViewTextFinder(
         forward.setOnClickListener { forward() }
         cancel.setOnClickListener { close() }
         input.addTextChangedListener(object : SimpleTextWatcher() {
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 webView.findAllAsync(s.toString())
             }
         })

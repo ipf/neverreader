@@ -47,7 +47,7 @@ class ItemThumbnailView : ThemedImageView, EmptiableView, SupportsPlaceholder {
 
     private fun init() {
         scaleType = ScaleType.CENTER
-        placeholder = ColorStateListDrawable(context, R.color.pkt_themed_grey_6)
+        placeholder = ColorStateListDrawable(context, R.color.nr_themed_grey_6)
         setImageDrawable(null)
     }
 
@@ -102,10 +102,10 @@ class ItemThumbnailView : ThemedImageView, EmptiableView, SupportsPlaceholder {
         emptyHelper.setOnEmptyChangedListener(listener)
     }
 
-    override fun drawPlaceholder(canvas: Canvas, bounds: Rect, state: IntArray) {
-        placeholder?.bounds = bounds
-        placeholder?.state = state
-        placeholder?.draw(canvas)
+    override fun drawPlaceholder(canvas: Canvas?, bounds: Rect?, state: IntArray?) {
+        placeholder?.bounds = bounds ?: return
+        placeholder?.state = state ?: return
+        placeholder?.draw(canvas ?: return)
     }
 
     companion object {

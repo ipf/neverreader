@@ -1,79 +1,23 @@
 package com.neverreader.app.list.list
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.LifecycleOwner
-import androidx.recyclerview.widget.AsyncListDiffer
+import android.widget.ImageView
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.ideashower.readitlater.R
-import com.ideashower.readitlater.databinding.ViewListItemRowBinding
-import com.neverreader.analytics.ImpressionComponent
-import com.neverreader.analytics.ItemContent
-import com.neverreader.analytics.Tracker
-import com.neverreader.analytics.ViewableImpressionScrollListener
-import com.neverreader.analytics.api.UiEntityable
-import com.neverreader.app.list.BadgeState
-import com.neverreader.app.list.BadgeType
+import com.neverreader.app.R
+import com.neverreader.app.databinding.ViewListItemRowBinding
 import com.neverreader.app.list.ListItemUiState
 import com.neverreader.app.list.MyListViewModel
-import com.neverreader.app.list.bulkedit.BulkEditListItemAnimator
-import com.neverreader.app.list.list.swipe.SwipeImageAnimator
-import com.neverreader.app.settings.Theme
-import com.neverreader.sdk.api.generated.enums.UiEntityIdentifier
-import com.neverreader.sdk.offline.cache.AssetUser
-import com.neverreader.sdk2.view.LazyAssetBitmap
-import com.neverreader.ui.util.LazyBitmapDrawable
-import com.neverreader.ui.view.badge.BadgeLayout
-import com.neverreader.ui.view.badge.BadgeView
-import com.neverreader.ui.view.checkable.CheckableImageView
-import com.neverreader.ui.view.item.ItemThumbnailView
-import com.neverreader.ui.view.themed.SwipeListener
-import com.neverreader.util.android.repeatOnCreated
-import com.neverreader.util.android.text.toTealHighlightedSpannableString
+import com.neverreader.backend.model.Bookmark
 
 class MyListAdapter(
-    viewLifecycleOwner: LifecycleOwner,
-    private val tracker: Tracker,
-    private val context: Context,
     private val viewModel: MyListViewModel,
-    private val bulkEditListItemAnimator: BulkEditListItemAnimator,
-    private val theme: Theme,
-    private val recyclerView: RecyclerView,
-    private val saveImpressionScrollListener: ViewableImpressionScrollListener,
-) : RecyclerView.Adapter<MyListAdapter.ItemRowViewHolder>() {
+) : PagingDataAdapter<ListItemUiState, MyListAdapter.ItemRowViewHolder>(DIFF_CALLBACK) {
 
-    /**
-     * used to track when the sort / filter / search state has changed so our next list submission
-     * can skip async diffing
-     */
-    private var sortFilterStateHasChanged = false
-
-    private var listDiffer = newListDiffer()
-
-    init {
-        viewLifecycleOwner.repeatOnCreated {
-            viewModel.listManager.sortFilterState.collect {
-                sortFilterStateHasChanged = true
-            }
-        }
-        viewLifecycleOwner.repeatOnCreated {
-            viewModel.listState.collect {
-                if (sortFilterStateHasChanged) {
-                    // Do an instant swap. No async diff.
-                    notifyDataSetChanged()
-                    recyclerView.scrollToPosition(0)
-                    sortFilterStateHasChanged = false
-                    listDiffer = newListDiffer() // Reset list differ.
-                }
-                listDiffer.submitList(it)
-            }
-        }
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyListAdapter.ItemRowViewHolder =
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemRowViewHolder =
         ItemRowViewHolder(
             ViewListItemRowBinding.inflate(
                 LayoutInflater.from(parent.context),
@@ -82,181 +26,48 @@ class MyListAdapter(
             )
         )
 
-    override fun onBindViewHolder(holder: MyListAdapter.ItemRowViewHolder, position: Int) =
-        holder.bind(listDiffer.currentList[position], position)
-
-    override fun getItemCount(): Int = listDiffer.currentList.size
+    override fun onBindViewHolder(holder: ItemRowViewHolder, position: Int) {
+        val item = getItem(position) ?: return
+        holder.bind(item)
+    }
 
     inner class ItemRowViewHolder(
         private val binding: ViewListItemRowBinding
-    ): RecyclerView.ViewHolder(binding.root) {
+    ) : RecyclerView.ViewHolder(binding.root) {
 
-        init {
-            binding.root.uiEntityIdentifier = UiEntityIdentifier.ITEM.value
-        }
-
-        @Suppress("LongMethod")
-        fun bind(state: ListItemUiState, position: Int) = with(binding) {
-            root.setUiEntityType(UiEntityable.Type.CARD)
-            tracker.bindContent(root, ItemContent(state.item.id_url?.url!!))
-            tracker.bindUiEntityValue(root, if (state.titleBold) "not_viewed" else "viewed")
-            title.text = if (state.showSearchHighlights) {
-                state.title.toTealHighlightedSpannableString(theme, context)
-            } else {
-                state.title.value
-            }
-            title.setBold(state.titleBold)
-            domain.text = if (state.showSearchHighlights) {
-                state.domain.toTealHighlightedSpannableString(theme, context)
-            } else {
-                state.domain.value
-            }
-            timeEstimate.text = state.timeEstimate
-            excerpt.text = state.excerpt.toTealHighlightedSpannableString(theme, context)
-            excerpt.visibility = if (state.excerptVisible) {
-                View.VISIBLE
-            } else {
-                View.GONE
-            }
-            setFavoriteImage(favorite, state.favorite)
-            setThumbnail(
-                state = state,
-                thumbnailView = thumbnail,
+        fun bind(state: ListItemUiState) = with(binding) {
+            title.text = state.title
+            domain.text = state.bookmark.url
+            excerpt.text = state.excerpt
+            excerpt.visibility = if (state.excerpt.isBlank()) View.GONE else View.VISIBLE
+            timeEstimate.text = state.bookmark.readingTimeMinutes.let { "$it min" }
+            favorite.setImageResource(
+                if (state.favorite) com.neverreader.ui.R.drawable.ic_nr_favorite_solid
+                else com.neverreader.ui.R.drawable.ic_nr_favorite_line
             )
-            setupBadges(
-                state = state,
-                badgesLayout = badgesLayout,
-            )
-
-            if (state.isInEditMode) {
-                swipeLayout.setOnClickListener { viewModel.onItemSelectedForBulkEdit(state.item) }
-            } else {
-                swipeLayout.setOnClickListener {
-                    viewModel.onItemClicked(state.item, state.index)
-                }
-            }
-            favorite.setOnClickListener { viewModel.onFavoriteClicked(state.item) }
-            favorite.isClickable = !state.isInEditMode
-            share.setOnClickListener { viewModel.onShareItemClicked(state.item) }
-            share.isClickable = !state.isInEditMode
-            overflow.setOnClickListener { viewModel.onItemOverflowClicked(state.item) }
-            overflow.isClickable = !state.isInEditMode
-
-            if (state.isInEditMode) {
-                bulkEditListItemAnimator.showBulkEdit(binding)
-            } else {
-                bulkEditListItemAnimator.hideBulkEdit(binding)
-            }
-            bulkEditRadioButton.isChecked = state.isSelectedForBulkEdit
-            val swipeImage = if (state.isInArchive) {
-                com.neverreader.ui.R.drawable.ic_pkt_re_add_line
-            } else {
-                com.neverreader.ui.R.drawable.ic_pkt_archive_line
-            }
-            rightSwipeImage.setImageResource(swipeImage)
-            leftSwipeImage.setImageResource(swipeImage)
-            swipeLayout.reset()
-            swipeLayout.allowSwiping = !state.isInEditMode
-            swipeLayout.swipeListener = object : SwipeListener {
-                override fun onSwipedRight() {
-                    viewModel.onItemSwipedRight(state.item)
-                }
-
-                override fun onSwipedLeft() {
-                    viewModel.onItemSwipedLeft(state.item)
-                }
-
-                override fun onMovement(percentToSwipeThreshold: Float) {
-                    SwipeImageAnimator.updateImage(
-                        percentToSwipeThreshold,
-                        leftSwipeImage,
-                        rightSwipeImage
-                    )
-                }
-            }
-            saveImpressionScrollListener.track(
-                view = root,
-                identifier = state.item.id_url!!.url,
-            ) {
-                viewModel.onSaveViewed(
-                    itemUrl = state.item.id_url!!.url,
-                    position = position
-                )
-            }
+            setThumbnail(state, thumbnail)
+            root.setOnClickListener { viewModel.onItemClicked(state.bookmark) }
+            favorite.setOnClickListener { viewModel.toggleFavorite(state.bookmark) }
+            overflow.setOnClickListener { viewModel.archive(state.bookmark) }
         }
 
-        private fun setupBadges(
-            state: ListItemUiState,
-            badgesLayout: BadgeLayout,
-        ) {
-            badgesLayout.removeAllViews()
-            badgesLayout.setBadges(
-                state.badges
-                    .sortedWith(
-                        compareByDescending<BadgeState> {
-                            it.type == BadgeType.HIGHLIGHT
-                        }.thenByDescending {
-                            it.type == BadgeType.SEARCH_MATCHING_TAG
-                        }
-                    )
-                    .map { badgeState ->
-                        BadgeView(context).apply {
-                            setValues(
-                                when (badgeState.type) {
-                                    BadgeType.TAG -> BadgeView.Type.TAG
-                                    BadgeType.HIGHLIGHT -> BadgeView.Type.HIGHLIGHT
-                                    BadgeType.SEARCH_MATCHING_TAG -> BadgeView.Type.EMPHASIZED_TAG
-                                },
-                                badgeState.text
-                            )
-                            setOnClickListener {
-                                if (badgeState.type == BadgeType.TAG) {
-                                    viewModel.onTagBadgeClicked(badgeState.text)
-                                }
-                            }
-                            isClickable = !state.isInEditMode
-                        }
-                    }
-            )
-            badgesLayout.visibility = if (state.badges.isEmpty()) {
-                View.GONE
+        private fun setThumbnail(state: ListItemUiState, thumbnailView: ImageView) {
+            val url = state.imageUrl
+            if (url.isNullOrBlank()) {
+                thumbnailView.visibility = View.GONE
             } else {
-                View.VISIBLE
+                thumbnailView.visibility = View.VISIBLE
+                thumbnailView.setImageResource(com.neverreader.ui.R.drawable.ic_nr_archive_solid)
             }
-        }
-
-        private fun setThumbnail(
-            state: ListItemUiState,
-            thumbnailView: ItemThumbnailView,
-        ) {
-            thumbnailView.visibility = if (state.thumbnailVisible) {
-                thumbnailView.setImageDrawable(
-                    LazyBitmapDrawable(
-                        LazyAssetBitmap(
-                            state.imageUrl,
-                            AssetUser.forItem(state.item.time_added, state.item.idkey())
-                        )
-                    )
-                )
-                View.VISIBLE
-            } else {
-                View.GONE
-            }
-        }
-
-        private fun setFavoriteImage(image: CheckableImageView, favorited: Boolean) {
-            image.isChecked = favorited
         }
     }
 
-    private fun newListDiffer() = AsyncListDiffer(this, DIFF_CALLBACK)
-
-    companion object {
-        val DIFF_CALLBACK = object: DiffUtil.ItemCallback<ListItemUiState>() {
+    private companion object {
+        val DIFF_CALLBACK = object : DiffUtil.ItemCallback<ListItemUiState>() {
             override fun areItemsTheSame(
                 oldItem: ListItemUiState,
                 newItem: ListItemUiState,
-            ): Boolean = oldItem.item == newItem.item
+            ): Boolean = oldItem.bookmark.id == newItem.bookmark.id
 
             override fun areContentsTheSame(
                 oldItem: ListItemUiState,

@@ -25,7 +25,7 @@ class FeedFooterView : ThemedConstraintLayout {
 
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
 
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context!!, attrs, defStyleAttr) {
         LayoutInflater.from(context).inflate(R.layout.view_feed_footer, this, true)
         text = findViewById(R.id.text)
         animation = findViewById(R.id.animation)

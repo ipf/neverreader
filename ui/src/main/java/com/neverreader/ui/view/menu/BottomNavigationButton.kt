@@ -91,16 +91,16 @@ class BottomNavigationButton(
         }
         binding.icon.setDrawableColor(
             if (checked) {
-                ContextCompat.getColorStateList(context, R.color.pkt_themed_grey_1)
+                ContextCompat.getColorStateList(context, R.color.nr_themed_grey_1)
             } else {
-                ContextCompat.getColorStateList(context, R.color.pkt_themed_grey_3)
+                ContextCompat.getColorStateList(context, R.color.nr_themed_grey_3)
             }
         )
         binding.label.setTextColor(
             if (checked) {
-                ContextCompat.getColorStateList(context, R.color.pkt_themed_grey_1)
+                ContextCompat.getColorStateList(context, R.color.nr_themed_grey_1)
             } else {
-                ContextCompat.getColorStateList(context, R.color.pkt_themed_grey_3)
+                ContextCompat.getColorStateList(context, R.color.nr_themed_grey_3)
             }
         )
     }
@@ -111,13 +111,11 @@ class BottomNavigationButton(
 
     companion object {
 
-        @JvmStatic
         @BindingAdapter("isChecked")
         fun setChecked(view: BottomNavigationButton, isChecked: Boolean) {
             view.isChecked = isChecked
         }
 
-        @JvmStatic
         @BindingAdapter("badgeVisible")
         fun setBadgeVisibility(view: BottomNavigationButton, badgeVisible: Boolean) {
             view.badgeVisible = badgeVisible

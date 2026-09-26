@@ -14,7 +14,9 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.add
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -50,6 +52,10 @@ object ReadeckAuth {
             put("client_uri", "https://readeck.org")
             put("software_id", "com.neverreader")
             put("software_version", "1.0")
+            // Device flow only: with the default grant types (incl. authorization_code)
+            // Readeck requires redirect_uris, which we don't use.
+            put("grant_types", buildJsonArray { add("urn:ietf:params:oauth:grant-type:device_code") })
+            put("token_endpoint_auth_method", "none")
         }.toString().toRequestBody("application/json".toMediaType())
         val request = Request.Builder().url(base(serverUrl) + "/oauth/client").post(body).build()
         val text = execute(http, request)

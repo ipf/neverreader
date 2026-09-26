@@ -33,11 +33,11 @@
     <string name="ic_brightness_up">Aumentar luminosidade do ecrã</string>
     <string name="ic_brightness_control">Luminosidade do ecrã</string>
     <string name="ic_settings">Configurações</string>
-    <string name="ic_premium">Pocket Premium</string>
-    <string name="ic_pocket_menu">Menu Pocket</string>
+    <string name="ic_premium">NeverReader Premium</string>
+    <string name="ic_menu">Menu</string>
 
     <string name="ac_save">Guardar</string>
-    <string name="ac_save_to_pocket">Guardar no Pocket</string>
+    <string name="ac_save_long">Guardar no NeverReader</string>
     <string name="ac_previous">Anterior</string>
     <string name="ac_next">Seguinte</string>
     
