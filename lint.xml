@@ -8,7 +8,7 @@
         Allow leaving unused strings in translated files.
         Smartling will send a PR to align with the main file, which will remove them.
         -->
-        <ignore regexp="Pocket/src/main/res/values-.*/strings\.xml" />
-        <ignore regexp="pocket-ui/src/main/res/values-.*/strings\.xml" />
+        <ignore regexp="app/src/main/res/values-.*/strings\.xml" />
+        <ignore regexp="ui/src/main/res/values-.*/strings\.xml" />
     </issue>
 </lint>

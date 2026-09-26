@@ -6,11 +6,12 @@ plugins {
 android {
     namespace = "com.neverreader.ui"
     testOptions.unitTests.isIncludeAndroidResources = true
-    defaultConfig.vectorDrawables.useSupportLibrary = true
     buildFeatures {
         viewBinding = true
         compose = true
     }
+    // Serves the @BindingAdapter annotations on the legacy Themed* views.
+    // Removed in the Compose migration, together with the views themselves.
     dataBinding {
         enable = true
     }
