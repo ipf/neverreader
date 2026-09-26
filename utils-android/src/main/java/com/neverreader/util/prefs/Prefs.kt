@@ -1,6 +1,8 @@
 package com.neverreader.util.prefs
 
-import io.reactivex.Observable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.onStart
 
 class Prefs(private val user: Store, private val app: Store) : Preferences {
     override fun clearUser() {
@@ -63,11 +65,11 @@ class Prefs(private val user: Store, private val app: Store) : Preferences {
 
 
     override fun forUser(key: String?, defaultValue: String?): StringPreference {
-        return StringPref(key, defaultValue, user, false, null)
+        return StringPref(key, defaultValue, user, false)
     }
 
     override fun forApp(key: String?, defaultValue: String?): StringPreference {
-        return StringPref(key, defaultValue, app, false, null)
+        return StringPref(key, defaultValue, app, false)
     }
 
 
@@ -88,15 +90,11 @@ class Prefs(private val user: Store, private val app: Store) : Preferences {
     }
 
     override fun forUser(key: String?, defaultValue: MutableSet<String?>?): StringSetPreference {
-        return StringSetPref(
-            key, defaultValue, user,
-            isSet = false,
-            withChanges = null
-        )
+        return StringSetPref(key, defaultValue, user, false)
     }
 
     override fun forApp(key: String?, defaultValue: MutableSet<String?>?): StringSetPreference {
-        return StringSetPref(key, defaultValue, app, false, null)
+        return StringSetPref(key, defaultValue, app, false)
     }
 
     override fun group(name: String?): Preferences {
@@ -104,7 +102,7 @@ class Prefs(private val user: Store, private val app: Store) : Preferences {
         return PrefixPreferences(this, name)
     }
 
-    override fun changes(): Observable<String?>? {
-        return Observable.merge<String?>(user.changes(), app.changes())
+    override fun changes(): Flow<String?> {
+        return merge(user.changes(), app.changes())
     }
 }

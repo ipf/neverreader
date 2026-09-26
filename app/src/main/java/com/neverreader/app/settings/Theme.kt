@@ -10,17 +10,14 @@ import com.neverreader.sdk.util.AbsNeverReaderFragment
 import com.neverreader.ui.R
 import com.neverreader.util.prefs.IntPreference
 import com.neverreader.util.prefs.Preferences
-import io.reactivex.Observable
-import io.reactivex.functions.Function
-import io.reactivex.subjects.PublishSubject
-import io.reactivex.subjects.Subject
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class Theme @Inject constructor(prefs: Preferences) {
-    private val changes: Subject<Any?> = PublishSubject.create<Any?>()
-    private val change = Any()
     private val pref: IntPreference
 
     init {
@@ -91,9 +88,16 @@ class Theme @Inject constructor(prefs: Preferences) {
         return applyFlagsToTheme(theme, allowedFlag)
     }
 
-    fun observeFor(context: Context?): Observable<Int?>? {
-        return changes.map<Int?>(Function { `__`: Any? -> get(context) }).distinctUntilChanged()
-    }
+    /**
+     * The effective theme, emitting the current value and then on every change.
+     *
+     * Backed by the preference's own change stream rather than a separate
+     * subject, so a write from anywhere in the app is picked up.
+     */
+    fun observeFor(context: Context?): Flow<Int> =
+        pref.withChanges
+            .map { get(context) }
+            .distinctUntilChanged()
 
     /**
      * Is the current theme set to a dark variant?
@@ -110,7 +114,6 @@ class Theme @Inject constructor(prefs: Preferences) {
      */
     fun set(theme: Int) {
         pref.set(theme)
-        changes.onNext(change)
     }
 
 

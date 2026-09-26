@@ -1,6 +1,7 @@
 package com.neverreader.util.prefs
 
-import io.reactivex.Observable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.onStart
 
 /** Implementation of [IntPreference]  */
 class IntPref(private val key: String?, private val defaultValue: Int, private val store: Store) :
@@ -16,10 +17,10 @@ class IntPref(private val key: String?, private val defaultValue: Int, private v
     override val isSet: Boolean
         get() = store.contains(key)
 
-    override fun changes(): Observable<Int?>? {
+    override fun changes(): Flow<Int?> {
         return store.intChanges(key)
     }
 
-    override val withChanges: Observable<Int?>?
-        get() = changes()!!.startWith(get())
+    override val withChanges: Flow<Int?>
+        get() = changes().onStart { emit(get()) }
 }

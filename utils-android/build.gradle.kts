@@ -3,6 +3,8 @@ plugins {
 }
 android {
     namespace = "com.neverreader.utils.android"
+    // Needed to exercise the real SharedPreferences in AndroidPrefStore.
+    testOptions.unitTests.isIncludeAndroidResources = true
 }
 dependencies {
     api(projects.utils)
@@ -10,4 +12,9 @@ dependencies {
     api(libs.kotlinx.coroutines.android)
     api(Deps.Google.Material.material)
     api(libs.androidx.core)
+
+    testImplementation(libs.kotlin.junit)
+    testImplementation(libs.androidx.test.core)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.robolectric)
 }

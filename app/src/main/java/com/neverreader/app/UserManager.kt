@@ -53,7 +53,7 @@ class UserManager @Inject constructor(
 
     private fun threads_logout(activity: AbsNeverReaderActivity?) {
         // The application context, not the Activity's: this Activity may already be
-        // finishing, or be null when logout is triggered from a fragment whose host
+        //  finishing or be null when logout is triggered from a fragment whose host
         // is not an AbsNeverReaderActivity.
         scope.launch {
             accountManager.logout()

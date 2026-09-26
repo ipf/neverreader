@@ -1,6 +1,8 @@
 package com.neverreader.util.prefs
 
-import io.reactivex.Observable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.onStart
 
 interface LongPreference : Preference<Long?> {
     /** The current value. If [.set] has never been called, it returns the default value. Use [.isSet] if you need to known.  */
@@ -12,12 +14,10 @@ interface LongPreference : Preference<Long?> {
             override val isSet: Boolean
                 get() = false
 
-            override fun changes(): Observable<Long?>? {
-                return Observable.never<Long?>()
-            }
+            override fun changes(): Flow<Long?> = emptyFlow()
 
-            override val withChanges: Observable<Long?>?
-                get() = changes()!!.startWith(get())
+            override val withChanges: Flow<Long?>
+                get() = changes().onStart { emit(get()) }
 
             override fun get(): Long {
                 return 0

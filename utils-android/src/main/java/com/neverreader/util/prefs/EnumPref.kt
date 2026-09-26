@@ -1,6 +1,8 @@
 package com.neverreader.util.prefs
 
-import io.reactivex.Observable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 
 /** Implementation of [EnumPreference] */
 class EnumPref<E>(
@@ -26,10 +28,10 @@ class EnumPref<E>(
         store.set(key, value?.toString())
     }
 
-    override fun changes(): Observable<E?>? {
-        return store.stringChanges(key)?.map { s -> from(s) }
+    override fun changes(): Flow<E?> {
+        return store.stringChanges(key).map { s -> from(s) }
     }
 
-    override val withChanges: Observable<E?>?
-        get() = changes()?.startWith(get())
+    override val withChanges: Flow<E?>
+        get() = changes().onStart { emit(get()) }
 }

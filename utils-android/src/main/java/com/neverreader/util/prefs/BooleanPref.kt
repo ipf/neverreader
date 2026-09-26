@@ -1,6 +1,7 @@
 package com.neverreader.util.prefs
 
-import io.reactivex.Observable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.onStart
 
 
 /** Implementation of [BooleanPreference]  */
@@ -20,10 +21,10 @@ class BooleanPref(
     override val isSet: Boolean
         get() = store.contains(key)
 
-    override fun changes(): Observable<Boolean?>? {
+    override fun changes(): Flow<Boolean?> {
         return store.booleanChanges(key)
     }
 
-    override val withChanges: Observable<Boolean?>?
-        get() = changes()!!.startWith(get())
+    override val withChanges: Flow<Boolean?>
+        get() = changes().onStart { emit(get()) }
 }

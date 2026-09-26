@@ -5,7 +5,7 @@ import com.neverreader.util.android.FormFactor.isTablet
 import com.neverreader.util.prefs.BooleanPreference
 import com.neverreader.util.prefs.Preferences
 import dagger.hilt.android.qualifiers.ApplicationContext
-import io.reactivex.Observable
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -30,7 +30,7 @@ class AppPrefs @Inject constructor(
 ) {
     val ROTATION_LOCK: BooleanPreference = prefs.forUser("enableRotationLock", !isTablet(context))
 
-    fun changes(): Observable<String?>? {
+    fun changes(): Flow<String?>? {
         return prefs.changes()
     }
 }

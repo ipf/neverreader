@@ -1,6 +1,7 @@
 package com.neverreader.util.prefs
 
-import io.reactivex.Observable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.onStart
 
 /** Implementation of [FloatPreference]  */
 class FloatPref(
@@ -19,10 +20,10 @@ class FloatPref(
     override val isSet: Boolean
         get() = store.contains(key)
 
-    override fun changes(): Observable<Float?>? {
+    override fun changes(): Flow<Float?> {
         return store.floatChanges(key)
     }
 
-    override val withChanges: Observable<Float?>?
-        get() = changes()!!.startWith(get())
+    override val withChanges: Flow<Float?>
+        get() = changes().onStart { emit(get()) }
 }

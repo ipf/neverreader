@@ -32,7 +32,9 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.ViewCompat
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
@@ -57,15 +59,13 @@ import com.neverreader.util.android.WindowUtil.StatusBarColorProperty
 import com.neverreader.util.android.fragment.FragmentUtil
 import com.neverreader.util.android.fragment.FragmentUtil.FragmentLaunchMode
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import com.neverreader.util.android.view.ManuallyUpdateTheme
 import com.neverreader.util.java.Logs
 import com.neverreader.util.java.Milliseconds
-import io.reactivex.Observable
-import io.reactivex.disposables.Disposables
-import io.reactivex.functions.Consumer
 import java.lang.ref.WeakReference
 
 /**
@@ -126,7 +126,7 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
 
     private var mThemeFlag = 0
 
-    private var mThemeSubscription = Disposables.empty()
+    private var themeJob: Job? = null
 
     /**
      * Whether or not the ask overlay is visible or in the process of becoming visible (animating).
@@ -601,9 +601,13 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        mThemeSubscription = app()!!.theme().observeFor(this)
-            ?.subscribe(Consumer { newTheme: Int? -> this.onThemeChanged(newTheme!!) })
-            ?: Disposables.empty()
+        themeJob = lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                app()!!.theme().observeFor(this@AbsNeverReaderActivity).collect { newTheme ->
+                    onThemeChanged(newTheme)
+                }
+            }
+        }
         for (listener in mOnLifeCycleChangedListeners) {
             listener.onActivityStart(this)
         }
@@ -636,7 +640,8 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
             App.setUserPresent(false, this)
         }
 
-        mThemeSubscription.dispose()
+        themeJob?.cancel()
+        themeJob = null
 
         for (listener in mOnLifeCycleChangedListeners) {
             listener.onActivityStop(this)
@@ -1061,8 +1066,6 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
         this.root.expandListen()
     }
 
-    val listenViewStates: Observable<Any?>?
-        get() = Observable.empty<Any?>()
 
     companion object {
         const val DIALOG_SUBCLASS: Int = 20 // Should be higher than any generic dialog ids

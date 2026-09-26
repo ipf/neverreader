@@ -1,7 +1,8 @@
 package com.neverreader.util.prefs
 
-import io.reactivex.Observable
-import io.reactivex.functions.Predicate
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.onStart
 
 /**
  * A [Preferences] that wraps another and when getting preference instances, it adds a prefix to the key and invokes it on the parent.
@@ -117,7 +118,7 @@ class PrefixPreferences(private val wrapped: Preferences, private val prefix: St
         return PrefixPreferences(this, name)
     }
 
-    override fun changes(): Observable<String?>? {
-        return wrapped.changes()?.filter(Predicate { key: String? -> key?.startsWith(prefix!!) == true })
+    override fun changes(): Flow<String?> {
+        return wrapped.changes().filter { key -> key?.startsWith(prefix!!) == true }
     }
 }

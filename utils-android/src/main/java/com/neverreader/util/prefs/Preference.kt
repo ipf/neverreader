@@ -1,6 +1,7 @@
 package com.neverreader.util.prefs
 
-import io.reactivex.Observable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.onStart
 
 
 /**
@@ -13,9 +14,9 @@ interface Preference<T> {
      */
     val isSet: Boolean
 
-    /** An observable anytime this preference's value changes in the future  */
-    fun changes(): Observable<T?>?
+    /** Emits anytime this preference's value changes in the future. */
+    fun changes(): Flow<T?>
 
-    /** An observable that emits the current value on subscribe plus anytime this preference's value changes in the future.  */
-    val withChanges: Observable<T?>?
+    /** Emits the current value on collection, then on every change. */
+    val withChanges: Flow<T?>
 }

@@ -114,14 +114,7 @@ object Deps {
             const val mockitoKotlin = "com.nhaarman.mockitokotlin2:mockito-kotlin:$VERSION"
         }
     }
-    object RxJava {
-        private const val VERSION = "2.2.21"
-        const val rxJava = "io.reactivex.rxjava2:rxjava:$VERSION"
-        object RxAndroid {
-            private const val VERSION = "2.1.1"
-            const val rxAndroid = "io.reactivex.rxjava2:rxandroid:$VERSION"
-        }
-    }
+
     object Jackson {
         private const val VERSION = "2.8.6"
         const val core = "com.fasterxml.jackson.core:jackson-core:$VERSION"

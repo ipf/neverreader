@@ -1,6 +1,7 @@
 package com.neverreader.util.prefs
 
-import io.reactivex.Observable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.onStart
 
 /** Implementation of [LongPreference]  */
 class LongPref(private val key: String?, private val defaultValue: Long, private val store: Store) :
@@ -16,10 +17,10 @@ class LongPref(private val key: String?, private val defaultValue: Long, private
     override val isSet: Boolean
         get() = store.contains(key)
 
-    override fun changes(): Observable<Long?>? {
+    override fun changes(): Flow<Long?> {
         return store.longChanges(key)
     }
 
-    override val withChanges: Observable<Long?>?
-        get() = changes()!!.startWith(get())
+    override val withChanges: Flow<Long?>
+        get() = changes().onStart { emit(get()) }
 }

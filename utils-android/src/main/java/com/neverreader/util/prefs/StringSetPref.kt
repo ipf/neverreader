@@ -1,15 +1,15 @@
 package com.neverreader.util.prefs
 
 import java.util.Collections
-import io.reactivex.Observable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.onStart
 
 /** Implementation of [StringSetPreference]  */
 class StringSetPref(
     private val key: String?,
     defaultValue: MutableSet<String?>?,
     private val store: Store,
-    override val isSet: Boolean,
-    override val withChanges: Observable<MutableSet<String?>?>?
+    override val isSet: Boolean
 ) : StringSetPreference {
     private val defaultValue: MutableSet<String?>? = if (defaultValue != null) Collections.unmodifiableSet<String?>(defaultValue) else null
 
@@ -21,7 +21,10 @@ class StringSetPref(
         store.set(key, value)
     }
 
-    override fun changes(): Observable<MutableSet<String?>?>? {
+    override fun changes(): Flow<MutableSet<String?>?> {
         return store.stringSetChanges(key)
     }
+
+    override val withChanges: Flow<MutableSet<String?>?>
+        get() = changes().onStart { emit(get()) }
 }

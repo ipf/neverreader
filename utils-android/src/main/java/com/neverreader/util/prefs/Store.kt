@@ -1,6 +1,6 @@
 package com.neverreader.util.prefs
 
-import io.reactivex.Observable
+import kotlinx.coroutines.flow.Flow
 
 
 /**
@@ -9,7 +9,7 @@ import io.reactivex.Observable
  * used in non-android contexts like unit tests.
  */
 interface Store {
-    fun changes(): Observable<String?>?
+    fun changes(): Flow<String?>
 
     fun contains(key: String?): Boolean
     fun remove(key: String?)
@@ -18,7 +18,7 @@ interface Store {
 
     fun getString(key: String?): String?
     fun set(key: String?, value: String?)
-    fun stringChanges(key: String?): Observable<String?>?
+    fun stringChanges(key: String?): Flow<String?>
 
     /** @return null if not present or an immutable set.
      */
@@ -28,21 +28,21 @@ interface Store {
     fun set(key: String?, value: MutableSet<String?>?)
 
     /** Note that sets emitted are immutable.  */
-    fun stringSetChanges(key: String?): Observable<MutableSet<String?>?>?
+    fun stringSetChanges(key: String?): Flow<MutableSet<String?>?>
 
     fun getInt(key: String?): Int
     fun set(key: String?, value: Int)
-    fun intChanges(key: String?): Observable<Int?>?
+    fun intChanges(key: String?): Flow<Int?>
 
     fun getFloat(key: String?): Float
     fun set(key: String?, value: Float)
-    fun floatChanges(key: String?): Observable<Float?>?
+    fun floatChanges(key: String?): Flow<Float?>
 
     fun getLong(key: String?): Long
     fun set(key: String?, value: Long)
-    fun longChanges(key: String?): Observable<Long?>?
+    fun longChanges(key: String?): Flow<Long?>
 
     fun getBoolean(key: String?): Boolean
     fun set(key: String?, value: Boolean)
-    fun booleanChanges(key: String?): Observable<Boolean?>?
+    fun booleanChanges(key: String?): Flow<Boolean?>
 }

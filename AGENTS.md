@@ -75,11 +75,10 @@ app (UI) → repositories → Room DB → WorkManager sync
 
 - Kotlin, official Kotlin style; checked-in Android Studio code style in
   `.idea/codeStyles/Project.xml` as a base.
-- New code uses coroutines/Flow. Do not add new Rx code. RxJava survives only in the
-  preference change-notification API (`utils-android/…/prefs/Store.kt` returns
-  `Observable`), which is typed in public interfaces across `:utils` →
-  `:utils-android` → `:ui` → `:app`. Replacing it with Flow is its own change;
-  it is not legacy TTS code, because there is no TTS in this repo.
+- Coroutines and Flow only. RxJava has been removed: the preference
+  change-notification API (`utils-android/…/prefs/Store.kt`) returns `Flow`,
+  backed by `SharedPreferences.OnSharedPreferenceChangeListener` in a
+  `callbackFlow`. Do not reintroduce Rx.
 - Version catalog in [`gradle/libs.versions.toml`](gradle/libs.versions.toml);
   Renovate keeps it updated.
 - No DI framework additions; Hilt/kapt exists — use it or plain constructors.

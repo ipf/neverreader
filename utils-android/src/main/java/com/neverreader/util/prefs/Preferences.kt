@@ -1,6 +1,7 @@
 package com.neverreader.util.prefs
 
-import io.reactivex.Observable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.onStart
 
 /**
  * An app's persisted [Preference]s.
@@ -69,7 +70,7 @@ interface Preferences {
     fun group(name: String?): Preferences?
 
     /**
-     * @return An observable of when preferences change, the emitted value is the key of the preference.
+     * @return Emits the key of each preference that changes.
      */
-    fun changes(): Observable<String?>?
+    fun changes(): Flow<String?>
 }

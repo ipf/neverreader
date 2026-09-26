@@ -13,8 +13,12 @@ import com.neverreader.sdk.util.AbsNeverReaderActivity
 import com.neverreader.sdk.util.AbsNeverReaderActivity.OnConfigurationChangedListener
 import com.neverreader.sdk.util.AbsNeverReaderActivity.SimpleOnLifeCycleChangedListener
 import com.neverreader.util.prefs.BooleanPreference
-import io.reactivex.disposables.Disposable
-import io.reactivex.functions.Consumer
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 
 /**
  * Rotation Lock is a feature which lets the user easily lock or unlock NeverReader's display orientation in order to prevent accidental screen rotation while in the app.
@@ -53,7 +57,7 @@ class RotationLockComponents(
     private val lockView: RotationLockView
     private val osRotationLock: OSRotationLock
     private val fineOrientationManager: FineOrientationManager
-    private var listener: Disposable?
+    private var prefJob: Job?
     private var currentOrientation = 0
 
     init {
@@ -70,12 +74,16 @@ class RotationLockComponents(
             }
         })
 
-        listener = userPref.changes()!!.subscribe(Consumer { enabled: Boolean? ->
-            // If it is locked and the setting has turned off, we want to unlock the rotation.
-            if (!enabled!! && rotationLock.isLocked) {
-                handler.post(Runnable { rotationLock.setLocked(false, activity) })
+        // Scoped to this component and cancelled in onActivityDestroy, matching the
+        // lifetime the Rx Disposable had.
+        prefJob = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate).launch {
+            userPref.changes().collect { enabled ->
+                // If it is locked and the setting has turned off, we want to unlock the rotation.
+                if (enabled == false && rotationLock.isLocked) {
+                    handler.post(Runnable { rotationLock.setLocked(false, activity) })
+                }
             }
-        })
+        }
 
         lockView.setOnToggleClick(OnClick { checked: Boolean ->
             // lock the current orientation
@@ -152,10 +160,8 @@ class RotationLockComponents(
         handler.post(Runnable {
             activity?.removeOnConfigurationChangedListener(this)
             activity?.removeOnLifeCycleChangeListener(this)
-            if (listener != null) {
-                listener!!.dispose()
-                listener = null
-            }
+            prefJob?.cancel()
+            prefJob = null
         })
     }
 

@@ -2,39 +2,34 @@ package com.neverreader.util.prefs
 
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
-import io.reactivex.Observable
-import io.reactivex.ObservableEmitter
-import io.reactivex.ObservableOnSubscribe
-import io.reactivex.functions.Cancellable
-import io.reactivex.functions.Function
-import io.reactivex.functions.Predicate
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
 import java.util.Collections
 
 /**
  * A [Store] backed by Android [SharedPreferences]
  */
 class AndroidPrefStore(private val prefs: SharedPreferences) : Store {
-    override fun changes(): Observable<String?>? {
-        return Observable.create<String?>(ObservableOnSubscribe { emitter: ObservableEmitter<String?>? ->
-            val listener =
-                OnSharedPreferenceChangeListener { sharedPreferences: SharedPreferences?, key: String? ->
-                    if (key == null) return@OnSharedPreferenceChangeListener  // OnSharedPreferenceChangeListener.onSharedPreferenceChanged makes a callback with a null key whenever clear() is called, which we don't need to emit.
-                    emitter!!.onNext(key)
-                }
-            emitter!!.setCancellable(Cancellable {
-                prefs.unregisterOnSharedPreferenceChangeListener(
-                    listener
-                )
-            })
-            prefs.registerOnSharedPreferenceChangeListener(listener)
-        })
+    /**
+     * Cold: the listener is registered when the flow is collected and unregistered
+     * when collection stops.
+     */
+    override fun changes(): Flow<String> = callbackFlow {
+        val listener = OnSharedPreferenceChangeListener { _, key ->
+            // A null key means clear() was called; there is no single key to report.
+            if (key != null) trySend(key)
+        }
+        prefs.registerOnSharedPreferenceChangeListener(listener)
+        awaitClose { prefs.unregisterOnSharedPreferenceChangeListener(listener) }
     }
 
-    private fun <T> changes(key: String?, getter: Get<T?>): Observable<T?>? {
-        return changes()!!
-            .filter(Predicate { changed: String? -> changed == key })
-            .map<T?>(Function { k: String? -> getter.get(key) })
-    }
+    private fun <T> changes(key: String?, getter: Get<T?>): Flow<T?> =
+        changes()
+            .filter { changed -> changed == key }
+            .map { getter.get(key) }
 
     internal fun interface Get<T> {
         fun get(key: String?): T?
@@ -60,7 +55,7 @@ class AndroidPrefStore(private val prefs: SharedPreferences) : Store {
         prefs.edit().putString(key, value).apply()
     }
 
-    override fun stringChanges(key: String?): Observable<String?>? {
+    override fun stringChanges(key: String?): Flow<String?> {
         return changes<String?>(key) { key: String? -> this.getString(key) }
     }
 
@@ -77,7 +72,7 @@ class AndroidPrefStore(private val prefs: SharedPreferences) : Store {
         prefs.edit().putStringSet(key, value).apply()
     }
 
-    override fun stringSetChanges(key: String?): Observable<MutableSet<String?>?>? {
+    override fun stringSetChanges(key: String?): Flow<MutableSet<String?>?> {
         return changes<MutableSet<String?>?>(
             key,
             AndroidPrefStore.Get { key: String? -> this.getStringSet(key) })
@@ -92,7 +87,7 @@ class AndroidPrefStore(private val prefs: SharedPreferences) : Store {
         prefs.edit().putInt(key, value).apply()
     }
 
-    override fun intChanges(key: String?): Observable<Int?>? {
+    override fun intChanges(key: String?): Flow<Int?> {
         return changes<Int?>(key, AndroidPrefStore.Get { key: String? -> this.getInt(key) })
     }
 
@@ -105,7 +100,7 @@ class AndroidPrefStore(private val prefs: SharedPreferences) : Store {
         prefs.edit().putFloat(key, value).apply()
     }
 
-    override fun floatChanges(key: String?): Observable<Float?>? {
+    override fun floatChanges(key: String?): Flow<Float?> {
         return changes<Float?>(key, AndroidPrefStore.Get { key: String? -> this.getFloat(key) })
     }
 
@@ -118,7 +113,7 @@ class AndroidPrefStore(private val prefs: SharedPreferences) : Store {
         prefs.edit().putLong(key, value).apply()
     }
 
-    override fun longChanges(key: String?): Observable<Long?>? {
+    override fun longChanges(key: String?): Flow<Long?> {
         return changes<Long?>(key, AndroidPrefStore.Get { key: String? -> this.getLong(key) })
     }
 
@@ -131,7 +126,7 @@ class AndroidPrefStore(private val prefs: SharedPreferences) : Store {
         prefs.edit().putBoolean(key, value).apply()
     }
 
-    override fun booleanChanges(key: String?): Observable<Boolean?>? {
+    override fun booleanChanges(key: String?): Flow<Boolean?> {
         return changes<Boolean?>(key, AndroidPrefStore.Get { key: String? -> this.getBoolean(key) })
     }
 

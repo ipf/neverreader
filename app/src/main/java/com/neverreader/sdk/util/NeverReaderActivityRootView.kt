@@ -12,7 +12,6 @@ import com.neverreader.app.settings.rotation.AppFineOrientationManager
 import com.neverreader.app.settings.rotation.RotationLockComponents
 import com.neverreader.app.settings.rotation.interf.RotationLockView
 import com.neverreader.util.android.view.ResizeDetectRelativeLayout
-import io.reactivex.Observable
 
 /**
  * The root view of [AbsNeverReaderActivity] that holds the content view, plus all of the
@@ -109,6 +108,4 @@ class NeverReaderActivityRootView : ResizeDetectRelativeLayout {
     fun expandListen() {
     }
 
-    val listenViewStates: Observable<Any?>?
-        get() = Observable.empty<Any?>()
 }
