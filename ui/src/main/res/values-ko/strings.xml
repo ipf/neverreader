@@ -3,7 +3,6 @@
 <!-- smartling.placeholder_format_custom = \{[a-zA-Z0-9_-]+\}-->
 <resources>
     <!-- Accessibility and tooltip labels for icons -->
-    <string name="ic_overflow">자세히…</string>
     <string name="ic_up">뒤로 이동</string>
     <string name="ic_archive" comment="Label for a button that archives an item. This is a verb.">보관소</string>
     <string name="ic_save">저장</string>

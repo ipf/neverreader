@@ -16,11 +16,16 @@ fun UpIcon(modifier: Modifier = Modifier) {
     )
 }
 
+/**
+ * The archive box. Every action icon is a 24x24 vector on a 50dp AppIconButton;
+ * ic_nr_android_overflow_solid was 4x24, so it sat off-centre in its button and
+ * made the row look unaligned.
+ */
 @Composable
-fun OverflowMenuIcon(modifier: Modifier = Modifier) {
+fun ArchiveIcon(modifier: Modifier = Modifier) {
     Icon(
-        painterResource(R.drawable.ic_nr_android_overflow_solid),
-        stringResource(R.string.ic_overflow),
+        painterResource(R.drawable.ic_nr_archive_line),
+        stringResource(R.string.ic_archive),
         modifier,
     )
 }

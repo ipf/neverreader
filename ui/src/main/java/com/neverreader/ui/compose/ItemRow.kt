@@ -34,7 +34,7 @@ import com.neverreader.ui.theme.AppRadii
 import com.neverreader.ui.theme.AppTheme
 import com.neverreader.ui.view.ThinDivider
 import com.neverreader.ui.view.button.AppIconButton
-import com.neverreader.ui.view.button.OverflowMenuIcon
+import com.neverreader.ui.view.button.ArchiveIcon
 
 /**
  * A saved article in the list.
@@ -55,7 +55,7 @@ fun ItemRow(
     onClick: () -> Unit,
     onToggleFavorite: () -> Unit,
     onShare: () -> Unit,
-    onOverflow: () -> Unit,
+    onArchive: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val colors = AppTheme.colors
@@ -151,8 +151,8 @@ fun ItemRow(
                     tint = AppTheme.colors.grey3,
                 )
             }
-            AppIconButton(onClick = onOverflow) {
-                OverflowMenuIcon()
+            AppIconButton(onClick = onArchive) {
+                ArchiveIcon()
             }
         }
 
@@ -188,7 +188,7 @@ private fun ItemRowPreview() {
             onClick = {},
             onToggleFavorite = {},
             onShare = {},
-            onOverflow = {},
+            onArchive = {},
         )
     }
 }

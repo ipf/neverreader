@@ -143,7 +143,17 @@ private fun MyListScreen(
                 AppIconButton(onClick = onOpenAddUrl) {
                     Icon(
                         painter = painterResource(com.neverreader.ui.R.drawable.ic_nr_add_tags_line),
-                        contentDescription = stringResource(com.neverreader.ui.R.string.ic_archive),
+                        contentDescription = stringResource(R.string.settings_add_url),
+                    )
+                }
+                // Settings used to live in the options menu. The Compose screens
+                // have no ActionBar, so without this the settings screen is
+                // unreachable - onOpenSettings was being passed in and never called.
+                AppIconButton(onClick = onOpenSettings) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_menu_settings),
+                        contentDescription = stringResource(R.string.settings_title),
+                        tint = AppTheme.colors.grey3,
                     )
                 }
             },
@@ -198,6 +208,7 @@ private fun MyListScreen(
                     )
                     SwipeToDismissBox(
                         state = dismissState,
+                        enableDismissFromStartToEnd = false,
                         backgroundContent = { SwipeToArchiveBackground() },
                     ) {
                         ItemRow(
@@ -212,7 +223,7 @@ private fun MyListScreen(
                             onClick = { viewModel.onItemClicked(state.bookmark) },
                             onToggleFavorite = { viewModel.toggleFavorite(state.bookmark) },
                             onShare = { share(context, state.bookmark) },
-                            onOverflow = { viewModel.archive(state.bookmark) },
+                            onArchive = { viewModel.archive(state.bookmark) },
                         )
                     }
                 }

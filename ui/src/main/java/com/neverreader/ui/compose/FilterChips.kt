@@ -83,9 +83,11 @@ fun FilterChip(
 /**
  * Revealed behind a row while it is swiped away.
  *
- * One icon, on the trailing edge, in exactly the slot the last AppIconButton
- * occupies. The old version drew an archive glyph on both edges and vertically
- * centred them, so it appeared twice and lined up with nothing.
+ * One icon, trailing edge, vertically centred - clear of the row's button row at
+ * the bottom. Parking it in the button row's own slot put it underneath the
+ * row's icons mid-swipe, which read as the archive glyph having three dots in
+ * it. Dismissal is restricted to end-to-start (MyListFragment), so a single
+ * trailing icon is the one that is always revealed.
  */
 @Composable
 fun SwipeToArchiveBackground(modifier: Modifier = Modifier) {
@@ -94,20 +96,15 @@ fun SwipeToArchiveBackground(modifier: Modifier = Modifier) {
             .fillMaxSize()
             .background(AppTheme.colors.chipBackground)
     ) {
-        Box(
+        Icon(
+            painter = painterResource(R.drawable.ic_nr_archive_line),
+            contentDescription = stringResource(R.string.ic_archive),
+            tint = AppTheme.colors.grey3,
             modifier = Modifier
-                .align(Alignment.BottomEnd)
+                .align(Alignment.CenterEnd)
                 .padding(end = AppTheme.dimensions.sideGrid)
-                .size(50.dp),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.ic_nr_archive_line),
-                contentDescription = stringResource(R.string.ic_archive),
-                tint = AppTheme.colors.grey3,
-                modifier = Modifier.size(24.dp),
-            )
-        }
+                .size(24.dp),
+        )
     }
 }
 

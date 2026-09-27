@@ -3,7 +3,6 @@
 <!-- smartling.placeholder_format_custom = \{[a-zA-Z0-9_-]+\}-->
 <resources>
     <!-- Accessibility and tooltip labels for icons -->
-    <string name="ic_overflow">More&#8230;</string>
     <string name="ic_up">Go Back</string>
     <string name="ic_archive" comment="Label for a button that archives an item. This is a verb.">Archive</string>
     <string name="ic_save">Save</string>
