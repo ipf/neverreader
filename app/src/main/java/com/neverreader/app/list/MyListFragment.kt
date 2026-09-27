@@ -8,7 +8,9 @@ import android.view.ViewGroup
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -31,6 +33,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.painterResource
 import androidx.core.os.bundleOf
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.viewModels
@@ -45,13 +48,17 @@ import com.neverreader.app.list.add.AddUrlBottomSheetFragment
 import com.neverreader.app.repository.ThumbnailRepository
 import com.neverreader.app.list.list.ListManager
 import com.neverreader.backend.model.Bookmark
+import com.neverreader.backend.model.BookmarkSort
 import com.neverreader.backend.sync.SyncWorker
 import com.neverreader.sdk.util.AbsNeverReaderFragment
 import com.neverreader.ui.compose.AppBar
 import com.neverreader.ui.compose.FilterChips
+import com.neverreader.ui.compose.SearchField
+import com.neverreader.ui.compose.MenuChip
 import com.neverreader.ui.compose.ItemRow
 import com.neverreader.ui.theme.AppTheme
 import com.neverreader.ui.view.button.AppIconButton
+import com.neverreader.ui.view.button.UpIcon
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlinx.coroutines.launch
@@ -115,6 +122,14 @@ class MyListFragment : AbsNeverReaderFragment() {
     }
 }
 
+/** Kept out of :ui, which has no dependency on :backend. */
+private fun BookmarkSort.labelRes(): Int = when (this) {
+    BookmarkSort.NEWEST -> com.neverreader.ui.R.string.sort_newest
+    BookmarkSort.OLDEST -> com.neverreader.ui.R.string.sort_oldest
+    BookmarkSort.TITLE_ASC -> com.neverreader.ui.R.string.sort_title_asc
+    BookmarkSort.TITLE_DESC -> com.neverreader.ui.R.string.sort_title_desc
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun MyListScreen(
@@ -128,18 +143,59 @@ private fun MyListScreen(
     val items = viewModel.pagedBookmarks.collectAsLazyPagingItems()
     var refreshing by remember { mutableStateOf(false) }
     val sortFilter by viewModel.sortFilterState.collectAsStateWithLifecycle()
+    // Search UI state lives here, not in the ViewModel: the field has to stay
+    // responsive while the query itself is debounced.
+    // Seeded from the ViewModel, which outlives a configuration change: otherwise
+    // a rotation would close the field while leaving the list filtered by it.
+    var searching by remember { mutableStateOf(viewModel.searchText.value.isNotBlank()) }
+    var query by remember { mutableStateOf(viewModel.searchText.value) }
 
     // One root layout: a bare ComposeView positions every top-level child at
     // (0,0), so the app bar, the filter chips and the list all drew on top
     // of each other.
     Column(Modifier.fillMaxSize()) {
         AppBar(
-            title = { Text(stringResource(R.string.nm_app)) },
+            navigationIcon = {
+                // While searching the bar's actions would crowd out the field, so
+                // they are replaced by a way out.
+                if (searching) {
+                    AppIconButton(
+                        onClick = {
+                            searching = false
+                            query = ""
+                            viewModel.clearSearch()
+                        },
+                    ) { UpIcon() }
+                }
+            },
+            title = {
+                if (searching) {
+                    SearchField(
+                        query = query,
+                        onQueryChange = {
+                            query = it
+                            viewModel.onSearchChange(it)
+                        },
+                        autoFocus = true,
+                        modifier = Modifier.padding(end = AppTheme.dimensions.spaceSmall),
+                    )
+                } else {
+                    Text(stringResource(R.string.nm_app))
+                }
+            },
             actions = {
+                if (searching) return@AppBar
                 AppIconButton(onClick = onOpenAddUrl) {
                     Icon(
                         painter = painterResource(com.neverreader.ui.R.drawable.ic_nr_add_tags_line),
                         contentDescription = stringResource(R.string.settings_add_url),
+                    )
+                }
+                AppIconButton(onClick = { searching = true }) {
+                    Icon(
+                        painter = painterResource(com.neverreader.ui.R.drawable.ic_pkt_search_line),
+                        contentDescription = stringResource(com.neverreader.ui.R.string.ic_search),
+                        tint = AppTheme.colors.grey3,
                     )
                 }
                 // Settings used to live in the options menu. The Compose screens
@@ -166,6 +222,16 @@ private fun MyListScreen(
                         ListManager.Tab.FAVORITES -> R.string.my_list_filter_favorites
                         ListManager.Tab.ARCHIVE -> R.string.nm_archive
                     }
+                )
+            },
+            trailing = {
+                MenuChip(
+                    options = BookmarkSort.entries,
+                    selected = sortFilter.sort,
+                    optionLabel = { stringResource(it.labelRes()) },
+                    onSelect = viewModel::setSort,
+                    icon = com.neverreader.ui.R.drawable.ic_pkt_sort_line,
+                    iconContentDescription = com.neverreader.ui.R.string.ic_sort,
                 )
             },
         )
@@ -211,9 +277,58 @@ private fun MyListScreen(
                             onArchive = { viewModel.archive(state.bookmark) },
                         )
                 }
+
+                // These strings survived the XML layouts; nothing had been using
+                // them, so an empty list - or a search with no hits - was just a
+                // blank screen.
+                if (items.itemCount == 0 && !refreshing) {
+                    item {
+                        EmptyState(
+                            title = stringResource(emptyTitleRes(sortFilter)),
+                            message = stringResource(
+                                if (sortFilter.search != null) {
+                                    R.string.list_empty_no_result_matched
+                                } else {
+                                    R.string.empty_list_all_message
+                                },
+                            ),
+                        )
+                    }
+                }
             }
         }
     }
+}
+
+@Composable
+private fun EmptyState(title: String, message: String) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(AppTheme.dimensions.sideGrid),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(
+            text = title,
+            style = AppTheme.typography.h6,
+            color = AppTheme.colors.grey1,
+            textAlign = TextAlign.Center,
+        )
+        Spacer(Modifier.height(AppTheme.dimensions.spaceSmall))
+        Text(
+            text = message,
+            style = AppTheme.typography.p4,
+            color = AppTheme.colors.textSecondary,
+            textAlign = TextAlign.Center,
+        )
+    }
+}
+
+private fun emptyTitleRes(state: ListManager.SortFilterState): Int = when {
+    state.search != null -> R.string.list_empty_search_title
+    state.tab == ListManager.Tab.FAVORITES -> R.string.empty_list_favorites_title
+    state.tab == ListManager.Tab.ARCHIVE -> R.string.empty_list_archive_title
+    else -> R.string.empty_list_all_title
 }
 
 private fun share(context: android.content.Context, bookmark: Bookmark) {

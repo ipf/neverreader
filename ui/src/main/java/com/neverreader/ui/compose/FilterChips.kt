@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -39,6 +40,12 @@ fun <T> FilterChips(
     onSelect: (T) -> Unit,
     label: @Composable (T) -> String,
     modifier: Modifier = Modifier,
+    /**
+     * Rendered after the tabs, inside the same scrolling row. The sort control
+     * lives here rather than in the app bar so the bar does not grow to four
+     * 50dp actions, which squeezes the title on a narrow phone.
+     */
+    trailing: @Composable RowScope.() -> Unit = {},
 ) {
     Row(
         modifier = modifier
@@ -57,6 +64,7 @@ fun <T> FilterChips(
                 onClick = { onSelect(tab) },
             )
         }
+        trailing()
     }
 }
 

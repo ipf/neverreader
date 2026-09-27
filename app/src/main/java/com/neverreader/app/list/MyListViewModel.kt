@@ -8,6 +8,7 @@ import androidx.paging.cachedIn
 import androidx.paging.map
 import com.neverreader.app.list.list.ListManager
 import com.neverreader.backend.model.Bookmark
+import com.neverreader.backend.model.BookmarkSort
 import com.neverreader.backend.repo.AccountManager
 import com.neverreader.sdk.preferences.AppPrefs
 import com.neverreader.repository.BookmarkRepository
@@ -18,7 +19,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
@@ -57,8 +60,40 @@ class MyListViewModel @Inject constructor(
 
     val sortFilterState: StateFlow<ListManager.SortFilterState> = listManager.sortFilterState
 
+    private val searchInput = MutableStateFlow("")
+
+    init {
+        viewModelScope.launch {
+            // Every keystroke otherwise tears down the Pager and re-runs the query.
+            // A blank query clears immediately so closing search is instant.
+            searchInput
+                .debounce { if (it.isBlank()) 0L else SEARCH_DEBOUNCE_MS }
+                .distinctUntilChanged()
+                .collect { listManager.setSearch(it.ifBlank { null }) }
+        }
+    }
+
+    /** The text as typed, so the field stays responsive while the query lags. */
+    val searchText: StateFlow<String> = searchInput
+
+    fun onSearchChange(query: String) {
+        searchInput.value = query
+    }
+
+    fun clearSearch() {
+        searchInput.value = ""
+    }
+
     fun setTab(tab: ListManager.Tab) {
         listManager.setTab(tab)
+    }
+
+    fun setSort(sort: BookmarkSort) {
+        listManager.setSort(sort)
+    }
+
+    private companion object {
+        const val SEARCH_DEBOUNCE_MS = 300L
     }
 
     fun archive(bookmark: Bookmark) {

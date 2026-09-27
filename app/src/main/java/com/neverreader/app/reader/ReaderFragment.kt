@@ -246,14 +246,18 @@ private fun ArticleWebView(
 }
 
 /** Injects the reader stylesheet and the body attributes it keys off. */
-private fun buildArticleHtml(context: Context, article: String, darkTheme: Boolean): String {
+/** Internal rather than private so the generated document can be asserted on. */
+internal fun buildArticleHtml(context: Context, article: String, darkTheme: Boolean): String {
     val css = context.assets.open(READER_STYLESHEET).bufferedReader().use { it.readText() }
     val resources = context.resources
     return """
         <html>
         <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-        <style>$css</style>
+        <style>
+        :root { --article-margin: ${resources.getInteger(R.integer.article_default_margin)}px; }
+        $css
+        </style>
         </head>
         <body textStyle="${if (darkTheme) 1 else 0}"
               lineHeightSetting="${resources.getInteger(R.integer.article_default_line_height)}"
@@ -264,7 +268,7 @@ private fun buildArticleHtml(context: Context, article: String, darkTheme: Boole
     """.trimIndent()
 }
 
-private const val READER_STYLESHEET = "html/c/text.css"
+internal const val READER_STYLESHEET = "html/c/text.css"
 
 private fun String.displayHost(): String =
     runCatching { Uri.parse(this).host }.getOrNull().orEmpty()

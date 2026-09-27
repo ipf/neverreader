@@ -80,6 +80,14 @@ body {
 		back blank. Nothing here may depend on script having run.
 	*/
 	visibility: visible;
+	/*
+		--article-margin is injected by buildArticleHtml from
+		R.integer.article_default_margin. The article ran edge to edge because
+		the star selector above zeroes every margin and nothing put it back.
+		The bottom is deeper than the sides so the last line is not flush with
+		the edge of the screen.
+	*/
+	padding: 10px var(--article-margin, 16px) 28px;
 }
 
 body[lineHeightSetting="1"] { line-height: 1.2em; }

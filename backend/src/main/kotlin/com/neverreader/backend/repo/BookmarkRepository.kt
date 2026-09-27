@@ -197,24 +197,7 @@ class BookmarkRepository(
         db.bookmarkDao().insertTagLinks(bookmarks.flatMap { b -> b.tags.map { com.neverreader.backend.db.BookmarkTagEntity(b.id, it) } })
     }
 
-    private fun queryFor(filter: ListFilter): SimpleSQLiteQuery {
-        val args = mutableListOf<Any>()
-        val sql = buildString {
-            append("SELECT * FROM bookmarks WHERE 1=1")
-            filter.unread?.let { append(" AND unread = ?"); args.add(it) }
-            filter.favorite?.let { append(" AND favorite = ?"); args.add(it) }
-            filter.tag?.let { append(" AND tagsJson LIKE ? ESCAPE '\\'"); args.add(likeFor(it)) }
-            filter.search?.let {
-                append(" AND (title LIKE ? OR excerpt LIKE ? OR url LIKE ?)")
-                args.add("%$it%"); args.add("%$it%"); args.add("%$it%")
-            }
-            append(" ORDER BY createdAt DESC")
-        }
-        return SimpleSQLiteQuery(sql, args.toTypedArray())
-    }
-
-    private fun likeFor(tag: String) =
-        "%" + tag.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_") + "%"
+    private fun queryFor(filter: ListFilter): SimpleSQLiteQuery = BookmarkQuery.build(filter)
 }
 
 private fun com.neverreader.backend.db.BookmarkEntity.toDomain() = Bookmark(

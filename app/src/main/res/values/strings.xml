@@ -517,6 +517,7 @@
 
 	<string name="empty_list_all_title">Start building your NeverReader list</string>
 	<string name="empty_list_all_action">How to save</string>
+	<string name="empty_list_all_message">Save an article and it shows up here.</string>
 	<string name="empty_list_favorites_title">Find your favorites here</string>
 	<string name="empty_list_favorites_message">Hit the star icon to favorite an article and find it faster.</string>
 	<string name="empty_list_tagged_title">Organize your list</string>

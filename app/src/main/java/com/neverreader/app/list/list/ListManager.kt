@@ -2,6 +2,7 @@ package com.neverreader.app.list.list
 
 import androidx.paging.PagingData
 import com.neverreader.backend.model.Bookmark
+import com.neverreader.backend.model.BookmarkSort
 import com.neverreader.backend.model.ListFilter
 import com.neverreader.repository.BookmarkRepository
 import kotlinx.coroutines.flow.Flow
@@ -29,6 +30,7 @@ class ListManager @Inject constructor(
         val tab: Tab = Tab.UNREAD,
         val tag: String? = null,
         val search: String? = null,
+        val sort: BookmarkSort = BookmarkSort.NEWEST,
     )
 
     private val _sortFilterState = MutableStateFlow(SortFilterState())
@@ -43,11 +45,18 @@ class ListManager @Inject constructor(
             favorite = state.tab.favorite,
             tag = state.tag,
             search = state.search,
+            sort = state.sort,
         )
     }
 
     fun setTab(tab: Tab) {
+        // Sort deliberately survives a tab change - it is a preference about how
+        // to read the list, not a narrowing of it. Search and tag do reset.
         _sortFilterState.update { it.copy(tab = tab, tag = null, search = null) }
+    }
+
+    fun setSort(sort: BookmarkSort) {
+        _sortFilterState.update { it.copy(sort = sort) }
     }
 
     fun setTag(tag: String?) {
@@ -59,6 +68,6 @@ class ListManager @Inject constructor(
     }
 
     fun clearFilter() {
-        _sortFilterState.update { SortFilterState(tab = it.tab) }
+        _sortFilterState.update { SortFilterState(tab = it.tab, sort = it.sort) }
     }
 }

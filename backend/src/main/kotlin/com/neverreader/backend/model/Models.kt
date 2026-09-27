@@ -42,11 +42,25 @@ data class Annotation(
     val createdAt: Long,
 )
 
+/**
+ * Neither backend exposes an article's publication date - Readeck and Wallabag
+ * only record when you saved it and when it last changed - so there is no
+ * "newest published" to sort by. These are the orders that mean something.
+ */
+enum class BookmarkSort {
+    /** Most recently saved first. The default, and what the list has always done. */
+    NEWEST,
+    OLDEST,
+    TITLE_ASC,
+    TITLE_DESC,
+}
+
 data class ListFilter(
     val unread: Boolean? = null,
     val favorite: Boolean? = null,
     val tag: String? = null,
     val search: String? = null,
+    val sort: BookmarkSort = BookmarkSort.NEWEST,
 )
 
 sealed interface Change {

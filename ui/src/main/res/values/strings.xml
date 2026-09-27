@@ -16,6 +16,14 @@
     <string name="ic_delete">Delete</string>
     <string name="ic_add_tags">Add Tags</string>
     <string name="ic_filters">Filters</string>
+    <string name="ic_sort" translatable="false">Sort</string>
+    <string name="ic_search" translatable="false">Search</string>
+    <string name="search_hint">Search your saved items</string>
+    <string name="search_clear" translatable="false">Clear search</string>
+    <string name="sort_newest">Newest</string>
+    <string name="sort_oldest">Oldest</string>
+    <string name="sort_title_asc">Title A-Z</string>
+    <string name="sort_title_desc">Title Z-A</string>
     <string name="ic_play">Play</string>
     <string name="ic_pause">Pause</string>
     <string name="ic_skip">Skip forward</string>

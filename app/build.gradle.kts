@@ -57,6 +57,15 @@ android {
         }
     }
 
+    // ArticleHtmlTest reads the real stylesheet and integer resources through
+    // Robolectric, which needs the merged assets and resources to be on the unit
+    // test classpath.
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
+
     lint {
         checkReleaseBuilds = false
         checkDependencies = true
