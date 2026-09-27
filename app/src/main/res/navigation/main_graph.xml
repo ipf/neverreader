@@ -43,6 +43,7 @@
         android:id="@+id/reader"
         android:name="com.neverreader.app.reader.ReaderFragment"
         android:label="ReaderFragment">
+        <argument android:name="id" app:argType="string"/>
         <argument android:name="url" app:argType="string"/>
     </fragment>
     

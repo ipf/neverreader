@@ -22,11 +22,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.widget.Toast
-import androidx.annotation.StringRes
 import androidx.annotation.StyleRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.view.OnApplyWindowInsetsListener
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
@@ -42,7 +40,6 @@ import androidx.fragment.app.FragmentManager
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.transition.TransitionManager
 import com.neverreader.app.App
-import com.neverreader.app.AppThreads.UiThreadResponse
 import com.neverreader.app.R
 import com.neverreader.app.settings.Brightness
 import com.neverreader.app.settings.Theme
@@ -58,14 +55,12 @@ import com.neverreader.util.android.WindowUtil.NavigationBarColorProperty
 import com.neverreader.util.android.WindowUtil.StatusBarColorProperty
 import com.neverreader.util.android.fragment.FragmentUtil
 import com.neverreader.util.android.fragment.FragmentUtil.FragmentLaunchMode
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import com.neverreader.util.android.view.ManuallyUpdateTheme
 import com.neverreader.util.java.Logs
-import com.neverreader.util.java.Milliseconds
 import java.lang.ref.WeakReference
 
 /**
@@ -244,16 +239,16 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
         setTaskDescription(TaskDescription(label, null, colorPrimary))
 
         ViewCompat.setOnApplyWindowInsetsListener(
-            mRoot!!,
-            OnApplyWindowInsetsListener { v: View?, insets: WindowInsetsCompat? ->
-                mWindowInsets.set(
-                    insets!!.systemWindowInsetLeft,
-                    insets.systemWindowInsetTop,
-                    insets.systemWindowInsetRight,
-                    insets.systemWindowInsetBottom
-                )
-                insets
-            })
+            mRoot!!
+        ) { v: View?, insets: WindowInsetsCompat? ->
+            mWindowInsets.set(
+                insets!!.systemWindowInsetLeft,
+                insets.systemWindowInsetTop,
+                insets.systemWindowInsetRight,
+                insets.systemWindowInsetBottom
+            )
+            insets
+        }
 
         app()!!.activities().onActivityCreate(this)
     }
@@ -703,18 +698,8 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
     }
 
     /**
-     * If needed, this can be overridden to move the clipboard prompt to
-     * a better spot for a specific layout.
-     *
-     * @param view The view to move to a different position in the layout.
-     */
-    /** Called when the clipboard prompt is shown, for subclasses that need to move it. */
-    protected fun onClipboardUrlPromptViewLayout() {}
-
-    /**
      * If needed, this can be overridden to add custom dismissal handling.
-     *
-     * @param view the view that was just dismissed
+    *
      */
     /** Called when the clipboard prompt goes away. */
     protected fun onClipboardUrlPromptViewDismissed() {}
@@ -824,13 +809,7 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
      * @param alpha 0 - 255. 0 for no dimming, 255 for complete black out.
      */
     fun setBrightnessOverlay(alpha: Int) {
-        /*
-		if (mSoftwareBrightnessOverlay == null && alpha > 0) {
-			mSoftwareBrightnessOverlay = (ImageView) ((ViewStub) findViewById(R.id.stub_brightness)).inflate();
-			mSoftwareBrightnessOverlay.setVisibility(View.VISIBLE);
-		}
-		mSoftwareBrightnessOverlay.setAlpha(alpha);
-		*/
+
     }
 
     /**
@@ -839,13 +818,6 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
     fun startDefaultActivity() {
         val activity: Class<out Activity> = app()?.userManager()!!.defaultActivity
         startActivity(Intent(this, activity))
-    }
-
-    /**
-     * Set the content view to be invisible.
-     */
-    fun hideContent() {
-        mContent!!.visibility = View.INVISIBLE
     }
 
     fun registerViewForThemeChanges(view: ManuallyUpdateTheme?) {
@@ -921,9 +893,6 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
             listener.onRequestPermissionsResult(requestCode, permissions, grantResults)
         }
     }
-
-    val themeInt: Int
-        get() = app()!!.theme().get(this)
 
 
     /**
@@ -1054,21 +1023,8 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
          */
         get() = true
 
-    /**
-     * Expand the Listen UI if it is already visible or mark it to automatically expand when it becomes visible.
-     * If your intention is for the Listen UI to expand as soon as possible make sure Listen is started
-     * and start it if it isn't.
-     *
-     *
-     * This won't start Listen.
-     */
-    fun expandListenUi() {
-        this.root.expandListen()
-    }
-
 
     companion object {
-        const val DIALOG_SUBCLASS: Int = 20 // Should be higher than any generic dialog ids
         const val DEBUG_LIFECYCLE: Boolean = false
 
         const val ACTION_SHUTDOWN: String = "com.ideashower.readitlater.ACTION_SHUTDOWN"
@@ -1084,11 +1040,9 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
         private val STATUS_BAR_COLOR = StatusBarColorProperty()
         private val NAVIGATION_BAR_COLOR = NavigationBarColorProperty()
 
-        const val EXTRA_UI_CONTEXT: String = "com.neverreader.extra.uiContext"
-
         /**
          * Since we seem to do this type casting a lot, this is a helper method for cleaner code. Pass a context
-         * and if the context is a RilAppActivity it will return one, other wise it returns null.
+         * and if the context is a RilAppActivity it will return one, otherwise it returns null.
          *
          * @param context
          * @return the context casted to a RilAppActivity if it is not null and is one, otherwise null.

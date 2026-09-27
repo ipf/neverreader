@@ -255,8 +255,22 @@ class ReadeckAdapter(
         return json.decodeFromString<List<ReadeckBookmark>>(text).map { it.toBookmark() }
     }
 
-    override suspend fun fetchArticleHtml(id: String): String =
-        execute(authorized(url("/bookmarks/$id/article")))
+    override suspend fun fetchArticleHtml(id: String): String {
+        // Readeck returns text/html here, not JSON. Ask for it, and escape the id:
+        // it is an opaque server-generated string, so it is not safe to paste
+        // straight into a path.
+        val target = (serverUrl.trimEnd('/') + "/api").toHttpUrl().newBuilder()
+            .addPathSegment("bookmarks")
+            .addPathSegment(id)
+            .addPathSegment("article")
+            .build()
+        return execute(
+            authorized(target.toString())
+                .newBuilder()
+                .header("Accept", "text/html")
+                .build(),
+        )
+    }
 
     override suspend fun addBookmark(url: String, title: String?): Bookmark {
         val payload = buildJsonObject {

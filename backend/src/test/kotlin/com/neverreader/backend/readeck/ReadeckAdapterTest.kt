@@ -33,6 +33,35 @@ class ReadeckAdapterTest {
         accessToken = "token",
     )
 
+    /**
+     * The single-article view is what the reader renders. It returns text/html
+     * rather than JSON, and the id is an opaque server string, so both the
+     * Accept header and the path escaping are pinned here.
+     */
+    @Test
+    fun `fetch article html asks for html and escapes the id`() = runTest {
+        server.enqueue(MockResponse().setBody("<p>Article body</p>"))
+
+        val html = adapter().fetchArticleHtml("a/b c")
+
+        assertEquals("<p>Article body</p>", html)
+        val request = server.takeRequest()
+        assertEquals("GET", request.method)
+        assertEquals("/api/bookmarks/a%2Fb%20c/article", request.path)
+        assertEquals("text/html", request.getHeader("Accept"))
+        assertEquals("Bearer token", request.getHeader("Authorization"))
+    }
+
+    @Test
+    fun `fetch article html reports the status when the server refuses`() = runTest {
+        server.enqueue(MockResponse().setResponseCode(404).setBody("not found"))
+
+        val error = runCatching { adapter().fetchArticleHtml("abc") }.exceptionOrNull()
+
+        assertTrue("$error", error is IllegalStateException)
+        assertTrue("$error", error!!.message!!.contains("404"))
+    }
+
     @Test
     fun `list bookmarks maps fields and sends filters`() = runTest {
         server.enqueue(

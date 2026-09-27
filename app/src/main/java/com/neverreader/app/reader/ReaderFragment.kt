@@ -14,6 +14,7 @@ import android.webkit.WebViewClient
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -24,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.viewinterop.AndroidView
@@ -78,7 +80,7 @@ class ReaderFragment : AbsNeverReaderFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        arguments?.getString("url")?.let { viewModel.load(it) }
+        arguments?.getString("url")?.let { viewModel.load(it, arguments?.getString("id")) }
     }
 
     private fun share(url: String, title: String) {
@@ -101,6 +103,7 @@ private fun ReaderScreen(
     val current by viewModel.state.collectAsStateWithLifecycle()
     val state = current
     val bookmark = (state as? ReaderViewModel.State.Content)?.bookmark
+        ?: (state as? ReaderViewModel.State.Error)?.bookmark
 
     // One root layout: a bare ComposeView positions every top-level child at
     // (0,0), so the app bar and the article drew over each other.
@@ -164,9 +167,13 @@ private fun ReaderScreen(
                 Alignment.Center,
             ) {
                 Text(
-                    text = stringResource(R.string.reader_load_failed),
+                    // A self-hosted server can fail in a dozen ways; "failed to
+                    // load" on its own was not actionable.
+                    text = stringResource(R.string.reader_load_failed) + "\n\n" + state.reason,
                     style = AppTheme.typography.p3,
                     color = AppTheme.colors.textSecondary,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(AppTheme.dimensions.sideGrid),
                 )
             }
 
@@ -220,13 +227,18 @@ private fun ArticleWebView(
             }
         },
         update = { webView ->
-            webView.loadDataWithBaseURL(
-                baseUrl,
-                buildArticleHtml(webView.context, html, darkTheme),
-                "text/html",
-                "utf-8",
-                null,
-            )
+            // update runs on every recomposition. Reloading each time threw away
+            // the scroll position on every theme or state change.
+            if (webView.tag != html) {
+                webView.tag = html
+                webView.loadDataWithBaseURL(
+                    baseUrl,
+                    buildArticleHtml(webView.context, html, darkTheme),
+                    "text/html",
+                    "utf-8",
+                    null,
+                )
+            }
         },
         modifier = modifier,
         onRelease = { it.stopLoading(); it.destroy() },

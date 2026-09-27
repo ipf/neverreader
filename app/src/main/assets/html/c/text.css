@@ -71,9 +71,15 @@ body {
 	color: #111111;
 	font-family: "NeverReader Sans", -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;
 	text-align: center;
-	visibility: hidden;
 	line-height: 1.4em;
 	-webkit-text-size-adjust: none; /* Never autoresize text */
+	/*
+		Was `visibility: hidden`. The old pipeline ran JavaScript that measured
+		the article, added .loaded to images and then revealed the body. The reader
+		disables JavaScript, so nothing ever revealed it and every article came
+		back blank. Nothing here may depend on script having run.
+	*/
+	visibility: visible;
 }
 
 body[lineHeightSetting="1"] { line-height: 1.2em; }
@@ -483,7 +489,8 @@ body[textStyle="1"]#more #nav_more a {
 
 .RIL_IMG
 {
-	display: none;
+	/* Was display:none until JavaScript added .loaded - see the note on body. */
+	display: block;
 	position: relative;
 	
 	margin: 0 auto; 

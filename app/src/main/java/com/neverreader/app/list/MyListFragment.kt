@@ -16,11 +16,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.SwipeToDismissBox
-import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -53,7 +50,6 @@ import com.neverreader.sdk.util.AbsNeverReaderFragment
 import com.neverreader.ui.compose.AppBar
 import com.neverreader.ui.compose.FilterChips
 import com.neverreader.ui.compose.ItemRow
-import com.neverreader.ui.compose.SwipeToArchiveBackground
 import com.neverreader.ui.theme.AppTheme
 import com.neverreader.ui.view.button.AppIconButton
 import dagger.hilt.android.AndroidEntryPoint
@@ -96,18 +92,18 @@ class MyListFragment : AbsNeverReaderFragment() {
                 viewModel.navigationEvents.collect { event ->
                     when (event) {
                         is MyListNavigationEvent.ShowAddUrl -> showAddUrl()
-                        is MyListNavigationEvent.OpenReader -> openReader(event.url)
+                        is MyListNavigationEvent.OpenReader -> openReader(event.id, event.url)
                     }
                 }
             }
         }
     }
 
-    private fun openReader(url: String) {
+    private fun openReader(id: String, url: String) {
         // Tapping an article used to emit OpenReader into a no-op: both this
         // fragment and MainActivity deferred to each other, so the reader was
         // unreachable.
-        findNavController().navigate(R.id.goToReader, bundleOf("url" to url))
+        findNavController().navigate(R.id.goToReader, bundleOf("id" to id, "url" to url))
     }
 
     private fun showAddUrl() {
@@ -196,22 +192,11 @@ private fun MyListScreen(
                     key = { index -> items.peek(index)?.bookmark?.id ?: index },
                 ) { index ->
                     val state = items[index] ?: return@items
-                    val dismissState = rememberSwipeToDismissBoxState(
-                        confirmValueChange = { value ->
-                            if (value != SwipeToDismissBoxValue.Settled) {
-                                viewModel.archive(state.bookmark)
-                            }
-                            // Never settle on a value: the paging diff removes the row,
-                            // and settling would animate it back into view.
-                            false
-                        },
-                    )
-                    SwipeToDismissBox(
-                        state = dismissState,
-                        enableDismissFromStartToEnd = false,
-                        backgroundContent = { SwipeToArchiveBackground() },
-                    ) {
-                        ItemRow(
+                    // No SwipeToDismissBox here. It swallowed every tap meant for the
+                    // row - tapping an article did nothing at all, which is why the
+                    // reader looked broken. The row's own archive button is the
+                    // single archive affordance.
+                    ItemRow(
                             title = state.title,
                             domain = state.domain,
                             meta = state.meta,
@@ -225,7 +210,6 @@ private fun MyListScreen(
                             onShare = { share(context, state.bookmark) },
                             onArchive = { viewModel.archive(state.bookmark) },
                         )
-                    }
                 }
             }
         }

@@ -78,7 +78,7 @@ class MyListViewModel @Inject constructor(
     }
 
     fun onItemClicked(bookmark: Bookmark) {
-        navigationEvents.tryEmit(MyListNavigationEvent.OpenReader(bookmark.url))
+        navigationEvents.tryEmit(MyListNavigationEvent.OpenReader(bookmark.id, bookmark.url))
     }
 
     private fun Bookmark.toUiState(allowThirdPartyImages: Boolean) = ListItemUiState(
@@ -147,5 +147,5 @@ data class ListItemUiState(
 
 sealed class MyListNavigationEvent {
     data object ShowAddUrl : MyListNavigationEvent()
-    data class OpenReader(val url: String) : MyListNavigationEvent()
+    data class OpenReader(val id: String, val url: String) : MyListNavigationEvent()
 }

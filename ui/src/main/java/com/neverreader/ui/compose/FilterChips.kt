@@ -80,34 +80,6 @@ fun FilterChip(
     )
 }
 
-/**
- * Revealed behind a row while it is swiped away.
- *
- * One icon, trailing edge, vertically centred - clear of the row's button row at
- * the bottom. Parking it in the button row's own slot put it underneath the
- * row's icons mid-swipe, which read as the archive glyph having three dots in
- * it. Dismissal is restricted to end-to-start (MyListFragment), so a single
- * trailing icon is the one that is always revealed.
- */
-@Composable
-fun SwipeToArchiveBackground(modifier: Modifier = Modifier) {
-    Box(
-        modifier
-            .fillMaxSize()
-            .background(AppTheme.colors.chipBackground)
-    ) {
-        Icon(
-            painter = painterResource(R.drawable.ic_nr_archive_line),
-            contentDescription = stringResource(R.string.ic_archive),
-            tint = AppTheme.colors.grey3,
-            modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .padding(end = AppTheme.dimensions.sideGrid)
-                .size(24.dp),
-        )
-    }
-}
-
 @Preview
 @Composable
 private fun FilterChipsPreview() {
