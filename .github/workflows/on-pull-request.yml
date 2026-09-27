@@ -20,10 +20,6 @@ jobs:
       uses: ./.github/actions/setup-environment
       with:
         gradle: true
-    - name: Decrypt secrets
-      env:
-        GPG_KEY: ${{ secrets.gpg_key }}
-      run: secrets/decrypt.sh
     - name: Run Android Lint
       run: scripts/run-android-lint.sh
 
@@ -37,9 +33,5 @@ jobs:
       uses: ./.github/actions/setup-environment
       with:
         gradle: true
-    - name: Decrypt secrets
-      env:
-        GPG_KEY: ${{ secrets.gpg_key }}
-      run: secrets/decrypt.sh
     - name: Validate licenses
       run: scripts/run-license-checks.sh

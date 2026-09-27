@@ -1,5 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Self-hosted backends (Readeck/Wallabag) may run without TLS on the local network. -->
+<!--
+    Cleartext stays permitted because this app talks to exactly one host: the
+    server the user configured, and nothing else. Scoping the permission to that
+    host is not possible - the host is chosen at runtime, and the only API for
+    changing this at runtime, NetworkSecurityPolicy.Builder plus
+    Application.setNetworkSecurityPolicy, is @hide, so it is not callable from
+    app code. Denying cleartext outright would break the plain-HTTP
+    self-hosted instances on a LAN that this app exists to serve.
+
+    User-installed CAs stay trusted for the same reason: a self-hosted server
+    with a self-signed certificate is the common case, and dropping them would
+    lock those users out of their own server. The trade-off is that an MDM or
+    root CA in the device's user store can intercept this app's traffic,
+    including the OAuth token exchange.
+
+    Both of these raise lint's InsecureBaseConfiguration, which is demoted to a
+    warning in lint.xml with the reasoning recorded there. It stays in the
+    report rather than being silenced.
+-->
 <network-security-config>
     <base-config cleartextTrafficPermitted="true">
         <trust-anchors>

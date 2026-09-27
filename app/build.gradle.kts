@@ -61,6 +61,9 @@ android {
         checkReleaseBuilds = false
         checkDependencies = true
         disable += "UnusedResources"
+        // Records the security findings we knowingly accept (see lint.xml) so
+        // they stay visible in the report instead of being ignored away.
+        baseline = file("lint-baseline.xml")
     }
     buildFeatures {
         viewBinding = true

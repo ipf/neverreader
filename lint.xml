@@ -1,14 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <lint>
-    <!-- Turn off all checks by default, so we can opt into just the ones we want. -->
+    <!--
+        Pocket's original config ignored every check and then opted a handful back
+        in. That is fine for style, but it also meant the security checks that
+        enforce this project's "no tracking, no third parties" rule never ran:
+        SetJavaScriptEnabled, the WebView file-access checks, the X509 trust
+        manager checks and InsecureBaseConfiguration were all silent.
+
+        So keep the cosmetic checks off, and opt the security set back in
+        explicitly. Adding a check here makes it fatal in CI.
+    -->
     <issue id="all" severity="ignore" />
-    
-    <issue id="UnusedResources" severity="error">
-        <!--
-        Allow leaving unused strings in translated files.
-        Smartling will send a PR to align with the main file, which will remove them.
-        -->
-        <ignore regexp="app/src/main/res/values-.*/strings\.xml" />
-        <ignore regexp="ui/src/main/res/values-.*/strings\.xml" />
-    </issue>
+
+    <!--
+        WebView: the reader renders HTML from a server the user chose.
+
+        Note these are listed for completeness, NOT because they protect us
+        today. Lint's WebView detector is XML-layout driven, and every screen is
+        Compose now, so a WebView built in an AndroidView factory is invisible to
+        it - verified: setting javaScriptEnabled or allowFileAccess to true in
+        ReaderFragment does not trip any of them. They would only bite if an XML
+        layout came back. The reader's WebView settings are therefore enforced by
+        review, not by lint.
+    -->
+    <issue id="SetJavaScriptEnabled" severity="error" />
+    <issue id="AllowFileAccess" severity="error" />
+    <issue id="AllowUniversalAccessFromFileURLs" severity="error" />
+    <issue id="AllowContentAccess" severity="error" />
+    <issue id="WebViewClientOnReceivedSslError" severity="error" />
+
+    <!--
+        Transport security. These are UAST detectors, so unlike the WebView ones
+        they do fire on Kotlin - verified by planting a trust-all X509TrustManager
+        and watching the build fail.
+    -->
+    <issue id="TrustAllX509TrustManager" severity="error" />
+    <issue id="TrustUserX509TrustManager" severity="error" />
+    <issue id="InsecureDomainConfiguration" severity="error" />
+
+    <!--
+        This app talks to exactly one host - the server the user configured - and
+        that host is only known at runtime. The per-domain cleartext grant that
+        would scope this properly lives behind NetworkSecurityPolicy.Builder and
+        Application.setNetworkSecurityPolicy, both @hide, so it cannot be used
+        from app code. Denying cleartext instead would break the plain-HTTP
+        self-hosted instances on a LAN this app exists to serve.
+
+        It is baselined in app/lint-baseline.xml rather than ignored, so it stays
+        in the lint report as a known issue instead of being silenced. Note that
+        severity="warning" does not survive the "all ignore" above, so this has to
+        stay an error plus a baseline.
+    -->
+    <issue id="InsecureBaseConfiguration" severity="error" />
+    <issue id="CleartextTraffic" severity="error" />
+
+    <!-- Anything that widens the app's reach or leaks intent payloads. -->
+    <issue id="UnsafeImplicitIntentLaunch" severity="error" />
+    <issue id="UnsafeOptInUsageError" severity="error" />
+    <issue id="ExportedReceiver" severity="error" />
+    <issue id="QueryAllPackagesPermission" severity="error" />
+    <issue id="GoogleAppIndexingWarning" severity="error" />
 </lint>

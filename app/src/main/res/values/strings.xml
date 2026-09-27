@@ -589,6 +589,7 @@
     <string name="settings_account" translatable="false">Account management</string>
     <string name="settings_logout" translatable="false">Log out</string>
     <string name="settings_section_about" translatable="false">About</string>
+    <string name="settings_add_url" translatable="false">Save a URL</string>
     <string name="settings_section_privacy">Privacy</string>
     <string name="settings_load_third_party_images">Load article images from other sites</string>
     <string name="settings_open_source_licenses" translatable="false">Open source licenses</string>

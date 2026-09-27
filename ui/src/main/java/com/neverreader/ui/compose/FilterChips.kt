@@ -81,8 +81,11 @@ fun FilterChip(
 }
 
 /**
- * Revealed behind a row while it is swiped away, matching the archive glyph the
- * old `leftSwipeImage` / `rightSwipeImage` pair used.
+ * Revealed behind a row while it is swiped away.
+ *
+ * One icon, on the trailing edge, in exactly the slot the last AppIconButton
+ * occupies. The old version drew an archive glyph on both edges and vertically
+ * centred them, so it appeared twice and lined up with nothing.
  */
 @Composable
 fun SwipeToArchiveBackground(modifier: Modifier = Modifier) {
@@ -91,24 +94,20 @@ fun SwipeToArchiveBackground(modifier: Modifier = Modifier) {
             .fillMaxSize()
             .background(AppTheme.colors.chipBackground)
     ) {
-        Icon(
-            painter = painterResource(R.drawable.ic_nr_archive_line),
-            contentDescription = stringResource(R.string.ic_archive),
-            tint = AppTheme.colors.grey3,
+        Box(
             modifier = Modifier
-                .align(Alignment.CenterStart)
-                .padding(start = 40.dp)
-                .size(18.dp),
-        )
-        Icon(
-            painter = painterResource(R.drawable.ic_nr_archive_line),
-            contentDescription = stringResource(R.string.ic_archive),
-            tint = AppTheme.colors.grey3,
-            modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .padding(end = 40.dp)
-                .size(18.dp),
-        )
+                .align(Alignment.BottomEnd)
+                .padding(end = AppTheme.dimensions.sideGrid)
+                .size(50.dp),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.ic_nr_archive_line),
+                contentDescription = stringResource(R.string.ic_archive),
+                tint = AppTheme.colors.grey3,
+                modifier = Modifier.size(24.dp),
+            )
+        }
     }
 }
 

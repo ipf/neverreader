@@ -82,6 +82,7 @@ class MyListFragment : AbsNeverReaderFragment() {
                 MyListScreen(
                     viewModel = viewModel,
                     onOpenAddUrl = ::showAddUrl,
+                    onOpenSettings = ::openSettings,
                     loadImage = { url -> thumbnailRepository.load(url) },
                 )
             }
@@ -112,6 +113,10 @@ class MyListFragment : AbsNeverReaderFragment() {
     private fun showAddUrl() {
         AddUrlBottomSheetFragment().show(parentFragmentManager, AddUrlBottomSheetFragment::class.java.name)
     }
+
+    private fun openSettings() {
+        findNavController().navigate(R.id.goToSettings)
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -119,6 +124,7 @@ class MyListFragment : AbsNeverReaderFragment() {
 private fun MyListScreen(
     viewModel: MyListViewModel,
     onOpenAddUrl: () -> Unit,
+    onOpenSettings: () -> Unit,
     loadImage: suspend (String) -> ByteArray?,
 ) {
     val context = LocalContext.current
