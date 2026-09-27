@@ -46,13 +46,23 @@ object ReadeckAuth {
     // Readeck serves the API under /api; api.json paths are relative to it.
     private fun base(serverUrl: String) = serverUrl.trimEnd('/') + "/api"
 
-    suspend fun registerClient(serverUrl: String, http: OkHttpClient = OkHttpClient()): String {
+    /**
+     * @param softwareVersion the installed app version, reported to the server so
+     *   Readeck can show which client a token was issued to. Readeck rejects the
+     *   whole registration as `invalid_client_metadata` if it is missing.
+     */
+    suspend fun registerClient(
+        serverUrl: String,
+        softwareVersion: String,
+        http: OkHttpClient = OkHttpClient(),
+    ): String {
         val body = buildJsonObject {
             put("client_name", "NeverReader")
             // Readeck requires an https client_uri that resolves to a public
             // address, so this cannot be a local or project URL.
             put("client_uri", "https://readeck.org")
             put("software_id", "com.neverreader")
+            put("software_version", softwareVersion)
             // Device flow only: with the default grant types (incl. authorization_code)
             // Readeck requires redirect_uris, which we don't use.
             put("grant_types", buildJsonArray { add("urn:ietf:params:oauth:grant-type:device_code") })

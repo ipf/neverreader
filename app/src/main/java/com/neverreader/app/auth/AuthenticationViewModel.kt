@@ -27,6 +27,11 @@ class AuthenticationViewModel @Inject constructor(
 
     private val http = OkHttpClient()
 
+    /** Installed versionName, as Readeck records against the registered client. */
+    private fun appVersion(): String = runCatching {
+        appContext.packageManager.getPackageInfo(appContext.packageName, 0).versionName
+    }.getOrNull().orEmpty().ifBlank { "0.0.0" }
+
     val state: StateFlow<State>
         field = MutableStateFlow<State>(State.EnterServerUrl())
 
@@ -57,7 +62,7 @@ class AuthenticationViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val clientId = withContext(Dispatchers.IO) {
-                    ReadeckAuth.registerClient(serverUrl, http)
+                    ReadeckAuth.registerClient(serverUrl, appVersion(), http)
                 }
                 val session = withContext(Dispatchers.IO) {
                     ReadeckAuth.startDeviceFlow(serverUrl, clientId, http)

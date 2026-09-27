@@ -1,6 +1,9 @@
 package com.neverreader.backend.readeck
 
 import kotlinx.coroutines.test.runTest
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
@@ -17,6 +20,8 @@ import org.junit.Test
  * encoding too. Sending form-encoded to /oauth/token made the whole flow fail
  * at the last step, long after the browser had already been opened.
  */
+private val REQUIRED_CLIENT_FIELDS = listOf("client_name", "client_uri", "software_id", "software_version")
+
 class ReadeckAuthTest {
 
     private lateinit var server: MockWebServer
@@ -34,11 +39,13 @@ class ReadeckAuthTest {
 
     private fun serverUrl() = server.url("/").toString().trimEnd('/')
 
+    private val appVersion = "1.2.3"
+
     @Test
     fun `registers a client as json and returns the client id`() = runTest {
         server.enqueue(MockResponse().setResponseCode(201).setBody("""{"client_id":"abc123"}"""))
 
-        val clientId = ReadeckAuth.registerClient(serverUrl())
+        val clientId = ReadeckAuth.registerClient(serverUrl(), appVersion)
 
         assertEquals("abc123", clientId)
         val request = server.takeRequest()
@@ -50,11 +57,30 @@ class ReadeckAuthTest {
         )
     }
 
+    /**
+     * Readeck's oauthClientCreate schema requires client_name, client_uri,
+     * software_id and software_version. Dropping software_version made every
+     * registration fail with `invalid_client_metadata` before the user ever saw
+     * a code, so assert the full required set rather than a sample.
+     */
+    @Test
+    fun `client registration sends every field the spec marks required`() = runTest {
+        server.enqueue(MockResponse().setResponseCode(201).setBody("""{"client_id":"abc"}"""))
+
+        ReadeckAuth.registerClient(serverUrl(), appVersion)
+
+        val body = server.takeRequest().body.readUtf8()
+        val json = Json.parseToJsonElement(body).jsonObject
+        val missing = REQUIRED_CLIENT_FIELDS.filterNot { key -> key in json }
+        assertTrue("missing $missing in $body", missing.isEmpty())
+        assertEquals(appVersion, json["software_version"]!!.jsonPrimitive.content)
+    }
+
     @Test
     fun `client registration asks for the device code grant`() = runTest {
         server.enqueue(MockResponse().setResponseCode(201).setBody("""{"client_id":"abc"}"""))
 
-        ReadeckAuth.registerClient(serverUrl())
+        ReadeckAuth.registerClient(serverUrl(), appVersion)
 
         val body = server.takeRequest().body.readUtf8()
         assertTrue(body, body.contains("urn:ietf:params:oauth:grant-type:device_code"))

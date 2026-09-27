@@ -98,7 +98,7 @@ class ReadeckAdapterTest {
         server.enqueue(
             MockResponse().setBody("""{"client_id":"cid123","client_name":"NeverReader"}"""),
         )
-        val clientId = ReadeckAuth.registerClient(server.url("/").toString().trimEnd('/'))
+        val clientId = ReadeckAuth.registerClient(server.url("/").toString().trimEnd('/'), "1.2.3")
         assertEquals("cid123", clientId)
         assertEquals("/api/oauth/client", server.takeRequest().path)
 
