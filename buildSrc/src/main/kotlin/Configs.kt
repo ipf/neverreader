@@ -13,14 +13,11 @@ object AndroidConfigs {
      * Android showed the "built for an older version" dialog on every launch and
      * most modern security defaults stayed switched off.
      *
-     * 34 rather than 35: 35 enforces edge-to-edge, and the activity is still
-     * scaffolded by a legacy view tree (activity_root.xml -> ril_root.xml) with
-     * the Compose screens inside it, so opting in would mean handling window
-     * insets across every screen. 34 still requires explicit android:exported,
-     * PendingIntent mutability flags, and a foregroundServiceType - none of
-     * which this app uses.
+     * 35, which enforces edge-to-edge. That is only safe now that the XML
+     * scaffold is gone: the activity root is a single ComposeView, so the
+     * window insets are applied in one place rather than on every screen.
      */
-    const val TargetSdkVersion = 34
+    const val TargetSdkVersion = 35
 }
 
 object KotlinConfigs {

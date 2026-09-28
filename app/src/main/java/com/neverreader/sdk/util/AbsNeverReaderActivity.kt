@@ -24,6 +24,10 @@ import android.view.Window
 import android.widget.Toast
 import androidx.annotation.StyleRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.activity.enableEdgeToEdge
 import android.widget.FrameLayout
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -154,7 +158,11 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 AppTheme(darkTheme = isDarkAppTheme(this@AbsNeverReaderActivity)) {
-                    Box(Modifier.fillMaxSize()) {
+                    Box(
+                        Modifier
+                            .fillMaxSize()
+                            .windowInsetsPadding(WindowInsets.systemBars),
+                    ) {
                         appContent.value?.invoke()
                         AppSnackbarHost(snackbarHostState)
                     }
@@ -234,6 +242,11 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
         )
 
         FormFactor.init()
+
+        // targetSdk 35 enforces edge-to-edge, so the window no longer fits the
+        // system bars and the content has to inset itself. One place: the
+        // Compose root, so every screen and the reader's WebView inherit it.
+        enableEdgeToEdge()
 
         super.onCreate(savedInstanceState)
 
