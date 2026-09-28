@@ -271,6 +271,7 @@ private fun MyListScreen(
                             loadImage = loadImage,
                             favorite = state.favorite,
                             unread = state.unread,
+                            savedDate = state.savedDate,
                             onClick = { viewModel.onItemClicked(state.bookmark) },
                             onToggleFavorite = { viewModel.toggleFavorite(state.bookmark) },
                             onShare = { share(context, state.bookmark) },

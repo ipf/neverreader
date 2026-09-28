@@ -22,6 +22,11 @@ android {
 
     defaultConfig {
         applicationId = "com.neverreader"
+        // Never set before, so AGP pinned it to minSdk - API 26, from 2018 - and
+        // Android showed "built for an older version" on every launch. 34 rather
+        // than 35 because 35 enforces edge-to-edge and the activity is still
+        // scaffolded by a legacy view tree.
+        targetSdk = AndroidConfigs.TargetSdkVersion
 
         buildStringField("GIT_SHA", getGitSha())
 

@@ -26,6 +26,11 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -127,6 +132,7 @@ class MyListViewModel @Inject constructor(
         favorite = favorite,
         unread = unread,
         meta = readingTimeLabel(readingTimeMinutes),
+        savedDate = savedDateLabel(createdAt),
     )
 
     private fun isServedByOurServer(imageUrl: String): Boolean {
@@ -145,6 +151,23 @@ internal const val MAX_READING_TIME_LABEL = 99
  * Backends report a reading time in whole minutes. Anything missing or zero is
  * dropped rather than rendered as a literal "0 min read".
  */
+/**
+ * When the item was saved, for the bottom-left of the row.
+ *
+ * This is the save date, not a publication date: neither backend records when an
+ * article was published. Null when unset, so a row never reads "1 Jan 1970".
+ */
+internal fun savedDateLabel(
+    epochMillis: Long,
+    zone: ZoneId = ZoneId.systemDefault(),
+    locale: Locale = Locale.getDefault(),
+): String? {
+    if (epochMillis <= 0L) return null
+    return DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
+        .withLocale(locale)
+        .format(Instant.ofEpochMilli(epochMillis).atZone(zone))
+}
+
 internal fun readingTimeLabel(minutes: Int?): String? = when {
     minutes == null || minutes <= 0 -> null
     minutes > MAX_READING_TIME_LABEL -> "60+ min read"
@@ -178,6 +201,7 @@ data class ListItemUiState(
     val favorite: Boolean,
     val unread: Boolean,
     val meta: String?,
+    val savedDate: String?,
 )
 
 sealed class MyListNavigationEvent {

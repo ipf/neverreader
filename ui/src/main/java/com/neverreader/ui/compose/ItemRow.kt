@@ -52,6 +52,7 @@ fun ItemRow(
     loadImage: suspend (String) -> ByteArray?,
     favorite: Boolean,
     unread: Boolean,
+    savedDate: String? = null,
     onClick: () -> Unit,
     onToggleFavorite: () -> Unit,
     onShare: () -> Unit,
@@ -132,9 +133,21 @@ fun ItemRow(
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            // Bottom-left: when the item was saved. The weighted spacer pushes the
+            // actions right whether or not there is a date to show.
+            if (savedDate != null) {
+                Text(
+                    text = savedDate,
+                    style = typography.p4,
+                    color = colors.textSecondary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f, fill = false),
+                )
+            }
+            Spacer(Modifier.weight(1f))
             AppIconButton(onClick = onToggleFavorite) {
                 Icon(
                     painter = painterResource(
