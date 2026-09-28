@@ -26,7 +26,7 @@ class OpenSourceLicensesFragment : AbsNeverReaderFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ) = content {
-        AppTheme {
+        AppTheme(darkTheme = isDarkTheme()) {
             Column {
                 AppBar(
                     navigationIcon = {

@@ -51,7 +51,7 @@ class PrefsFragment : AbsNeverReaderFragment() {
     ): View = ComposeView(requireContext()).apply {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
-            com.neverreader.ui.theme.AppTheme {
+            com.neverreader.ui.theme.AppTheme(darkTheme = isDarkTheme()) {
                 SettingsScreen(
                     appPrefs = appPrefs,
                     onBack = { requireActivity().onBackPressedDispatcher.onBackPressed() },

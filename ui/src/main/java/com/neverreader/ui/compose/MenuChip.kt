@@ -69,6 +69,10 @@ fun <T> MenuChip(
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
+            // Material draws the menu on its own surfaceContainer colour, which
+            // ignored the in-app theme and came out lavender.
+            shape = RoundedCornerShape(AppRadii.chip),
+            containerColor = colors.chipBackground,
         ) {
             options.forEach { option ->
                 DropdownMenuItem(
@@ -78,7 +82,7 @@ fun <T> MenuChip(
                             style = AppTheme.typography.p4,
                             // The current choice is already spelled out on the chip,
                             // so this is the one that reads as selected.
-                            color = if (option == selected) colors.teal1 else colors.grey3,
+                            color = if (option == selected) colors.teal1 else colors.grey1,
                         )
                     },
                     onClick = {

@@ -1,6 +1,7 @@
 package com.neverreader.app.settings
 
 import android.content.Context
+import android.content.res.Configuration
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -21,7 +22,7 @@ class Theme @Inject constructor(prefs: Preferences) {
     private val pref: IntPreference
 
     init {
-        pref = prefs.forUser("appTheme", LIGHT)
+        pref = prefs.forUser("appTheme", SYSTEM)
     }
 
     /**
@@ -49,6 +50,7 @@ class Theme @Inject constructor(prefs: Preferences) {
         if (activity != null) {
             allowedFlag = activity.themeFlag
         }
+        cachedContext = context ?: activity
 
         return applyFlagsToTheme(theme, allowedFlag)
     }
@@ -142,8 +144,18 @@ class Theme @Inject constructor(prefs: Preferences) {
     }
 
     companion object {
+        /** Last context seen by [get], used to resolve [SYSTEM]. */
+        private var cachedContext: Context? = null
+
         const val LIGHT: Int = 0
         const val DARK: Int = 1
+
+        /**
+         * Follow the system setting. This is the default: the preference had no
+         * UI behind it, so it was stuck on [LIGHT] and the app simply had no
+         * dark mode even with the system in dark.
+         */
+        const val SYSTEM: Int = 3
 
         // OPT this would be a good place to use bitwise ops instead
         const val FLAG_ALLOW_ALL: Int = 0
@@ -151,12 +163,23 @@ class Theme @Inject constructor(prefs: Preferences) {
         const val FLAG_ONLY_LIGHT: Int = 2
 
 
-        private fun applyFlagsToTheme(theme: Int, flag: Int): Int {
-            when (flag) {
-                FLAG_ONLY_DARK -> return DARK
-                FLAG_ONLY_LIGHT -> return LIGHT
+        /** Whether [context] is currently in dark mode, per the system setting. */
+        fun isSystemDark(context: Context?): Boolean {
+            val mode = (context?.resources?.configuration?.uiMode ?: 0) and Configuration.UI_MODE_NIGHT_MASK
+            return mode == Configuration.UI_MODE_NIGHT_YES
+        }
 
-                else -> return theme
+        private fun applyFlagsToTheme(theme: Int, flag: Int): Int {
+            return when (flag) {
+                FLAG_ONLY_DARK -> DARK
+                FLAG_ONLY_LIGHT -> LIGHT
+                // Resolved here rather than at every use, so the activity theme
+                // and Compose agree on one value.
+                else -> if (theme == SYSTEM) {
+                    if (isSystemDark(cachedContext)) DARK else LIGHT
+                } else {
+                    theme
+                }
             }
         }
 
@@ -189,4 +212,18 @@ class Theme @Inject constructor(prefs: Preferences) {
             }
         }
     }
+}
+
+/**
+ * The in-app light/dark preference for [context], or false when there is no
+ * activity to ask.
+ *
+ * Compose has to be told this rather than left to default to
+ * isSystemInDarkTheme(): the window background comes from the XML theme that the
+ * activity picked from this same preference, so when the two disagree the app
+ * paints dark surfaces onto a light window.
+ */
+fun isDarkAppTheme(context: Context?): Boolean {
+    val activity = context as? com.neverreader.sdk.util.AbsNeverReaderActivity ?: return false
+    return Theme.isDark(activity.currentTheme())
 }

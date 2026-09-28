@@ -23,6 +23,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -73,7 +74,7 @@ class AuthenticationFragment : AbsNeverReaderFragment() {
     ): View = ComposeView(requireContext()).apply {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
-            AppTheme {
+            AppTheme(darkTheme = isDarkTheme()) {
                 AuthenticationScreen(
                     viewModel = viewModel,
                     onOpenUrl = ::openVerificationUrl,
@@ -169,6 +170,17 @@ private fun AuthenticationScreen(
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Uri,
                     imeAction = ImeAction.Next,
+                ),
+                // Material's default focus/cursor colour is a purple that appears
+                // nowhere else in the app; the theme owns these.
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = AppTheme.colors.teal1,
+                    unfocusedBorderColor = AppTheme.colors.grey3,
+                    cursorColor = AppTheme.colors.teal1,
+                    focusedLabelColor = AppTheme.colors.teal1,
+                    unfocusedLabelColor = AppTheme.colors.grey3,
+                    focusedTextColor = AppTheme.colors.grey1,
+                    unfocusedTextColor = AppTheme.colors.grey1,
                 ),
                 modifier = Modifier.fillMaxWidth(),
             )

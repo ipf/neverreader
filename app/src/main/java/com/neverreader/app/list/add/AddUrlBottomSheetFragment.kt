@@ -56,7 +56,7 @@ class AddUrlBottomSheetFragment : AbsNeverReaderBottomSheetDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ) = content {
-        AppTheme {
+        AppTheme(darkTheme = com.neverreader.app.settings.isDarkAppTheme(activity)) {
             AddUrlBottomSheet()
         }
     }

@@ -16,15 +16,12 @@ import androidx.appcompat.app.AppCompatDialogFragment
 import androidx.fragment.app.Fragment
 import com.neverreader.app.App
 import com.neverreader.app.App.Companion.from
-import com.neverreader.app.App.Companion.getStringResource
 import com.neverreader.app.MainActivity
 import com.neverreader.app.settings.Theme
+import com.neverreader.app.settings.isDarkAppTheme
 import com.neverreader.sdk.util.fragment.NeverReaderFragmentManager
 import com.neverreader.util.android.FormFactor
 import com.neverreader.util.android.ViewUtil.refreshDrawableStateDeep
-import com.neverreader.util.android.fragment.FragmentUtil
-import com.neverreader.util.android.fragment.FragmentUtil.isDetachedOrFinishing
-import com.neverreader.util.android.fragment.FragmentUtil.isFinishing
 import com.neverreader.util.android.view.DialogSizeWrapper
 import com.neverreader.util.java.Logs
 
@@ -188,7 +185,7 @@ abstract class AbsNeverReaderFragment : AppCompatDialogFragment() {
         )
         dialog.window!!.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
 
-        Companion.setupDialogWithNoTopSpace(mDialogRootView!!)
+        setupDialogWithNoTopSpace(mDialogRootView!!)
 
         return dialog
     }
@@ -246,24 +243,15 @@ abstract class AbsNeverReaderFragment : AppCompatDialogFragment() {
             .finishFragment(this, getActivity()!!)
     }
 
-    val isDetachedOrFinishing: Boolean
-        /**
-         * Convenience method for calling [FragmentUtil.isDetachedOrFinishing] with itself.
-         */
-        get() = isDetachedOrFinishing(this)
-
-    val isFinishing: Boolean
-        /**
-         * Convenience method for calling [FragmentUtil.isFinishing] with itself.
-         */
-        get() = isFinishing(this)
-
     /**
      * The app's theme (dark/light mode) has changed.
      */
     fun onThemeChanged(newTheme: Int) {
         refreshDrawableStateDeep(this.viewRoot)
     }
+
+    /** See [isDarkAppTheme]. */
+    protected fun isDarkTheme(): Boolean = isDarkAppTheme(activity)
 
     val absNeverReaderActivity: AbsNeverReaderActivity?
         /**
@@ -321,16 +309,6 @@ abstract class AbsNeverReaderFragment : AppCompatDialogFragment() {
                 mRootView // Seems like the compatibility library wraps the view returned by onCreateView and returns that parent in super.getView() instead of our actual view. So we just maintain a reference ourselves.
             }
         }
-
-    /**
-     * When fragments detach, they do not have access to resources and this can crash.  So instead of
-     * using getString(), you can use this method which will get the string from the App context instead.
-     * @param res
-     * @return
-     */
-    fun getStringSafely(res: Int): String? {
-        return App.getStringResource(res)
-    }
 
     override fun onCancel(dialog: DialogInterface) {
         if (showsDialog) {

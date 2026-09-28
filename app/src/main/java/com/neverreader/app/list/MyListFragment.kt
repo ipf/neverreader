@@ -81,7 +81,7 @@ class MyListFragment : AbsNeverReaderFragment() {
     ): View = ComposeView(requireContext()).apply {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
-            AppTheme {
+            AppTheme(darkTheme = isDarkTheme()) {
                 MyListScreen(
                     viewModel = viewModel,
                     onOpenAddUrl = ::showAddUrl,

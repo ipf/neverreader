@@ -33,6 +33,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.neverreader.app.R
 import com.neverreader.app.settings.Theme
+import com.neverreader.backend.model.Bookmark
 import com.neverreader.sdk.util.AbsNeverReaderActivity
 import com.neverreader.sdk.util.AbsNeverReaderFragment
 import com.neverreader.ui.compose.AppBar
@@ -73,11 +74,6 @@ class ReaderFragment : AbsNeverReaderFragment() {
         }
     }
 
-    private fun isDarkTheme(): Boolean {
-        val activity = activity as? AbsNeverReaderActivity ?: return false
-        return Theme.isDark(activity.currentTheme())
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         arguments?.getString("url")?.let { viewModel.load(it, arguments?.getString("id")) }
@@ -113,8 +109,11 @@ private fun ReaderScreen(
                 AppIconButton(onClick = onBack) { UpIcon() }
             },
             title = {
+                // The article's own title. This used to be the host, which sat
+                // immediately right of the back arrow and so read as the back
+                // button's label - and the article had no title at all.
                 Text(
-                    text = state.url.displayHost(),
+                    text = readerTitle(bookmark, state.url),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -269,6 +268,10 @@ internal fun buildArticleHtml(context: Context, article: String, darkTheme: Bool
 }
 
 internal const val READER_STYLESHEET = "html/c/text.css"
+
+/** Falls back to the host while the bookmark is still being read. */
+internal fun readerTitle(bookmark: Bookmark?, url: String): String =
+    bookmark?.title?.takeIf { it.isNotBlank() } ?: url.displayHost()
 
 private fun String.displayHost(): String =
     runCatching { Uri.parse(this).host }.getOrNull().orEmpty()

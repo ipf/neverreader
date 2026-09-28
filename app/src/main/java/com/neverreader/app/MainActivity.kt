@@ -19,7 +19,6 @@ import androidx.navigation.fragment.NavHostFragment
 import com.neverreader.app.R
 import com.neverreader.app.auth.AuthenticationActivity
 import com.neverreader.app.list.MyListFragment
-import com.neverreader.app.reader.Reader
 import com.neverreader.app.settings.PrefsFragment
 import com.neverreader.sdk.util.AbsNeverReaderActivity
 import com.neverreader.sdk.util.AbsNeverReaderFragment
@@ -45,16 +44,19 @@ class MainActivity : AbsNeverReaderActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // First start: redirect to the server setup screen
-        if (App.from(this).userManager.isLoggedIn.not()) {
-            startActivity(Intent(this, AuthenticationActivity::class.java))
-            finish()
-            return
-        }
-
-        setContentView(R.layout.activity_main)
-        onBackPressedDispatcher.addCallback(this, backPressedCallback)
+        // The active account lives in Room and is read asynchronously, so asking
+        // whether we are logged in here raced that read: on a cold start
+        // activeCached was still null and a signed-in user was dumped on the setup
+        // screen. Wait for the row instead. The window background covers the gap.
         lifecycleScope.launch {
+            if (App.from(this@MainActivity).accountManager.active() == null) {
+                startActivity(Intent(this@MainActivity, AuthenticationActivity::class.java))
+                finish()
+                return@launch
+            }
+
+            setContentView(R.layout.activity_main)
+            onBackPressedDispatcher.addCallback(this@MainActivity, backPressedCallback)
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 setupEventsObserver()
             }

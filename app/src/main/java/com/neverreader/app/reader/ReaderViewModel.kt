@@ -43,6 +43,9 @@ class ReaderViewModel @Inject constructor(
                 fail(url, "no saved item for this article")
                 return@launch
             }
+            // Publish the bookmark before the fetch so the title shows straight
+            // away rather than after the round trip.
+            _state.value = State.Loading(url, bookmark)
             val html = runCatching { articleRepository.getArticleHtml(bookmark.id) }
                 .onFailure { fail(url, it.message ?: it::class.java.simpleName, bookmark) }
                 .getOrNull()
@@ -76,7 +79,9 @@ class ReaderViewModel @Inject constructor(
     sealed class State {
         abstract val url: String
 
-        data class Loading(override val url: String) : State()
+        /** [bookmark] is filled in as soon as the local record is read, so the
+         *  title does not wait on the network. */
+        data class Loading(override val url: String, val bookmark: Bookmark? = null) : State()
         data class Content(
             override val url: String,
             val bookmark: Bookmark?,

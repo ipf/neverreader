@@ -66,7 +66,7 @@ class AccountManagementFragment : AbsNeverReaderFragment() {
     ): View = ComposeView(requireContext()).apply {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
-            AppTheme {
+            AppTheme(darkTheme = isDarkTheme()) {
                 AccountScreen(
                     onBack = { requireActivity().onBackPressedDispatcher.onBackPressed() },
                     onLogout = { userManager.logout(activity as? AbsNeverReaderActivity) },
