@@ -3,8 +3,10 @@ package com.neverreader.app.settings
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import dagger.hilt.android.AndroidEntryPoint
 import com.neverreader.sdk.util.AbsNeverReaderActivity
 
+@AndroidEntryPoint
 class OpenSourceLicensesActivity : AbsNeverReaderActivity() {
 
     override val accessType: ActivityAccessRestriction

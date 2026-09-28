@@ -32,6 +32,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 /** A thin class to allow [AccountManagementFragment] to be launched as a fullscreen activity. */
+@AndroidEntryPoint
 class AccountManagementActivity : AbsNeverReaderActivity() {
 
     override val accessType: ActivityAccessRestriction = ActivityAccessRestriction.ANY
