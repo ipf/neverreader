@@ -24,6 +24,16 @@ import android.view.Window
 import android.widget.Toast
 import androidx.annotation.StyleRes
 import androidx.appcompat.app.AppCompatActivity
+import android.widget.FrameLayout
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.fragment.app.commit
+import com.neverreader.app.settings.isDarkAppTheme
 import androidx.core.content.ContextCompat
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
@@ -68,7 +78,6 @@ import java.lang.ref.WeakReference
  * See [.isUserPresent] to opt out.
  */
 abstract class AbsNeverReaderActivity : AppCompatActivity() {
-    protected var mContent: AppActivityContentView? = null
 
     enum class ActivityAccessRestriction {
         /**
@@ -104,7 +113,6 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
     private var mAccessReceiver: BroadcastReceiver? = null
     private var mFullShutdownReceiver: BroadcastReceiver? = null
     private val EXTRA_KILL_APP = "killApp"
-    protected var mRoot: NeverReaderActivityRootView? = null
 
     protected var isMenuVisible: Boolean = true
 
@@ -134,14 +142,61 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
      */
     val snackbarHostState: SnackbarHostState = SnackbarHostState()
 
-    private fun setUpSnackbarHost() {
-        mRoot!!.snackbarHost.apply {
+    private val appContent = mutableStateOf<(@Composable () -> Unit)?>(null)
+    private val fragmentContainerId = View.generateViewId()
+
+    /**
+     * The activity root: a Compose surface holding the subclass's content and the
+     * snackbar host.
+     *
+     * Replaces a three-file XML scaffold - activity_root.xml inflating
+     * NeverReaderActivityRootView, which inflated ril_root.xml, which held a
+     * FrameLayout, a ViewStub and a ComposeView. All it bought was nesting one
+     * container inside another.
+     */
+    private fun installComposeRoot() {
+        super.setContentView(ComposeView(this).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                AppTheme(darkTheme = Theme.isDark(currentTheme())) {
-                    AppSnackbarHost(snackbarHostState)
+                AppTheme(darkTheme = isDarkAppTheme(this@AbsNeverReaderActivity)) {
+                    Box(Modifier.fillMaxSize()) {
+                        appContent.value?.invoke()
+                        AppSnackbarHost(snackbarHostState)
+                    }
                 }
             }
+        })
+    }
+
+    /** Supplies the activity's content: Compose, or [hostFragment]. */
+    protected fun setAppContent(content: @Composable () -> Unit) {
+        appContent.value = content
+    }
+
+    /**
+     * For the activities that still host a fragment. The container is only
+     * created once something asks for it, so an activity using [setAppContent]
+     * is not covered by an empty one.
+     */
+    protected fun hostFragment(fragment: Fragment, afterAttach: (() -> Unit)? = null) {
+        val id = fragmentContainerId
+        setAppContent {
+            AndroidView(
+                modifier = Modifier.fillMaxSize(),
+                factory = { ctx ->
+                    FrameLayout(ctx).apply {
+                        this.id = id
+                        // The fragment manager resolves a container by this id, and
+                        // the id only resolves once the view is attached. This
+                        // factory runs during composition, which is after onCreate
+                        // has returned, so the commit has to wait for that.
+                        post {
+                            supportFragmentManager.commit { replace(id, fragment) }
+                            afterAttach?.invoke()
+                        }
+                    }
+                },
+            )
         }
     }
 
@@ -160,7 +215,6 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
     val neverReaderFragmentManager: NeverReaderFragmentManager =
         NeverReaderFragmentManager(super.getSupportFragmentManager(), this)
     private var mIsContentSet = false
-    private val mWindowInsets = Rect()
 
     fun app(): App? {
         return application as? App
@@ -195,19 +249,13 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
         setActivityTheme(app()!!.theme().get(this))
 
 
-        // Create the root layout structure that will wrap the view supplied by subclasses.
         if (mIsContentSet) {
             Logs.throwIfNotProduction("You must call the super.onCreate() of AbsNeverReaderActivity before calling setContentView")
         }
-        super.setContentView(R.layout.activity_root)
-        mRoot = findViewById<NeverReaderActivityRootView>(R.id.nr_root)
-        mRoot!!.attach(this)
-        mContent = mRoot!!.contentView
-        setUpSnackbarHost()
+        installComposeRoot()
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if (this@AbsNeverReaderActivity.root.onBackPressed()) return  // Handled
                 if (neverReaderFragmentManager.onBackPressed()) return  // Handled
                 for (listener in ArrayList<OnBackPressedListener>(mOnBackPressedListeners)) { // Iterates on a copy to allow listeners to remove themselves during callback/iteration without a concurrent mod exceptions.
                     if (listener.onBackPressed()) return  // Handled
@@ -238,37 +286,8 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
 
         setTaskDescription(TaskDescription(label, null, colorPrimary))
 
-        ViewCompat.setOnApplyWindowInsetsListener(
-            mRoot!!
-        ) { v: View?, insets: WindowInsetsCompat? ->
-            mWindowInsets.set(
-                insets!!.systemWindowInsetLeft,
-                insets.systemWindowInsetTop,
-                insets.systemWindowInsetRight,
-                insets.systemWindowInsetBottom
-            )
-            insets
-        }
 
         app()!!.activities().onActivityCreate(this)
-    }
-
-    override fun setContentView(view: View?) {
-        // Overridden to insert into our root layout instead.
-        mIsContentSet = true
-        mContent!!.addView(view)
-    }
-
-    override fun setContentView(layoutResID: Int) {
-        // Overridden to insert into our root layout instead.
-        mIsContentSet = true
-        layoutInflater.inflate(layoutResID, mContent)
-    }
-
-    override fun setContentView(view: View?, params: ViewGroup.LayoutParams?) {
-        // Overridden to insert into our root layout instead.
-        mIsContentSet = true
-        mContent!!.addView(view, params)
     }
 
     /**
@@ -278,73 +297,14 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
      * Sets the fragment tag as null, if you want to set a tag, use [.setContentFragment].
      * @param fragment
      */
-    fun setContentFragment(fragment: Fragment?) {
-        setContentFragment(fragment, null)
-    }
 
     /**
      * Similar to [.setContentView] but allows you to supply a Fragment as your root layout.
      * @param fragment
      * @param tag
      */
-    fun setContentFragment(fragment: Fragment?, tag: String?) {
-        mIsContentSet = true
-        FragmentUtil.addFragment(fragment!!, this, R.id.content, tag, false)
-    }
 
-    /**
-     * A convenience method to show this fragment based on its launch mode.
-     *
-     *
-     * [FragmentLaunchMode.ACTIVITY] will add the fragment as the main content, same as [.setContentFragment].
-     *
-     *
-     * [FragmentLaunchMode.ACTIVITY_DIALOG] depends on the result of [FormFactor.showSecondaryScreensInDialogs].
-     * If false, it is handled the same as the [FragmentLaunchMode.ACTIVITY] mode. If true, the content view will be set
-     * to a full-screen rainbow bar and the fragment show as a dialog over it. Note in this case, the fragment must be an instance of
-     * [DialogFragment] or an exception will be thrown. Another note is that if this fragment is dismissed, the activity will also
-     * automatically finish itself because there is no other content to view.
-     *
-     *
-     * **Warning** No other [FragmentLaunchMode]'s are supported by this method.
-     *
-     * @param fragment
-     * @param tag
-     * @param mode
-     */
-    fun setContentFragment(fragment: Fragment?, tag: String?, mode: FragmentLaunchMode?) {
-        if (mode == FragmentLaunchMode.ACTIVITY) {
-            setContentFragment(fragment)
-        } else if (mode == FragmentLaunchMode.ACTIVITY_DIALOG
-            || mode == FragmentLaunchMode.DIALOG
-        ) { // If dialog, just launch as activity dialog.
-            if (FormFactor.showSecondaryScreensInDialogs(this)) {
-                // This is a special case where we launch it as dialog with a rainbow covering the background.
-                // There is no additional view layout to the activity.
-                val rainbow = RainbowBar(this)
-                rainbow.layoutParams = ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
-                )
-                setContentView(rainbow)
-
-                FragmentUtil.addFragmentAsDialog(fragment as DialogFragment?, this, tag)
-
-
-                // If this fragment is dismissed (from a back button for example), finish this activity since there is no other content to show.
-                this.neverReaderFragmentManager.addOnBackStackChangedListener {
-                    val frags: NeverReaderFragmentManager = neverReaderFragmentManager
-                    if (frags.backStackEntryCount == 0 || frags.getFragments().isEmpty()) {
-                        finish()
-                    }
-                }
-            } else {
-                setContentFragment(fragment, tag)
-            }
-        } else {
-            throw RuntimeException("unexpected mode")
-        }
-    }
-
+    
     public override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         this.neverReaderFragmentManager.onSaveInstanceState(outState)
@@ -365,9 +325,7 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
      * @param newTheme
      */
     fun onThemeChanged(newTheme: Int) {
-        TransitionManager.beginDelayedTransition(mRoot!!, THEME_CHANGE)
         setActivityTheme(newTheme)
-        ViewUtil.refreshDrawableStateDeep(mRoot!!.getRootView())
 
 
         // Manually update any web views
@@ -848,8 +806,6 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
             }
         }
 
-    val root: NeverReaderActivityRootView
-        get() = mRoot!!
 
     /**
      * Searches these Activities' fragments to find which one holds a certain view. If the parent view is found, it is returned. Otherwise null.

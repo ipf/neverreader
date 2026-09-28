@@ -9,6 +9,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
@@ -19,7 +25,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.neverreader.app.App
 import com.neverreader.app.R
 import com.neverreader.app.UserManager
-import com.neverreader.app.settings.account.AccountManagementActivity
 import com.neverreader.sdk.preferences.AppPrefs
 import com.neverreader.sdk.util.AbsNeverReaderActivity
 import com.neverreader.sdk.util.AbsNeverReaderFragment
@@ -31,6 +36,8 @@ import com.neverreader.ui.view.button.AppIconButton
 import com.neverreader.ui.view.button.UpIcon
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+
+private enum class SettingsOverlay { Account, Licenses }
 
 /**
  * The settings screen: account and open-source licenses.
@@ -52,17 +59,33 @@ class PrefsFragment : AbsNeverReaderFragment() {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
             com.neverreader.ui.theme.AppTheme(darkTheme = isDarkTheme()) {
-                SettingsScreen(
-                    appPrefs = appPrefs,
-                    onBack = { requireActivity().onBackPressedDispatcher.onBackPressed() },
-                    onAccount = {
-                        AccountManagementActivity.startActivity(requireContext())
-                    },
-                    onLogout = { userManager.logout(activity as AbsNeverReaderActivity) },
-                    onOpenSourceLicenses = {
-                        OpenSourceLicensesActivity.startActivity(requireContext())
-                    },
-                )
+                // The two sub-screens used to be separate activities, each with a
+                // manifest entry and a fragment container to host it. They are one
+                // composable each, so they stack here instead.
+                var overlay by remember { mutableStateOf<SettingsOverlay?>(null) }
+                if (overlay != null) {
+                    androidx.activity.compose.BackHandler { overlay = null }
+                }
+                // Either the list or the sub-screen, never both: an overlay
+                // stacked on top was transparent, so both drew at once.
+                when (overlay) {
+                    SettingsOverlay.Account -> AccountScreen(
+                        onBack = { overlay = null },
+                        onLogout = { userManager.logout(activity as AbsNeverReaderActivity) },
+                    )
+
+                    SettingsOverlay.Licenses -> OpenSourceLicensesScreen(
+                        onBack = { overlay = null },
+                    )
+
+                    null -> SettingsScreen(
+                        appPrefs = appPrefs,
+                        onBack = { requireActivity().onBackPressedDispatcher.onBackPressed() },
+                        onAccount = { overlay = SettingsOverlay.Account },
+                        onLogout = { userManager.logout(activity as AbsNeverReaderActivity) },
+                        onOpenSourceLicenses = { overlay = SettingsOverlay.Licenses },
+                    )
+                }
             }
         }
     }

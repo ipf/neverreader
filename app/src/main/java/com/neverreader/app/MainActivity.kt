@@ -33,11 +33,15 @@ class MainActivity : AbsNeverReaderActivity() {
 
     private val viewModel: MainViewModel by viewModels()
 
-    private val navHostFragment: NavHostFragment?
-        get() = supportFragmentManager.findFragmentById(R.id.fragmentContainer) as? NavHostFragment
+    /**
+     * Held directly rather than looked up by view id: there is no
+     * FragmentContainerView in a layout any more, so the container is created in
+     * code and the graph attached afterwards.
+     */
+    private val navHost = NavHostFragment()
 
     private val navController: NavController?
-        get() = navHostFragment?.navController
+        get() = navHost.navController
 
     override val accessType: ActivityAccessRestriction = ActivityAccessRestriction.ANY
 
@@ -55,7 +59,12 @@ class MainActivity : AbsNeverReaderActivity() {
                 return@launch
             }
 
-            setContentView(R.layout.activity_main)
+            // The graph cannot be set before the fragment exists, and
+            // NavHostFragment would normally read it from activity_main.xml.
+            hostFragment(navHost) {
+                supportFragmentManager.executePendingTransactions()
+                navController?.setGraph(R.navigation.main_graph)
+            }
             onBackPressedDispatcher.addCallback(this@MainActivity, backPressedCallback)
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 setupEventsObserver()
@@ -110,5 +119,5 @@ class MainActivity : AbsNeverReaderActivity() {
     }
 
     private val currentFragment: Fragment?
-        get() = navHostFragment?.childFragmentManager?.primaryNavigationFragment
+        get() = navHost.childFragmentManager.primaryNavigationFragment
 }

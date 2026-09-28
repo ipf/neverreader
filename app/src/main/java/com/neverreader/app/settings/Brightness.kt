@@ -7,7 +7,6 @@ import kotlin.math.min
 object Brightness {
     // OPT does software dimming this slow down drawing? what about hardware acceleration? is this worth the extra dimness?
     // OPT i disabled software dimming for now as it seemed to be too dark in many cases and possibly? causes extra drawing calls.
-    //     if you turn it back on, uncomment it NeverReaderActivityRootView
     // OPT if we stick with only hardware, clean up this code to remove the uneeded software dimming code.
     private var mUsingCustomBrightness = false
     private var mHardware = 0f // 0 to 1 // 0 is dim, 1 is bright
