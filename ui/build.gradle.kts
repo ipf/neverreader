@@ -7,7 +7,6 @@ android {
     namespace = "com.neverreader.ui"
     testOptions.unitTests.isIncludeAndroidResources = true
     buildFeatures {
-        viewBinding = true
         compose = true
     }
 }

@@ -54,7 +54,6 @@ import com.neverreader.app.R
 import com.neverreader.app.settings.Brightness
 import com.neverreader.app.settings.Theme
 import com.neverreader.sdk.util.fragment.NeverReaderFragmentManager
-import com.neverreader.sdk.util.view.RainbowBar
 import com.neverreader.ui.compose.AppSnackbarHost
 import com.neverreader.ui.theme.AppTheme
 import com.neverreader.util.android.ApiLevel
@@ -69,9 +68,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import com.neverreader.util.android.view.ManuallyUpdateTheme
 import com.neverreader.util.java.Logs
-import java.lang.ref.WeakReference
 
 /**
  * The base activity for NeverReader's screens. Automatically handles tracking and [AppLifecycle] events.
@@ -124,8 +121,6 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
      */
     fun currentTheme(): Int = mTheme
 
-    protected var mViewsListeningForThemeChanges: ArrayList<WeakReference<ManuallyUpdateTheme?>> =
-        ArrayList<WeakReference<ManuallyUpdateTheme?>>()
 
     private var mThemeFlag = 0
 
@@ -327,12 +322,6 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
     fun onThemeChanged(newTheme: Int) {
         setActivityTheme(newTheme)
 
-
-        // Manually update any web views
-        for (reference in mViewsListeningForThemeChanges) {
-            val view = reference.get()
-            view?.updateThemeManually()
-        }
 
         setBackgroundDrawable()
         mTheme = newTheme
@@ -776,10 +765,6 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
     fun startDefaultActivity() {
         val activity: Class<out Activity> = app()?.userManager()!!.defaultActivity
         startActivity(Intent(this, activity))
-    }
-
-    fun registerViewForThemeChanges(view: ManuallyUpdateTheme?) {
-        mViewsListeningForThemeChanges.add(WeakReference<ManuallyUpdateTheme?>(view))
     }
 
 

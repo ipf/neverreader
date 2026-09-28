@@ -80,7 +80,6 @@ android {
         baseline = file("lint-baseline.xml")
     }
     buildFeatures {
-        viewBinding = true
         compose = true
         buildConfig = true
     }
