@@ -5,10 +5,6 @@
     <!-- Version 2 is switching the base theme to see if we can fix the abc_ic_ab_back_material.xml resource not found crash on 4.4 -->
 
     
-    <style name="ProgressCircle">
-        <item name="android:layout_width">@dimen/circle_progress_diameter</item>
-        <item name="android:layout_height">@dimen/circle_progress_diameter</item>
-    </style>
 
     <style name="FetchingDialog" parent="@android:style/Theme.Dialog">
         <item name="android:windowBackground">@color/transparent</item>

@@ -47,7 +47,6 @@
     	Postfix: _t = title,
     			 _m = message
     -->
-	<string name="dg_fetching">Récupération de votre liste…</string>
 
 	<string name="dg_no_email_app_t">Échec de l\'envoi d\'un courriel</string>
 	<string name="dg_no_email_app_m">Cet appareil n\'a pas d\'application de courriel installé.</string>

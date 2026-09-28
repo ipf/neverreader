@@ -44,7 +44,6 @@
     	Postfix: _t = title,
     			 _m = message
     -->
-	<string name="dg_fetching">Retrieving your list&#8230;</string>
 
 	<string name="dg_no_email_app_t">Cannot Send Email</string>
 	<string name="dg_no_email_app_m">This device does not have any email apps installed.</string>

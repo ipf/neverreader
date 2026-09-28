@@ -43,7 +43,6 @@
     	Postfix: _t = title,
     			 _m = message
     -->
-	<string name="dg_fetching">リストを復元中…</string>
 
 	<string name="dg_no_email_app_t">メールを送信できません</string>
 	<string name="dg_no_email_app_m">このデバイスにはメールアプリがインストールされていません。</string>

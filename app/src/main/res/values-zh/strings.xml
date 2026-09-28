@@ -43,7 +43,6 @@
     	Postfix: _t = title,
     			 _m = message
     -->
-	<string name="dg_fetching">正在检索列表…</string>
 
 	<string name="dg_no_email_app_t">无法发送电子邮件</string>
 	<string name="dg_no_email_app_m">此设备未安装任何电子邮件应用程序。</string>

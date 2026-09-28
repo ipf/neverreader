@@ -3,8 +3,6 @@
 
     <!-- Dark overrides. Android picks these by the current uiMode. -->
     <color name="add_overlay_free_stroke">@color/nr_grey_3</color>
-    <color name="nr_rotation_lock">@color/nr_grey_2</color>
-    <color name="nr_rotation_lock_bg_base">@color/white</color>
 
     <color name="ic_launcher_bg_start">#00A094</color>
     <color name="ic_launcher_bg_end">#002E2B</color>

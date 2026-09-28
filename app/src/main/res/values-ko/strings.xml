@@ -43,7 +43,6 @@
     	Postfix: _t = title,
     			 _m = message
     -->
-	<string name="dg_fetching">목록 검색 중…</string>
 
 	<string name="dg_no_email_app_t">이메일을 보낼 수 없음</string>
 	<string name="dg_no_email_app_m">이 장치에는 이메일 앱이 설치되어 있지 않습니다.</string>

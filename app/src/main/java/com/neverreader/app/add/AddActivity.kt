@@ -38,9 +38,6 @@ class AddActivity : AbsNeverReaderActivity() {
         // Do not check in this Activity
     }
 
-    override fun supportsRotationLock(): Boolean {
-        return false
-    }
 
     override val isListenUiEnabled: Boolean
         get() = false

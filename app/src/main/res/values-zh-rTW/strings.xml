@@ -43,7 +43,6 @@
     	Postfix: _t = title,
     			 _m = message
     -->
-	<string name="dg_fetching">擷取清單中…</string>
 
 	<string name="dg_no_email_app_t">無法傳送電子郵件</string>
 	<string name="dg_no_email_app_m">此裝置未安裝任何電子郵件應用程式。</string>

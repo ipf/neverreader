@@ -47,7 +47,6 @@
     	Postfix: _t = title,
     			 _m = message
     -->
-	<string name="dg_fetching">Je lijst wordt opgehaald…</string>
 
 	<string name="dg_no_email_app_t">Kan geen e-mail versturen</string>
 	<string name="dg_no_email_app_m">Dit toestel heeft geen e-mail apps geïnstalleerd.</string>

@@ -25,9 +25,6 @@
 	
 
     
-	<declare-styleable name="DialogSizeWrapper">
-        <attr name="max_width" format="dimension" />
-    </declare-styleable>
     
 
     
@@ -45,4 +42,9 @@
 	
 
 	
+
+    <!-- Read by DialogSizeWrapper, which sizes fragment dialogs on large screens. -->
+    <declare-styleable name="DialogSizeWrapper">
+        <attr name="max_width" format="dimension" />
+    </declare-styleable>
 </resources>

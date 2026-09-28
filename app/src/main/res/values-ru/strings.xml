@@ -55,7 +55,6 @@
     	Postfix: _t = title,
     			 _m = message
     -->
-	<string name="dg_fetching">Получение списка…</string>
 
 	<string name="dg_no_email_app_t">Невозможно отправить email</string>
 	<string name="dg_no_email_app_m">В этом устройстве не установлен клиент email.</string>

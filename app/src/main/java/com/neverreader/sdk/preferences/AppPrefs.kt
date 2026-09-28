@@ -28,7 +28,6 @@ class AppPrefs @Inject constructor(
     val prefs: Preferences,
     @ApplicationContext context: Context
 ) {
-    val ROTATION_LOCK: BooleanPreference = prefs.forUser("enableRotationLock", !isTablet(context))
 
     /**
      * Whether to load article thumbnails that are served by a third party.

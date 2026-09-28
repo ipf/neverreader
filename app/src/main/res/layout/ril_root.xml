@@ -8,13 +8,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <ViewStub
-        android:id="@+id/stub_lock"
-        android:inflatedId="@+id/locks"
-        android:layout="@layout/rotation_lock"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
     <androidx.compose.ui.platform.ComposeView
         android:id="@+id/snackbarHost"
         android:layout_width="match_parent"

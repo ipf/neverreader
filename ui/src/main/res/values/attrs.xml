@@ -6,16 +6,7 @@
         the app ships; they replaced the licensed Graphik LCG and Doyle.
     -->
 
-    <declare-styleable name="CheckableHelper">
-        <attr name="isCheckable" format="boolean" />
-        <!-- A content description to use when checked. When not, it will use the default one. -->
-        <attr name="checkedContentDescription" format="string" />
-    </declare-styleable>
 
-    <declare-styleable name="RainbowProgressCircleView">
-        <attr name="progressColorsExcludeCoral" format="boolean" />
-        <attr name="progressStartAsArc" format="boolean" />
-    </declare-styleable>
 
     
 

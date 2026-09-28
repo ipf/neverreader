@@ -848,10 +848,6 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
             }
         }
 
-    open fun supportsRotationLock(): Boolean {
-        return true
-    }
-
     val root: NeverReaderActivityRootView
         get() = mRoot!!
 

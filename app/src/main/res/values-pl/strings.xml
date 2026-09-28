@@ -55,7 +55,6 @@
     	Postfix: _t = title,
     			 _m = message
     -->
-	<string name="dg_fetching">Pobieranie listy…</string>
 
 	<string name="dg_no_email_app_t">Nie można wysłać wiadomości e-mail</string>
 	<string name="dg_no_email_app_m">Na tym urządzeniu nie zainstalowano żadnych aplikacji poczty e-mail.</string>

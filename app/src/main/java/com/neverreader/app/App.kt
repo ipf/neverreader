@@ -14,7 +14,6 @@ import com.neverreader.sdk.http.HttpClientDelegate
 import com.neverreader.app.settings.Theme
 import com.neverreader.sdk.util.wakelock.WakeLockManager
 import com.neverreader.util.android.Clipboard
-import com.neverreader.app.settings.rotation.RotationLock
 import com.neverreader.sdk.preferences.AppPrefs
 import com.neverreader.sdk.util.AbsNeverReaderActivity
 import com.neverreader.util.android.IntentUtils
@@ -37,7 +36,7 @@ class App : Application(), Configuration.Provider {
     @Inject lateinit var accountManager: AccountManager
     @Inject lateinit var userManager: UserManager
     @Inject lateinit var theme: Theme
-    @Inject lateinit var rotationLock: RotationLock
+    @Inject lateinit var legacyPrefs: com.neverreader.util.prefs.Preferences
     @Inject lateinit var activities: ActivityMonitor
     @Inject lateinit var clipboard: Clipboard
     @Inject lateinit var wakelocks: WakeLockManager
@@ -51,14 +50,25 @@ class App : Application(), Configuration.Provider {
     override fun onCreate() {
         super.onCreate()
         AndroidThreeTen.init(this)
+        clearLegacyRotationLock()
         SyncWorker.schedule(this)
+    }
+
+    /**
+     * The rotation lock is gone. It only ever appeared as an overlay that
+     * popped up for a few seconds when you turned the phone, with no settings
+     * row anywhere, so there was nothing to miss - but a stored orientation
+     * lock would be left behind with nothing reading it, and if it were ever
+     * reintroduced the user would come back to a lock they never set.
+     */
+    private fun clearLegacyRotationLock() {
+        legacyPrefs.remove(LEGACY_ROTATION_ORIENTATION_KEY)
     }
 
     fun mode(): AppMode = if (BuildConfig.DEBUG) AppMode.DEV else AppMode.PRODUCTION
     fun threads(): AppThreads = appThreads
     fun theme(): Theme = theme
     fun prefs(): AppPrefs = prefs
-    fun rotationLock(): RotationLock = rotationLock
     fun accountManager(): AccountManager = accountManager
     fun userManager(): UserManager = userManager
     fun bookmarks(): BookmarkRepository = bookmarkRepository
@@ -72,6 +82,7 @@ class App : Application(), Configuration.Provider {
     }
 
     companion object {
+        const val LEGACY_ROTATION_ORIENTATION_KEY = "orientation"
         private lateinit var sContext: App
         private val sOnUserPresenceChangedListeners =
             CopyOnWriteArraySet<OnUserPresenceChangedListener>()
