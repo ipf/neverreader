@@ -78,12 +78,12 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
 
         /**
          * A special case for the Login/Splash Activity. Similar to [.REQUIRES_LOGGED_OUT] as it will auto-finish if logged in or on login.
-         * The only difference is that it will auto launch the default activity as a replacement. The other types just close and offer no replacement.
+         * The only difference is that it will auto-launch the default activity as a replacement. The other types just close and offer no replacement.
          */
         LOGIN_ACTIVITY,
 
         /**
-         * Behaves as ANY if the user is opted into the Guest Mode experience. Otherwise, functions the same as REQUIRES_LOGIN
+         * Behaves as ANY if the user is opted into the Guest Mode experience. Otherwise, functions are the same as REQUIRES_LOGIN
          */
         ALLOWS_GUEST,
 

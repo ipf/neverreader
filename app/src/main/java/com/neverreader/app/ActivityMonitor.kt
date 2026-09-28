@@ -32,7 +32,7 @@ class ActivityMonitor @Inject internal constructor() {
         set(activity, State.CREATED)
 
         activity.addOnLifeCycleChangedListener(object : SimpleOnLifeCycleChangedListener() {
-            public override fun onActivityCreate(
+            override fun onActivityCreate(
                 savedInstanceState: Bundle?,
                 activity: AbsNeverReaderActivity?
             ) {
@@ -40,31 +40,31 @@ class ActivityMonitor @Inject internal constructor() {
                 set(activity, State.CREATED)
             }
 
-            public override fun onActivityRestart(activity: AbsNeverReaderActivity?) {
+            override fun onActivityRestart(activity: AbsNeverReaderActivity?) {
                 set(activity, State.RESTARTED)
             }
 
-            public override fun onActivityStart(activity: AbsNeverReaderActivity?) {
+            override fun onActivityStart(activity: AbsNeverReaderActivity?) {
                 set(activity, State.STARTED)
             }
 
-            public override fun onActivityResume(activity: AbsNeverReaderActivity?) {
+            override fun onActivityResume(activity: AbsNeverReaderActivity?) {
                 set(activity, State.RESUMED)
             }
 
-            public override fun onActivityPause(activity: AbsNeverReaderActivity?) {
+            override fun onActivityPause(activity: AbsNeverReaderActivity?) {
                 set(activity, State.PAUSED)
             }
 
-            public override fun onActivityStop(activity: AbsNeverReaderActivity?) {
+            override fun onActivityStop(activity: AbsNeverReaderActivity?) {
                 set(activity, State.STOPPED)
             }
 
-            public override fun onActivityDestroy(activity: AbsNeverReaderActivity?) {
+            override fun onActivityDestroy(activity: AbsNeverReaderActivity?) {
                 set(activity, null)
             }
 
-            public override fun onRequestPermissionsResult(
+            override fun onRequestPermissionsResult(
                 requestCode: Int,
                 permissions: Array<out String>,
                 grantResults: IntArray
@@ -90,7 +90,7 @@ class ActivityMonitor @Inject internal constructor() {
 
         // Attach it to the new state
         if (state != null) {
-            mActivities.put(state, activity)
+            mActivities[state] = activity
         }
 
         // Invoke listeners
@@ -111,56 +111,26 @@ class ActivityMonitor @Inject internal constructor() {
     val visible: Activity?
         /**
          * @return An app activity that is visible to the user. In most cases this just means in the resumed or started state,
-         * but in a multi window mode, it could include paused.
+         * but in a multi-window mode, it could include paused.
          * null if nothing is visible.
          */
         get() {
             if (mActivities.containsKey(State.RESUMED)) {
-                return mActivities.get(State.RESUMED)
+                return mActivities[State.RESUMED]
             } else if (mActivities.containsKey(State.STARTED)) {
-                return mActivities.get(State.STARTED)
+                return mActivities[State.STARTED]
             } else if (mActivities.containsKey(State.PAUSED)) {
                 val paused =
-                    mActivities.get(State.PAUSED)
-                if (ApiLevel.isNougatOrGreater() && paused!!.isInMultiWindowMode()) {
-                    return paused
+                    mActivities[State.PAUSED]
+                return if (ApiLevel.isNougatOrGreater() && paused!!.isInMultiWindowMode) {
+                    paused
                 } else {
-                    return null
+                    null
                 }
             } else {
                 return null
             }
         }
-
-    val availableContext: Activity?
-        /**
-         * @return Returns the most relevant or recent Activity if available or null.
-         */
-        get() {
-            if (mActivities.containsKey(State.RESUMED)) {
-                return mActivities.get(State.RESUMED)
-            } else if (mActivities.containsKey(State.STARTED)) {
-                return mActivities.get(State.STARTED)
-            } else if (mActivities.containsKey(State.CREATED)) {
-                return mActivities.get(State.CREATED)
-            } else if (mActivities.containsKey(State.RESTARTED)) {
-                return mActivities.get(State.RESTARTED)
-            } else if (mActivities.containsKey(State.PAUSED)) {
-                return mActivities.get(State.PAUSED)
-            } else if (mActivities.containsKey(State.STOPPED)) {
-                return mActivities.get(State.STOPPED)
-            } else {
-                return null
-            }
-        }
-
-    fun addListener(listener: Listener?) {
-        mListeners.add(listener!!)
-    }
-
-    fun removeListener(listener: Listener?) {
-        mListeners.remove(listener)
-    }
 
     interface Listener {
         fun onActivityStarted(activity: Activity?)
@@ -168,14 +138,4 @@ class ActivityMonitor @Inject internal constructor() {
         fun onActivityPaused(activity: Activity?)
     }
 
-    class SimpleListener : Listener {
-        override fun onActivityStarted(activity: Activity?) {
-        }
-
-        override fun onActivityResumed(activity: Activity?) {
-        }
-
-        override fun onActivityPaused(activity: Activity?) {
-        }
-    }
 }

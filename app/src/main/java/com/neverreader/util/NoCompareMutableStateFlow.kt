@@ -1,11 +1,13 @@
 package com.neverreader.util
 
+import kotlinx.coroutines.ExperimentalForInheritanceCoroutinesApi
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 
+@OptIn(ExperimentalForInheritanceCoroutinesApi::class)
 interface NoCompareStateFlow<T> : SharedFlow<T> {
     val value: T
 }

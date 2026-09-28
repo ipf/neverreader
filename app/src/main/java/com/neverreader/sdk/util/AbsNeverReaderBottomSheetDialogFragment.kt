@@ -12,7 +12,7 @@ abstract class AbsNeverReaderBottomSheetDialogFragment : BottomSheetDialogFragme
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // fixes weird bug with bottom sheets and landscape.
-        // bug might be caused by us using a very old version of material library
+        // bug might be caused by us using a very old version of material libraries
         // try to remove after we updated past v1.0.0
 
         BottomSheetBehavior.from(view.parent as View).apply {

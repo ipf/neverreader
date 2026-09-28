@@ -1,16 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="App_IconButton">
-        <item name="android:focusable">true</item>
-        <item name="android:clickable">true</item>
-        <item name="android:scaleType">center</item>
-        <item name="android:background">@drawable/nr_ripple_borderless</item>
-        <item name="android:layout_width">@dimen/nr_icon_button_width</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:layout_gravity">center</item>
-        <item name="drawableColor">@color/nr_nst_disableable_grey_3</item>
-        <item name="isCheckable">false</item>
-    </style>
     
     
     
@@ -38,9 +27,6 @@
     <!-- Style for single line search input fields -->
     
     
-
-
-
 
     
     

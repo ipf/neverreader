@@ -62,7 +62,6 @@
     <color name="nr_themed_grey_6">@color/nr_grey_6</color>
     <color name="nr_themed_teal_3">@color/nr_teal_3</color>
     <color name="nr_themed_teal_4">@color/nr_teal_4</color>
-    <color name="nr_nst_disableable_grey_3">@color/nr_grey_4</color>
     <color name="nr_themed_amber_1">@color/amber_30</color>
     <color name="nr_grey_4">#737373</color>
 </resources>

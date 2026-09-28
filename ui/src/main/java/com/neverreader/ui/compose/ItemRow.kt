@@ -160,18 +160,6 @@ fun ItemRow(
     }
 }
 
-/** Placeholder shown behind a thumbnail while it loads and when it fails. */
-@Composable
-fun ThumbnailPlaceholder(modifier: Modifier = Modifier) {
-    Box(
-        modifier
-            .background(
-                color = AppTheme.colors.grey7,
-                shape = RoundedCornerShape(AppRadii.card),
-            )
-    )
-}
-
 @Preview
 @Composable
 private fun ItemRowPreview() {

@@ -5,58 +5,13 @@
     <!-- Accessibility and tooltip labels for icons -->
     <string name="ic_up">Ga terug</string>
     <string name="ic_archive" comment="Label for a button that archives an item. This is a verb.">Archief</string>
-    <string name="ic_save">Opslaan</string>
-    <string name="ic_saved">Opgeslagen</string>
-    <string name="ic_readd">Opnieuw toevoegen</string>
     <string name="ic_favorite">Favoriet</string>
-    <string name="ic_unfavorite">verwijderen uit Favorieten</string>
-    <string name="ic_mark_as_viewed">Markeren als Bekeken</string>
-    <string name="ic_mark_as_not_viewed">Markeren als Niet bekeken</string>
     <string name="ic_share">Delen</string>
-    <string name="ic_delete">Verwijderen</string>
-    <string name="ic_add_tags">Tags toevoegen</string>
-    <string name="ic_filters">Filters</string>
-    <string name="ic_play">Afspelen</string>
-    <string name="ic_pause">Pauzeren</string>
-    <string name="ic_skip">Verder</string>
-    <string name="ic_back">Terug</string>
-    <string name="ic_cancel">Annuleren</string>
-    <string name="ic_listen">Luisteren</string>
-    <string name="ic_plus">+</string>
-    <string name="ic_minus">-</string>
-    <string name="ic_close">Sluiten</string>
-    <string name="ic_edit">Bewerken</string>
     <string name="ic_highlight" comment="Label for button that highlights selected text">Markering</string>
     <string name="ic_copy">Kopiëren</string>
-    <string name="ic_brightness_down">Helderheid scherm verlagen</string>
-    <string name="ic_brightness_up">Helderheid scherm verhogen</string>
-    <string name="ic_brightness_control">Helderheid scherm</string>
-    <string name="ic_settings">Instellingen</string>
-    <string name="ic_premium">NeverReader Premium</string>
-    <string name="ic_menu">Menu</string>
 
     <string name="ac_save">Opslaan</string>
-    <string name="ac_save_long">Opslaan naar NeverReader</string>
-    <string name="ac_previous">Vorige</string>
-    <string name="ac_next">Volgende</string>
     
-    <string name="upgrade">Bijwerken</string>
-    <string name="upgrade_upsell">Krijg toegang tot meer opties voor aanpassen</string>
-    <string name="get_premium">Koop Premium</string>
     
-    <!-- content descriptions -->
-    <string name="setting_incrementor" comment="{setting} is a placeholder for a text style setting, eg Text Size, Line Height, or Margin, do not translate the content within {}">{setting} vergroten</string>
-    <string name="setting_decrementor" comment="{setting} is a placeholder for a text style setting, eg Text Size, Line Height, or Margin, do not translate the content within {}">{setting} verkleinen</string>
-    <string name="text_setting_text_size">Tekstformaat</string>
-    <string name="text_setting_line_height">Regelafstand</string>
-    <string name="text_setting_margin">Marge</string>
 
-
-    <string name="theme_toggle_light_desc">Veranderen naar een licht thema</string>
-    <string name="theme_toggle_dark_desc">Veranderen naar een donker thema</string>
-    <string name="theme_toggle_auto_desc">Thema automatisch wijzigen</string>
-
-    <!-- Strings only used for ux playground-->
-    <string name="light">Licht</string>
-    <string name="dark">Donker</string>
 </resources>

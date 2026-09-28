@@ -23,8 +23,6 @@
         <item>104</item>
     </integer-array>
     <integer name="article_default_font_size">18</integer>
-    <integer name="article_max_margin">145</integer>
-    <integer name="article_min_margin">18</integer>
     <integer name="article_default_margin">18</integer>
     <integer-array name="article_margins">
         <item>18</item>

@@ -134,7 +134,6 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.okhttp.logginginterceptor)
 
-    implementation(libs.markwon)
     implementation(Deps.JSoup.jsoup)
     implementation(Deps.Google.JUniversalCharDet.juniversalchardet)
 

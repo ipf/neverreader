@@ -48,11 +48,8 @@
         <item>50</item>
     </integer-array>
     <integer name="article_default_font_size">18</integer>
-    <integer name="article_max_margin">20</integer>
-    <integer name="article_min_margin">20</integer>
 
     <integer name="article_default_line_height">3</integer>
     <integer name="article_default_margin">18</integer>
 
-    <integer name="listen_max_progress">1000</integer>
 </resources>

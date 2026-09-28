@@ -1,7 +1,3 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="nr_side_sm">@dimen/nr_space_md</dimen>
-    <dimen name="nr_side_grid">@dimen/nr_space_lg</dimen>
-    <dimen name="nr_side_grid_icon_mini">23dp</dimen> <!-- see description in the main dimens.xml -->
-    <dimen name="nr_bottom_sheet_margin">@dimen/nr_space_lg</dimen>
 </resources>

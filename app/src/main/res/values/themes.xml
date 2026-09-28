@@ -34,7 +34,6 @@
 
         <item name="popupMenuStyle">@style/LightPopupMenu</item>
         
-        <item name="iconButtonStyle">@style/App_IconButton</item>
     </style>
 
     <style name="Theme.NeverReaderDefault.Dark" parent="Theme.NeverReaderBase.Dark">
@@ -47,7 +46,6 @@
 
         <item name="popupMenuStyle">@style/DarkPopupMenu</item>
 
-        <item name="iconButtonStyle">@style/App_IconButton</item>
     </style>
     
     <style name="Theme.NeverReaderDefault.Light.Transparent" parent="Theme.NeverReaderDefault.Light">

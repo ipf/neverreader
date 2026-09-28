@@ -10,14 +10,6 @@ import android.widget.FrameLayout
  * serve as a strong type for what ViewGroup the content view is.
  */
 class AppActivityContentView : FrameLayout {
-    constructor(
-        context: Context,
-        attrs: AttributeSet?,
-        defStyleAttr: Int,
-        defStyleRes: Int
-    ) : super(context, attrs, defStyleAttr, defStyleRes)
-
-    fun getContentView(): FrameLayout = this
 
     constructor(context: Context, attrs: AttributeSet?, defStyle: Int) : super(
         context,

@@ -1,7 +1,6 @@
 package com.neverreader.sdk.util
 
 import android.content.Context
-import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -25,14 +24,6 @@ import com.neverreader.util.android.view.ResizeDetectRelativeLayout
 class NeverReaderActivityRootView : ResizeDetectRelativeLayout {
     private var content: AppActivityContentView? = null
     private var rotationLockComponents: RotationLockComponents? = null
-    constructor(
-        context: Context,
-        attrs: AttributeSet?,
-        defStyleAttr: Int,
-        defStyleRes: Int
-    ) : super(context, attrs, defStyleAttr, defStyleRes) {
-        init()
-    }
 
     constructor(context: Context?, attrs: AttributeSet?, defStyle: Int) : super(
         context,
@@ -55,7 +46,7 @@ class NeverReaderActivityRootView : ResizeDetectRelativeLayout {
     }
 
     fun attach(activity: AbsNeverReaderActivity) {
-        content = findViewById<AppActivityContentView>(R.id.content)
+        content = findViewById(R.id.content)
         if (activity.isListenUiEnabled) {
         }
 
@@ -74,16 +65,6 @@ class NeverReaderActivityRootView : ResizeDetectRelativeLayout {
             activity.addOnLifeCycleChangedListener(rotationLockComponents)
             activity.addOnConfigurationChangedListener(rotationLockComponents)
         }
-    }
-
-    fun setListenInsets(insets: Rect?) {
-    }
-
-    /** Set the bottom space needed to show the listen component.  */
-    fun setListenSpacing(height: Int) {
-        val lp = content!!.layoutParams as LayoutParams
-        lp.bottomMargin = height
-        content!!.layoutParams = lp
     }
 
     val contentView: AppActivityContentView

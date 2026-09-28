@@ -40,7 +40,7 @@ object BackPressedUtil {
     }
 
     /**
-     * Create breadth first list of fragments
+     * Create breadth-first list of fragments
      */
     private fun createBreadthFirstFragmentList(fragmentManager: FragmentManager): List<AbsNeverReaderFragment> {
         val fragmentList: MutableList<AbsNeverReaderFragment> = mutableListOf()
