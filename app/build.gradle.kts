@@ -115,8 +115,6 @@ dependencies {
     implementation(libs.androidx.compose.material3.adaptive)
     debugImplementation(libs.androidx.compose.ui.tooling)
     implementation(libs.androidx.compose.ui.tooling.preview)
-    implementation(libs.androidx.fragment)
-    implementation(libs.androidx.fragment.compose)
     // Destinations are composables, so this replaces navigation-fragment-ktx.
     // hilt-navigation-compose is what makes hiltViewModel() work inside one.
     implementation(libs.androidx.navigation.compose)

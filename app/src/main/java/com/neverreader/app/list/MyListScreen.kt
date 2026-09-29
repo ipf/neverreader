@@ -237,7 +237,14 @@ fun MyListScreen(
                 // These strings survived the XML layouts; nothing had been using
                 // them, so an empty list - or a search with no hits - was just a
                 // blank screen.
-                if (items.itemCount == 0 && !refreshing) {
+                //
+                // Gated on the load state too: itemCount is 0 while the first
+                // page is still being queried, which on a large list is long
+                // enough to flash "Start building your list" at a full library.
+                if (items.itemCount == 0 &&
+                    !refreshing &&
+                    items.loadState.refresh is androidx.paging.LoadState.NotLoading
+                ) {
                     item {
                         EmptyState(
                             title = stringResource(emptyTitleRes(sortFilter)),

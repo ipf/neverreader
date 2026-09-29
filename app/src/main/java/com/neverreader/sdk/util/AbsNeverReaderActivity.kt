@@ -36,7 +36,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.fragment.app.commit
 import com.neverreader.app.settings.isDarkAppTheme
 import androidx.core.content.ContextCompat
 import androidx.compose.material3.SnackbarDuration
@@ -48,7 +47,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.core.view.WindowInsetsCompat
-import androidx.fragment.app.DialogFragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.transition.TransitionManager
 import com.neverreader.app.App
@@ -164,7 +162,7 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
         })
     }
 
-    /** Supplies the activity's content: Compose, or [hostFragment]. */
+    /** Supplies the activity's content. Calling it again replaces the whole composition. */
     protected fun setAppContent(content: @Composable () -> Unit) {
         appContent.value = content
     }
@@ -254,22 +252,6 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
 
         app()!!.activities().onActivityCreate(this)
     }
-
-    /**
-     * Similar to [.setContentView] but allows you to supply a Fragment as your root layout.
-     *
-     *
-     * Sets the fragment tag as null, if you want to set a tag, use [.setContentFragment].
-     * @param fragment
-     */
-
-    /**
-     * Similar to [.setContentView] but allows you to supply a Fragment as your root layout.
-     * @param fragment
-     * @param tag
-     */
-
-    
 
     /**
      * Something has modified the theme (dark/light mode), the UI should update as needed.
@@ -769,7 +751,7 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
             requestCode: Int,
             permissions: Array<out String>,
             grantResults: IntArray
-        ) //		void onFocusedFragmentChange(AbsNeverReaderActivity activity, Fragment focus);
+        )
     }
 
     fun addOnConfigurationChangedListener(listener: OnConfigurationChangedListener?) {
@@ -820,21 +802,6 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
         ) {
         }
     }
-
-    /**
-     * A [AbsNeverReaderFragment] has been shown overlaying the activity so that the fragment is now the
-     * main focus of the user.
-     * @see .onRegainedFocus
-     */
-    fun onLostFocus() {}
-
-    /**
-     * A [AbsNeverReaderFragment] that was covering this activity is gone. This activity is once again
-     * the user's main focus.
-     * @see .onLostFocus
-     */
-    fun onRegainedFocus() {}
-
 
     open val isListenUiEnabled: Boolean
         /**
