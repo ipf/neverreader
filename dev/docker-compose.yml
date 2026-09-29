@@ -1,0 +1,120 @@
+# Local Readeck and Wallabag, for exercising the app end to end.
+#
+#   docker compose up -d                       # both
+#   docker compose --profile wallabag up -d    # just one
+#   ./seed.sh
+#
+# The two halves are behind the "readeck" and "wallabag" profiles so they can be
+# started independently. With no profile given, both start.
+#
+# The app reaches these on localhost:8000 and localhost:8080. From an Android
+# emulator the host is 10.0.2.2, so use http://10.0.2.2:8000 and
+# http://10.0.2.2:8080 there.
+#
+# Credentials are in .env - all local, all throwaway. Do not reuse them.
+
+name: neverreader-dev
+
+services:
+  readeck-db:
+    profiles: ["readeck"]
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: ${READECK_DB_USER:-readeck}
+      POSTGRES_PASSWORD: ${READECK_DB_PASSWORD:-readeck}
+      POSTGRES_DB: ${READECK_DB_NAME:-readeck}
+    volumes:
+      - readeck-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${READECK_DB_USER:-readeck}"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    # Not published: only Readeck needs to reach it, over the compose network.
+    expose:
+      - "5432"
+
+  readeck:
+    profiles: ["readeck"]
+    image: ghcr.io/readeck/readeck:latest
+    depends_on:
+      readeck-db:
+        condition: service_healthy
+    environment:
+      # The DSN is a URL; the scheme selects the driver ("postgres").
+      READECK_DATABASE_SOURCE: >-
+        postgres://${READECK_DB_USER:-readeck}:${READECK_DB_PASSWORD:-readeck}@readeck-db:5432/${READECK_DB_NAME:-readeck}?sslmode=disable
+      READECK_SERVER_BASE_URL: http://localhost:${READECK_PORT:-8000}
+      # Signs sessions and the OAuth tokens. Throwaway, but it must be set and
+      # must not change between runs or existing sessions are invalidated.
+      READECK_SECRET_KEY: ${READECK_SECRET_KEY:-dev-secret-not-for-production-0e3f9a}
+      READECK_LOG_FORMAT: text
+      READECK_LOG_LEVEL: info
+    ports:
+      - "${READECK_PORT:-8000}:8080"
+    volumes:
+      - readeck-data:/var/lib/readeck
+    healthcheck:
+      test: ["CMD", "readeck", "healthcheck"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+
+  wallabag-db:
+    profiles: ["wallabag"]
+    image: mariadb:11
+    environment:
+      # Only a root password here. MARIADB_DATABASE/MARIADB_USER are
+      # deliberately NOT set: the wallabag entrypoint provisions the database,
+      # the user and the schema itself, but only when the database does not
+      # already exist. Creating it from this side makes it skip the schema
+      # install, and the container then reports itself healthy against an
+      # empty database where every console command fails.
+      MARIADB_ROOT_PASSWORD: ${WALLABAG_DB_ROOT_PASSWORD:-wallabag-root}
+    volumes:
+      - wallabag-db:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+    expose:
+      - "3306"
+
+  wallabag:
+    profiles: ["wallabag"]
+    image: wallabag/wallabag:latest
+    depends_on:
+      wallabag-db:
+        condition: service_healthy
+    environment:
+      # Note the SYMFONY__ENV__ prefix: these are rendered into
+      # parameters.yml by the image's entrypoint.
+      SYMFONY__ENV__DATABASE_DRIVER: pdo_mysql
+      SYMFONY__ENV__DATABASE_HOST: wallabag-db
+      SYMFONY__ENV__DATABASE_PORT: 3306
+      SYMFONY__ENV__DATABASE_NAME: ${WALLABAG_DB_NAME:-wallabag}
+      SYMFONY__ENV__DATABASE_USER: ${WALLABAG_DB_USER:-wallabag}
+      SYMFONY__ENV__DATABASE_PASSWORD: ${WALLABAG_DB_PASSWORD:-wallabag}
+      # Both required, and neither obvious. The entrypoint only creates the
+      # schema (wallabag:install) when POPULATE_DATABASE is exactly "True" AND
+      # MYSQL_ROOT_PASSWORD is non-empty. Without them the container still
+      # reports itself healthy while the database is completely empty, and
+      # every console command fails on a missing table.
+      POPULATE_DATABASE: "True"
+      MYSQL_ROOT_PASSWORD: ${WALLABAG_DB_ROOT_PASSWORD:-wallabag-root}
+      # The app sends client_id/client_secret "wallabag"/"wallabag", which is
+      # the public client a stock Wallabag registers for its own API. This must
+      # match: AuthenticationViewModel hardcodes those two.
+      WALLABAG_SECRET: ${WALLABAG_SECRET:-dev-secret-not-for-production-91bc2e}
+    ports:
+      - "${WALLABAG_PORT:-8080}:80"
+    volumes:
+      - wallabag-data:/var/www/wallabag/data
+
+volumes:
+  readeck-db:
+  readeck-data:
+  wallabag-db:
+  wallabag-data:
