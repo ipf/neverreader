@@ -245,7 +245,6 @@ object JsonUtil {
      * @throws IOException
      * @throws JsonParseException
      */
-    @Throws(JsonParseException::class, IOException::class)
     fun getText(jp: JsonParser): String? {
         return if (jp.currentToken != JsonToken.VALUE_NULL) jp.text else null
     }

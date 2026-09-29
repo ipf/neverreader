@@ -98,19 +98,19 @@ class PrefixPreferences(private val wrapped: Preferences, private val prefix: St
         return wrapped.forApp(prefix(key), defaultValue)
     }
 
-    override fun <E> forUser(
+    override fun <E : Enum<E>> forUser(
         key: String?,
-        clazz: Class<E?>?,
+        clazz: Class<E>?,
         defaultValue: E?
-    ): EnumPreference<E?> {
+    ): EnumPreference<E> {
         return wrapped.forUser(prefix(key), clazz, defaultValue)
     }
 
-    override fun <E> forApp(
+    override fun <E : Enum<E>> forApp(
         key: String?,
-        clazz: Class<E?>?,
+        clazz: Class<E>?,
         defaultValue: E?
-    ): EnumPreference<E?> {
+    ): EnumPreference<E> {
         return wrapped.forApp(prefix(key), clazz, defaultValue)
     }
 

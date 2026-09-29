@@ -6,8 +6,7 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
 object AppFileUtils {
-    @Suppress("MagicNumber")
-    fun unzip(path: String): Boolean {
+        fun unzip(path: String): Boolean {
         val zipInputStream: ZipInputStream
         return try {
             zipInputStream = ZipInputStream(BufferedInputStream(FileInputStream(path)))
@@ -57,7 +56,6 @@ object AppFileUtils {
         }
     }
 
-    @Throws(IOException::class)
     fun createFile(path: String): File {
         return createFile(File(path), true)
     }
@@ -79,9 +77,7 @@ object AppFileUtils {
      * @return A file representing the path.
      * @throws IOException
      */
-    @Throws(IOException::class)
-    @Suppress("MagicNumber", "NestedBlockDepth")
-    fun createFile(file: File, createEmptyFile: Boolean): File {
+        fun createFile(file: File, createEmptyFile: Boolean): File {
         val directory = file.parentFile
         var directoryReady = false
         var mkdirAttempts = 4

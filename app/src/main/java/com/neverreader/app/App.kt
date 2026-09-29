@@ -114,7 +114,6 @@ class App : Application(), Configuration.Provider {
             }
         }
 
-        @JvmStatic
         fun getStringResource(id: Int): String? {
             if (id == 0) return null
             return sContext.getString(id)

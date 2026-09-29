@@ -23,17 +23,14 @@ interface EclecticHttp {
      * Send a request via POST. All of the params in your requests Uri will be encoded and sent
      * as the POST body. This method supports uploading files.
      */
-    @Throws(Exception::class)
     fun post(request: EclecticHttpRequest?, parser: ResponseParser?): Response?
 
     /**
      * Access the contents of a url.
      */
-    @Throws(Exception::class)
     fun get(request: EclecticHttpRequest?, parser: ResponseParser?): Response?
 
     /** Makes a request via DELETE.  */
-    @Throws(Exception::class)
     fun delete(request: EclecticHttpRequest?, parser: ResponseParser?): Response?
 
     val cookieManager: CookieManager?
@@ -61,7 +58,6 @@ interface EclecticHttp {
          * @param response A response object so you can read status, headers, etc.
          * @return Optionally return a value you want to be available via [Response.getResponse] later.
          */
-        @Throws(Exception::class)
         fun readResponse(inputStream: Stream?, response: Response?): Any?
     }
 

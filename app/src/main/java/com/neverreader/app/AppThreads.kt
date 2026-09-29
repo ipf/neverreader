@@ -30,7 +30,6 @@ import javax.inject.Singleton
  */
 @Singleton
 class AppThreads @Inject constructor(private val wakelocks: WakeLockManager) {
-    @JvmField
     val handler: Handler = Handler(Looper.getMainLooper())
     private val main: Thread = Looper.getMainLooper().thread
 
@@ -126,7 +125,6 @@ class AppThreads @Inject constructor(private val wakelocks: WakeLockManager) {
      */
     fun asyncThen(task: SimpleTask, uiOnComplete: UiThreadResponse?): TaskRunnable {
         val run: TaskRunnable = object : TaskRunnable() {
-            @Throws(Exception::class)
             override fun backgroundOperation() {
                 task.backgroundOperation()
             }
@@ -144,7 +142,6 @@ class AppThreads @Inject constructor(private val wakelocks: WakeLockManager) {
     }
 
     interface SimpleTask {
-        @Throws(Exception::class)
         fun backgroundOperation()
     }
 
@@ -153,7 +150,6 @@ class AppThreads @Inject constructor(private val wakelocks: WakeLockManager) {
     }
 
     interface ResultTask<T> {
-        @Throws(Exception::class)
         fun backgroundOperation(): T?
     }
 

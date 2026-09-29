@@ -49,17 +49,17 @@ interface Preferences {
     fun forUser(key: String?, defaultValue: MutableSet<String?>?): StringSetPreference
     fun forApp(key: String?, defaultValue: MutableSet<String?>?): StringSetPreference
 
-    fun <E> forUser(
+    fun <E : Enum<E>> forUser(
         key: String?,
-        clazz: Class<E?>?,
+        clazz: Class<E>?,
         defaultValue: E?
-    ): EnumPreference<E?>
+    ): EnumPreference<E>
 
-    fun <E> forApp(
+    fun <E : Enum<E>> forApp(
         key: String?,
-        clazz: Class<E?>?,
+        clazz: Class<E>?,
         defaultValue: E?
-    ): EnumPreference<E?>
+    ): EnumPreference<E>
 
     /**
      * Create a nested set of preferences.

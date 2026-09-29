@@ -159,7 +159,6 @@ fun ReaderScreen(
  * The article itself. JavaScript stays off: article HTML comes from a server the
  * user chose, and the reader stylesheet needs no scripting.
  */
-@SuppressLint("SetJavaScriptEnabled")
 @Composable
 private fun ArticleWebView(
     html: String,

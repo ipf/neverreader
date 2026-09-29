@@ -51,7 +51,6 @@ class EclecticOkHttpClient(client: OkHttpClient) : EclecticHttp {
         POST("POST"), DELETE("DELETE"), PATCH("PATCH"), PUT("PUT")
     }
 
-    @Throws(Exception::class)
     override fun post(
         request: EclecticHttpRequest?,
         parser: EclecticHttp.ResponseParser?
@@ -59,7 +58,6 @@ class EclecticOkHttpClient(client: OkHttpClient) : EclecticHttp {
         return execute(request!!, parser, Method.POST)
     }
 
-    @Throws(Exception::class)
     override fun delete(
         request: EclecticHttpRequest?,
         parser: EclecticHttp.ResponseParser?
@@ -68,7 +66,6 @@ class EclecticOkHttpClient(client: OkHttpClient) : EclecticHttp {
     }
 
     /** Executes requests that use a request body.  */
-    @Throws(Exception::class)
     private fun execute(
         request: EclecticHttpRequest,
         parser: EclecticHttp.ResponseParser?,
@@ -147,7 +144,6 @@ class EclecticOkHttpClient(client: OkHttpClient) : EclecticHttp {
         }
     }
 
-    @Throws(Exception::class)
     override fun get(request: EclecticHttpRequest?, parser: EclecticHttp.ResponseParser?): EclecticHttp.Response {
         checkEnabled()
 
@@ -185,7 +181,6 @@ class EclecticOkHttpClient(client: OkHttpClient) : EclecticHttp {
         }
     }
 
-    @Throws(Exception::class)
     private fun execute(request: Request, parser: EclecticHttp.ResponseParser?): EclecticHttp.Response {
         val okResponse = mClient.newCall(request).execute()
         try {

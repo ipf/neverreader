@@ -9,7 +9,6 @@ import android.content.res.Configuration
 /**
  * Major App events.
  */
-@Suppress("TooManyFunctions")
 interface AppLifecycle {
     /**
      * Invoked from within a [android.content.Intent.ACTION_BOOT_COMPLETED] action receiver.

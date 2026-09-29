@@ -75,7 +75,6 @@ object Safe {
 
     fun interface Get<V> {
         /** Do whatever is needed to obtain the value or throw an exception if it cannot be obtained.  */
-        @Throws(Exception::class)
         fun get(): V?
     }
 }

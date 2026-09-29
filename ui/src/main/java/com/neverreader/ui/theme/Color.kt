@@ -15,7 +15,6 @@ import androidx.compose.ui.graphics.Color
  * The ramps are numbered light-to-dark, which is why the semantic role
  * [AppColors.grey1] resolves to `Grey1` in light mode and `DmGrey1` in dark.
  */
-@Suppress("MagicNumber")
 object Palette {
     // Functional
     val White = Color(0xFFFFFFFF)
@@ -131,7 +130,6 @@ data class AppColors(
     val textTertiary: Color get() = grey5
 }
 
-@Suppress("MagicNumber")
 val LightColors = AppColors(
     background = Palette.White,
     onBackground = Palette.Grey1,
@@ -165,7 +163,6 @@ val LightColors = AppColors(
     grey7 = Palette.Grey7,
 )
 
-@Suppress("MagicNumber")
 val DarkColors = AppColors(
     background = Palette.DmGrey1,
     onBackground = Palette.DmGrey1,

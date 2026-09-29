@@ -50,7 +50,6 @@ object Fonts {
     /**
      * Get a typeface by enum.
      */
-    @JvmStatic
     fun get(context: Context, font: Font): Typeface? {
         var typeFace = cache.get(font)
         if (typeFace == null) {

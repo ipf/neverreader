@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger
  *
  * Outside processes can also observe/listen to the result of this operation with [.setOperationListener]
  */
-abstract class TaskRunnable @JvmOverloads constructor(var priority: Int = PRIORITY_NORMAL) :
+abstract class TaskRunnable constructor(var priority: Int = PRIORITY_NORMAL) :
     Runnable, Cancelable {
     protected val mStatus: AtomicInteger = AtomicInteger(STATUS_UNEXECUTED)
     protected val mCanceled: AtomicBoolean = AtomicBoolean(false)
@@ -173,7 +173,6 @@ abstract class TaskRunnable @JvmOverloads constructor(var priority: Int = PRIORI
      * Called on the operation thread. Do your background work here.
      * @throws Exception
      */
-    @Throws(Exception::class)
     protected abstract fun backgroundOperation()
 
     /**
@@ -235,7 +234,6 @@ abstract class TaskRunnable @JvmOverloads constructor(var priority: Int = PRIORI
     }
 
     fun interface ThrowingRunnable {
-        @Throws(Exception::class)
         fun run()
     }
 
@@ -254,10 +252,8 @@ abstract class TaskRunnable @JvmOverloads constructor(var priority: Int = PRIORI
         const val PRIORITY_HIGH: Int = 3
         const val PRIORITY_VERY_HIGH: Int = 4
 
-        @JvmOverloads
         fun simple(work: ThrowingRunnable, priority: Int = PRIORITY_NORMAL): TaskRunnable {
             return object : TaskRunnable(priority) {
-                @Throws(Exception::class)
                 override fun backgroundOperation() {
                     work.run()
                 }

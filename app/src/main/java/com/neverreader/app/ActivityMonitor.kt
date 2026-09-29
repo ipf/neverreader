@@ -107,7 +107,6 @@ class ActivityMonitor @Inject internal constructor() {
         }
     }
 
-    @get:SuppressLint("NewApi")
     val visible: Activity?
         /**
          * @return An app activity that is visible to the user. In most cases this just means in the resumed or started state,
@@ -122,7 +121,7 @@ class ActivityMonitor @Inject internal constructor() {
             } else if (mActivities.containsKey(State.PAUSED)) {
                 val paused =
                     mActivities[State.PAUSED]
-                return if (ApiLevel.isNougatOrGreater() && paused!!.isInMultiWindowMode) {
+                return if (paused!!.isInMultiWindowMode) {
                     paused
                 } else {
                     null

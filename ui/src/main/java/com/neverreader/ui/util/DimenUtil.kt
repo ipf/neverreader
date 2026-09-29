@@ -11,7 +11,6 @@ object DimenUtil {
             context.resources.displayMetrics
         )
 
-    @JvmStatic
     fun dpToPxInt(context: Context, dp: Float): Int = dpToPx(context, dp).toInt()
 
     // use convertDpToPixel to get the density ratio.  Using context.resources.displayMetrics.density

@@ -73,19 +73,19 @@ class Prefs(private val user: Store, private val app: Store) : Preferences {
     }
 
 
-    override fun <E> forUser(
+    override fun <E : Enum<E>> forUser(
         key: String?,
-        clazz: Class<E?>?,
+        clazz: Class<E>?,
         defaultValue: E?,
-    ): EnumPreference<E?> {
+    ): EnumPreference<E> {
         return EnumPref(clazz!!, key, defaultValue, user)
     }
 
-    override fun <E> forApp(
+    override fun <E : Enum<E>> forApp(
         key: String?,
-        clazz: Class<E?>?,
+        clazz: Class<E>?,
         defaultValue: E?,
-    ): EnumPreference<E?> {
+    ): EnumPreference<E> {
         return EnumPref(clazz!!, key, defaultValue, app)
     }
 

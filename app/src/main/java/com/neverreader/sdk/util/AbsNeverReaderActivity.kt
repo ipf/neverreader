@@ -2,7 +2,6 @@ package com.neverreader.sdk.util
 
 import android.animation.ObjectAnimator
 import androidx.activity.OnBackPressedCallback
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.ActivityManager.TaskDescription
 import androidx.core.view.WindowInsetsControllerCompat
@@ -20,7 +19,6 @@ import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
-import android.widget.Toast
 import androidx.annotation.StyleRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.systemBars
@@ -173,7 +171,6 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
         }
     }
 
-    private var mToasty: Toast? = null
 
     private var mIsContentSet = false
 
@@ -192,7 +189,6 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
         get() = true
 
 
-    @SuppressLint("NewApi")
     public override fun onCreate(savedInstanceState: Bundle?) {
         if (DEBUG_LIFECYCLE) Logs.i(
             "Lifecycle",
@@ -816,39 +812,6 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
         fun from(context: Context?): AbsNeverReaderActivity? {
             val activity = ContextUtil.getActivity(context)
             return activity as? AbsNeverReaderActivity
-        }
-
-        /**
-         * Uses a shared toast message for a  RilAppActivity. This is helpful for when toasts might happen fast enough
-         * to overlap. This will ensure that the new toast is visible right away instead of waiting for the previous
-         * toast to finish before becoming visible.
-         *
-         * This method does not call show() on the new Toast.
-         *
-         * @param context should be a RilAppActivity, but can pass a context for coding convenience.
-         * @param text
-         * @param res if text is null, it will use a resource id, otherwise it is ignored
-         * @param duration
-         * @return
-         */
-        @SuppressLint("ShowToast")
-        fun toast(context: Context?, text: String?, res: Int, duration: Int): Toast? {
-            val activity = context as AbsNeverReaderActivity
-            if (activity.mToasty == null) {
-                if (text != null) {
-                    activity.mToasty = Toast.makeText(context, text, duration)
-                } else {
-                    activity.mToasty = Toast.makeText(context, res, duration)
-                }
-            }
-            // REVIEW why isn't this part in a else?
-            activity.mToasty!!.duration = duration
-            if (text != null) {
-                activity.mToasty!!.setText(text)
-            } else {
-                activity.mToasty!!.setText(res)
-            }
-            return activity.mToasty
         }
     }
 }

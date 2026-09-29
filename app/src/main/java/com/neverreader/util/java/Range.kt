@@ -1,6 +1,6 @@
 package com.neverreader.util.java
 
-class Range @JvmOverloads constructor(min: Int = 0, max: Int = 0) {
+class Range constructor(min: Int = 0, max: Int = 0) {
     var min: Int = 0
     var max: Int = 0
 

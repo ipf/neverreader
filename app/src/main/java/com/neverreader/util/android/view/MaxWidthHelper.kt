@@ -17,7 +17,6 @@ class MaxWidthHelper {
 
     constructor()
 
-    @JvmOverloads
     constructor(
         context: Context,
         attrs: AttributeSet?,

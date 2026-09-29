@@ -13,10 +13,8 @@ object AnimationUtil {
 
     class AnimationValues {
         var elapsedTotal: Long = 0
-        @JvmField
         var repeatCount: Int = 0
         var currentElapsed: Long = 0
-        @JvmField
         var currentPercent: Float = 0f
     }
 }

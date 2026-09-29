@@ -72,7 +72,6 @@ class MainActivity : AbsNeverReaderActivity() {
      * the launch one. Sharing a page in arrives as SEND and is handled by
      * [AddActivity] instead.
      */
-    @SuppressLint("MissingSuperCall")
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)

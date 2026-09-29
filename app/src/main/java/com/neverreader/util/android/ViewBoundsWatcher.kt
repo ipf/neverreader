@@ -128,7 +128,6 @@ class ViewBoundsWatcher private constructor(
     /**
      * Release the global listeners.
      */
-    @SuppressLint("NewApi")
     private fun releaseGlobalListeners() {
         if (mViewTreeObserver != null && mViewTreeObserver!!.isAlive()) {
             if (mIsScrollable) {

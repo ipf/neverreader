@@ -6,7 +6,7 @@ import java.util.concurrent.ThreadFactory
 /**
  * A thread factory that ensures it runs with the recommended background thread priority in Android
  */
-class AndroidBgThreadFactory @JvmOverloads constructor(private val name: String? = null) :
+class AndroidBgThreadFactory constructor(private val name: String? = null) :
     ThreadFactory {
     private var count = 0
 

@@ -25,7 +25,6 @@ class Theme @Inject constructor(prefs: Preferences) {
      * The int key of the current app theme, resolving [SYSTEM] against the
      * configuration of the last context to ask.
      */
-    @JvmOverloads
     fun get(context: Context? = null as Context?): Int {
         cachedContext = context ?: cachedContext
         return applyFlagsToTheme(pref.get())

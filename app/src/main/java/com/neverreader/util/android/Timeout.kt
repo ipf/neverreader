@@ -10,7 +10,7 @@ import android.os.Looper
  *
  * A delay of 0 will act like [Handler.post] without a delay.
  */
-class Timeout @JvmOverloads constructor(
+class Timeout constructor(
     runOnTimeout: TimeoutListener,
     timeoutMs: Long = 0,
     private val mHandler: Handler = Handler(Looper.getMainLooper())

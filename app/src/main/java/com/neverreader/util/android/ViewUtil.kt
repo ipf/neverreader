@@ -298,7 +298,6 @@ object ViewUtil {
      * do nothing and return false.
      * @return true if removed
      */
-    @JvmOverloads
     fun remove(view: View?, animate: Boolean = true): Boolean {
         if (view != null && view.getParent() is ViewGroup) {
             val parent = (view.getParent() as ViewGroup)
@@ -481,47 +480,4 @@ object ViewUtil {
         return output
     }
 
-    @Suppress("unused")
-    fun logViewHierarchy(view: View?) {
-        val hierarchy = getAllViews(view, null)
-        for (v in hierarchy) {
-            Log.v(
-                "View Hierarchy",
-                "W:" + v.getMeasuredWidth() + " H:" + v.getMeasuredHeight() + " L:" + v.getLeft() + " T:" + v.getTop() + " " + v
-            )
-        }
-    }
-
-    /**
-     * Log motion events in a view hierarchy to help determine where it is going and what view is consuming it.
-     * Do not use outside of debugging.
-     * @param view
-     */
-    @Suppress("unused")
-    fun debugTouch(view: View) {
-        var listener: OnTouchListener? = null
-        try {
-            val m = view.javaClass.getMethod("getListenerInfo")
-            m.setAccessible(true)
-            val info = m.invoke(view)
-            val f = info!!.javaClass.getDeclaredField("mOnTouchListener")
-            f.setAccessible(true)
-            listener = f.get(info) as OnTouchListener?
-        } catch (ignored: Exception) {
-        }
-        view.setOnTouchListener { v: View?, event: MotionEvent? ->
-            Logs.v("TouchDebug", event!!.action.toString() + " " + view)
-            if (listener != null) {
-                listener.onTouch(v, event)
-            } else {
-                false
-            }
-        }
-        if (view is ViewGroup) {
-            val group = view
-            for (i in 0..<group.getChildCount()) {
-                debugTouch(group.getChildAt(i))
-            }
-        }
-    }
 }

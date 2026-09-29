@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 
 /** Implementation of [EnumPreference] */
-class EnumPref<E>(
+class EnumPref<E : Enum<E>>(
     private val clazz: Class<E>,
     private val key: String?,
     private val defaultValue: E?,
@@ -19,9 +19,8 @@ class EnumPref<E>(
         return if (isSet) from(store.getString(key)) else defaultValue
     }
 
-    @Suppress("UNCHECKED_CAST")
     private fun from(value: String?): E? {
-        return value?.let { java.lang.Enum.valueOf(clazz as Class<out Enum<*>>, it) as E }
+        return value?.let { java.lang.Enum.valueOf(clazz, it) }
     }
 
     override fun set(value: E?) {

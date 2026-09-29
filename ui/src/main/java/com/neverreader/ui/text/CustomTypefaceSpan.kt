@@ -5,10 +5,11 @@ import android.graphics.Typeface
 import android.text.TextPaint
 import android.text.style.TypefaceSpan
 
-class CustomTypefaceSpan
 /**
- * [.CustomTypefaceSpan] true for allowFakeEffects
- */ @JvmOverloads constructor(
+ * A [TypefaceSpan] that also carries a Typeface, so the family name is not
+ * re-resolved. [mFakeEffectsEnabled] is true for allowFakeEffects.
+ */
+class CustomTypefaceSpan(
     family: String?,
     private val mNewType: Typeface,
     private val mFakeEffectsEnabled: Boolean = true
