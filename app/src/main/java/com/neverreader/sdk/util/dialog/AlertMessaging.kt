@@ -2,7 +2,6 @@ package com.neverreader.sdk.util.dialog
 
 import android.app.AlertDialog
 import android.app.Dialog
-import android.app.ProgressDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.view.View
@@ -81,14 +80,5 @@ object AlertMessaging {
     ): AlertDialog? {
         if (isContextUnavailable(activity)) return null
         return show(activity, title, message)
-    }
-
-    fun progress(context: Context?, message: Int, cancellable: Boolean): ProgressDialog? {
-        if (isContextUnavailable(context)) return null
-        val progress = ProgressDialog(context, R.style.FetchingDialog)
-        progress.setMessage(context!!.getText(message))
-        progress.setIndeterminate(true)
-        progress.setCancelable(cancellable)
-        return progress
     }
 }

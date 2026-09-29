@@ -1,8 +1,6 @@
 package com.neverreader.util.android.thread
 
-import java.lang.Long
 import kotlin.Comparator
-import kotlin.Int
 
 class PriorityFutureTaskComparator : Comparator<Runnable?> {
     override fun compare(a: Runnable?, b: Runnable?): Int {
@@ -13,10 +11,10 @@ class PriorityFutureTaskComparator : Comparator<Runnable?> {
 
         if (priorityComparison == 0L) { // Same priority
             // Order it based on FIFO
-            return Long.signum(task1.addedOrder - task2.addedOrder)
+            return (task1.addedOrder - task2.addedOrder).compareTo(0L)
         } else {
             // Order it based on Priority
-            return Long.signum(priorityComparison)
+            return priorityComparison.compareTo(0L)
         }
     }
 }

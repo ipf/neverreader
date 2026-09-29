@@ -391,7 +391,7 @@ object JsonUtil {
         return jsonNode == null || jsonNode.isNull
     }
 
-    fun <T : JsonNode?> sortKeys(`in`: T?, mapper: ObjectMapper): T? {
+    fun sortKeys(`in`: JsonNode?, mapper: ObjectMapper): JsonNode? {
         if (`in` is ObjectNode) {
             val out = mapper.createObjectNode()
             val sorted: SortedMap<String?, JsonNode?> = TreeMap<String?, JsonNode?>()
@@ -402,15 +402,15 @@ object JsonUtil {
                 sorted[key] = value
             }
             for (field in sorted.entries) {
-                out.set(field.key, sortKeys<JsonNode?>(field.value, mapper))
+                out.replace(field.key, sortKeys(field.value, mapper))
             }
-            return out as T?
+            return out
         } else if (`in` is ArrayNode) {
             val out = mapper.createArrayNode()
             for (i in 0..<`in`.size()) {
-                out.add(sortKeys<JsonNode?>(`in`.get(i), mapper))
+                out.add(sortKeys(`in`.get(i), mapper))
             }
-            return out as T?
+            return out
         } else {
             return `in`
         }
@@ -422,7 +422,7 @@ object JsonUtil {
             val it = `in`.fieldNames()
             while (it.hasNext()) {
                 val key = it.next()
-                out.put(key, stringAllValues(`in`.get(key), mapper))
+                out.replace(key, stringAllValues(`in`.get(key), mapper))
             }
             return out
         } else if (`in` is ArrayNode) {

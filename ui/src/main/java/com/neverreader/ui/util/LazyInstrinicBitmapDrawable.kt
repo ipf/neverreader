@@ -73,9 +73,9 @@ class LazyInstrinicBitmapDrawable(
         paint.setColorFilter(colorFilter)
     }
 
-    override fun getOpacity(): Int {
-        return PixelFormat.TRANSLUCENT
-    }
+    /** The base declaration is deprecated and has done nothing since API 3. */
+    @Deprecated("Deprecated in the Drawable base class")
+    override fun getOpacity(): Int = PixelFormat.TRANSLUCENT
 
     override fun isStateful(): Boolean {
         return true

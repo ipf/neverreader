@@ -76,7 +76,7 @@ class Theme @Inject constructor(prefs: Preferences) {
             else -> res = R.color.nr_base_bg
         }
 
-        return context.getResources().getColor(res)
+        return ContextCompat.getColor(context, res)
     }
 
     /** Exposed only for use in a preference screen. Use APIs on this class to modify and query.  */
@@ -125,24 +125,6 @@ class Theme @Inject constructor(prefs: Preferences) {
             return theme == DARK
         }
 
-        /**
-         * Returns the status bar color to use for the provided theme.
-         */
-        fun getStatusBarColor(theme: Int, context: Context): Int {
-            when (theme) {
-                DARK -> return ContextCompat.getColor(context, R.color.nr_dm_base_bg)
-                LIGHT -> return ContextCompat.getColor(context, R.color.nr_base_bg)
-                else -> return ContextCompat.getColor(context, R.color.nr_base_bg)
-            }
-        }
-
-        fun getNavigationBarDividerColor(theme: Int, context: Context): Int {
-            when (theme) {
-                DARK -> return ContextCompat.getColor(context, R.color.nr_dm_grey_6)
-                LIGHT -> return ContextCompat.getColor(context, R.color.nr_grey_6)
-                else -> return ContextCompat.getColor(context, R.color.nr_grey_6)
-            }
-        }
     }
 }
 

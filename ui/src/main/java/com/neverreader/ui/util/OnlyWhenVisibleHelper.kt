@@ -3,7 +3,6 @@ package com.neverreader.ui.util
 import android.view.View
 import android.view.View.OnAttachStateChangeListener
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
-import androidx.core.view.ViewCompat
 
 /**
  * Helper for releasing resources or stopping animations/listeners etc for a [View] when no longer visible or off screen.
@@ -15,33 +14,31 @@ class OnlyWhenVisibleHelper private constructor(
     onVisible: Runnable?,
     onHidden: Runnable?
 ) : OnAttachStateChangeListener, OnGlobalLayoutListener {
-    private val onVisible: Runnable
-    private val onHidden: Runnable
+    private val onVisible: Runnable = onVisible ?: Runnable {}
+    private val onHidden: Runnable = onHidden ?: Runnable {}
 
     /** Null means it hasn't been initialized yet.  */
     private var isVisible: Boolean? = null
 
     init {
-        this.onVisible = if (onVisible != null) onVisible else Runnable {}
-        this.onHidden = if (onHidden != null) onHidden else Runnable {}
 
-        if (ViewCompat.isAttachedToWindow(view)) {
+        if (view.isAttachedToWindow) {
             onViewAttachedToWindow(view)
         }
         view.addOnAttachStateChangeListener(this)
     }
 
     override fun onViewAttachedToWindow(p0: View) {
-        if (view.getViewTreeObserver() != null && view.getViewTreeObserver().isAlive()) {
-            view.getViewTreeObserver().addOnGlobalLayoutListener(this)
+        if (view.viewTreeObserver != null && view.viewTreeObserver.isAlive) {
+            view.viewTreeObserver.addOnGlobalLayoutListener(this)
         }
         update()
     }
 
     override fun onViewDetachedFromWindow(p0: View) {
         update()
-        if (view.getViewTreeObserver() != null && view.getViewTreeObserver().isAlive()) {
-            view.getViewTreeObserver().removeOnGlobalLayoutListener(this)
+        if (view.viewTreeObserver != null && view.viewTreeObserver.isAlive) {
+            view.viewTreeObserver.removeOnGlobalLayoutListener(this)
         }
     }
 
@@ -53,7 +50,7 @@ class OnlyWhenVisibleHelper private constructor(
         val first = isVisible == null
         val was = isVisible == true
         val now =
-            ViewCompat.isAttachedToWindow(view) && view.isShown && view.width > 0 && view.height > 0
+            view.isAttachedToWindow && view.isShown && view.width > 0 && view.height > 0
         isVisible = now
         if (first || was != now) {
             if (isVisible == true) {
@@ -61,19 +58,6 @@ class OnlyWhenVisibleHelper private constructor(
             } else {
                 onHidden.run()
             }
-        }
-    }
-
-    companion object {
-        /**
-         * Runs `onVisible` if already visible, or 'onHidden' if already hidden and then any time it
-         * changes visibility state runs the appropriate method.
-         *
-         *
-         * Visible means attached to a window, has a non-zero size and it and its parents are [View.VISIBLE].
-         */
-        fun install(view: View, onVisible: Runnable?, onHidden: Runnable?): OnlyWhenVisibleHelper {
-            return OnlyWhenVisibleHelper(view, onVisible, onHidden)
         }
     }
 }

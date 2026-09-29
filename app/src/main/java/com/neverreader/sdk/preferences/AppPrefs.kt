@@ -1,7 +1,6 @@
 package com.neverreader.sdk.preferences
 
 import android.content.Context
-import com.neverreader.util.android.FormFactor.isTablet
 import com.neverreader.util.prefs.BooleanPreference
 import com.neverreader.util.prefs.Preferences
 import dagger.hilt.android.qualifiers.ApplicationContext

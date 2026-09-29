@@ -7,6 +7,7 @@ import android.graphics.Paint
 import android.graphics.PixelFormat
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
+import androidx.core.content.ContextCompat
 import android.os.SystemClock
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.Interpolator
@@ -350,11 +351,11 @@ class RainbowDrawable(callback: Callback?) : Drawable() {
         private val ANIMATION_COLORS: Array<Paint?>
 
         init {
-            val res = appContextFn().resources
-            BLUE = res.getColor(R.color.nr_teal_4)
-            GREEN = res.getColor(R.color.nr_teal_3)
-            RED = res.getColor(R.color.nr_coral_2)
-            GOLD = res.getColor(R.color.amber_30)
+            val res = appContextFn()
+            BLUE = ContextCompat.getColor(res, R.color.nr_teal_4)
+            GREEN = ContextCompat.getColor(res, R.color.nr_teal_3)
+            RED = ContextCompat.getColor(res, R.color.nr_coral_2)
+            GOLD = ContextCompat.getColor(res, R.color.amber_30)
 
             PAINT_MINT = newColorPaint(GREEN)
             PAINT_TURQUOISE = newColorPaint(BLUE)
@@ -364,7 +365,7 @@ class RainbowDrawable(callback: Callback?) : Drawable() {
             PAINT_BLACK = newColorPaint(Color.BLACK)
             PAINT_WHITE.strokeWidth = 0f
 
-            ANIMATION_COLORS = arrayOf<Paint>(PAINT_TURQUOISE, PAINT_CORAL, PAINT_GOLD, PAINT_MINT) as Array<Paint?>
+            ANIMATION_COLORS = arrayOf<Paint?>(PAINT_TURQUOISE, PAINT_CORAL, PAINT_GOLD, PAINT_MINT)
         }
 
         private fun drawRainbowSegment(

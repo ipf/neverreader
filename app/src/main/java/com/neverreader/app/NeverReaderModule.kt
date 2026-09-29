@@ -1,13 +1,10 @@
 package com.neverreader.app
 
 import android.content.Context
-import android.preference.PreferenceManager
 import com.neverreader.repository.ItemRepository
 import com.neverreader.repository.NeverReaderItemRepository
 import com.neverreader.repository.NeverReaderUserRepository
 import com.neverreader.repository.UserRepository
-import com.neverreader.sdk.http.AndroidNetworkStatus
-import com.neverreader.sdk.http.NetworkStatus
 import com.neverreader.util.DrawableLoader
 import com.neverreader.util.StringLoader
 import com.neverreader.util.prefs.AndroidPrefStore
@@ -31,16 +28,21 @@ class NeverReaderModule {
     @Provides @Singleton
     fun providePrefs(@ApplicationContext context: Context): Preferences =
         Prefs(
-            AndroidPrefStore(PreferenceManager.getDefaultSharedPreferences(context)),
+            AndroidPrefStore(
+                // android.preference.PreferenceManager is deprecated as a whole,
+                // including the accessor for this file's name. Its default file
+                // has always been "<packageName>_preferences"; opening that by
+                // name keeps existing settings.
+                context.getSharedPreferences(
+                    context.packageName + "_preferences",
+                    Context.MODE_PRIVATE,
+                )
+            ),
             AndroidPrefStore(context.getSharedPreferences("neverreaderPrefs", 0))
         )
 
     @Provides @Singleton
     fun provideAppMode(): AppMode = if (BuildConfig.DEBUG) AppMode.DEV else AppMode.PRODUCTION
-
-    @Provides @Singleton
-    fun provideNetworkStatus(@ApplicationContext context: Context): NetworkStatus =
-        AndroidNetworkStatus(context)
 
     @Provides @Singleton
     fun provideStringLoader(@ApplicationContext context: Context): StringLoader = StringLoader(context)

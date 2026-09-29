@@ -19,7 +19,8 @@ class StatefulPaint() : Paint() {
     )
 
     constructor(res: Resources, colorResourceId: Int) : this() {
-        mColors = res.getColorStateList(colorResourceId)
+        // The Resources overload taking a theme is the non-deprecated one.
+        mColors = res.getColorStateList(colorResourceId, null)
     }
 
     init {

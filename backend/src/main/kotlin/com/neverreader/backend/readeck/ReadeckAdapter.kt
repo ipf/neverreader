@@ -109,7 +109,7 @@ object ReadeckAuth {
             val request = Request.Builder().url(base(serverUrl) + "/oauth/token").post(body).build()
             val response = withContext(Dispatchers.IO) { http.newCall(request).execute() }
             response.use {
-                val text = it.body?.string().orEmpty()
+                val text = it.body.string()
                 if (it.isSuccessful) return json.decodeFromString<TokenResponse>(text).accessToken
                 val parsed = runCatching { json.decodeFromString<ErrorResponse>(text) }.getOrNull()
                 when (val error = parsed?.error) {
@@ -127,7 +127,7 @@ object ReadeckAuth {
 
     private suspend fun execute(http: OkHttpClient, request: Request): String = withContext(Dispatchers.IO) {
         http.newCall(request).execute().use { response ->
-            val text = response.body?.string().orEmpty()
+            val text = response.body.string()
             check(response.isSuccessful) { "Readeck request failed: HTTP ${response.code} ${text.take(200)}" }
             text
         }
@@ -228,7 +228,7 @@ class ReadeckAdapter(
 
     private suspend fun execute(request: Request): String = withContext(Dispatchers.IO) {
         http.newCall(request).execute().use { response ->
-            val text = response.body?.string().orEmpty()
+            val text = response.body.string()
             check(response.isSuccessful) { "Readeck ${request.method} failed: HTTP ${response.code} ${text.take(200)}" }
             text
         }

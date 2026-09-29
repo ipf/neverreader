@@ -24,36 +24,6 @@ object ViewUtil {
     /** A shared instance rect to be used by methods in this class, but only on the uithread to ensure things to break  */
     private val mUiThreadRect = Rect()
 
-    /**
-     * Helper for ensuring absolutely that the soft keyboard opens/closes when focusing/unfocusing.
-     * @param focus whether
-     */
-    fun forceFocus(focus: Boolean, view: View): Boolean {
-        if (focus) {
-            view.requestFocus()
-        } else {
-            view.clearFocus()
-        }
-
-        return forceSoftKeyboard(focus, view)
-    }
-
-    /**
-     * Force a soft keyboard open or closed for a view.
-     *
-     * @param open true if force open, false if force close
-     * @param view the view focused or being unfocused
-     */
-    fun forceSoftKeyboard(open: Boolean, view: View): Boolean {
-        val mgr =
-            view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        if (open) {
-            return mgr.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
-        } else {
-            return mgr.hideSoftInputFromWindow(view.getWindowToken(), 0)
-        }
-    }
-
     fun fadeView(view: View, visible: Boolean, duration: Long) {
         val fromAlpha = (if (visible) 0 else 1).toFloat()
         val toAlpha = (if (visible) 1 else 0).toFloat()
@@ -466,14 +436,7 @@ object ViewUtil {
         if (activity == null) {
             return false
         }
-        val window = activity.getWindow()
-        if (window == null) {
-            return false
-        }
-        val decor = window.getDecorView()
-        if (decor == null) {
-            return false
-        }
+        val decor = activity.window.decorView
         if (decor === rootParent) {
             return true
         } else if (decor.getParent() === rootParent) {

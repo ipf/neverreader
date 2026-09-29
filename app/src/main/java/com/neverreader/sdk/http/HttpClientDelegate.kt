@@ -24,7 +24,6 @@ import javax.inject.Singleton
 class HttpClientDelegate
 @Inject constructor(
     private val mode: AppMode,
-    private val status: NetworkStatus,
     prefs: Preferences,
     dispatcher: AppLifecycleEventDispatcher,
 ) : AppLifecycle {
@@ -67,10 +66,6 @@ class HttpClientDelegate
     fun setLoggingLevel(value: EclecticHttp.Logging) {
         if (!mode.isForInternalCompanyOnly) return
         loggingLevel.set(value.name)
-    }
-
-    fun status(): NetworkStatus {
-        return status
     }
 
     override fun onLogoutStarted(): LogoutPolicy {

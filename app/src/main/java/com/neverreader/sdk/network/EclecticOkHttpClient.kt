@@ -16,6 +16,7 @@ import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import okio.BufferedSource
@@ -123,9 +124,11 @@ class EclecticOkHttpClient(client: OkHttpClient) : EclecticHttp {
                     mediaType = mimeType.toMediaTypeOrNull()
                 }
 
-                multiBuilder.addFormDataPart(file.key!!, file.value.name, RequestBody.create(mediaType,
-                    file.value
-                ))
+                multiBuilder.addFormDataPart(
+                    file.key!!,
+                    file.value.name,
+                    file.value.asRequestBody(mediaType)
+                )
             }
 
             // Query
@@ -197,12 +200,12 @@ class EclecticOkHttpClient(client: OkHttpClient) : EclecticHttp {
 
                     override fun inputStream(): InputStream {
                         used()
-                        return okResponse.body!!.byteStream()
+                        return okResponse.body.byteStream()
                     }
 
                     override fun okioBuffer(): BufferedSource {
                         used()
-                        return okResponse.body!!.source()
+                        return okResponse.body.source()
                     }
                 }, result)
             }

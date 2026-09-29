@@ -74,7 +74,7 @@ object WallabagAuth {
             .build()
         val response = withContext(Dispatchers.IO) { http.newCall(request).execute() }
         response.use {
-            val text = it.body?.string().orEmpty()
+            val text = it.body.string()
             if (it.isSuccessful) {
                 val parsed = json.decodeFromString<TokenResponse>(text)
                 return AuthResult(parsed.accessToken, parsed.refreshToken)
@@ -192,7 +192,7 @@ class WallabagAdapter(
             )
         }
         response.use {
-            val text = it.body?.string().orEmpty()
+            val text = it.body.string()
             check(it.isSuccessful) { "wallabag ${request.method} failed: HTTP ${it.code} ${text.take(200)}" }
             return text
         }

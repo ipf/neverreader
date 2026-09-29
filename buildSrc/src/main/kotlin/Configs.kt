@@ -5,7 +5,10 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 
 object AndroidConfigs {
-    const val CompileSdkVersion = "android-37.1"
+    // "android-37.1" as two properties: AGP 9 replaced the single
+    // compileSdkVersion(String) with compileSdk plus compileSdkMinor.
+    const val CompileSdkVersion = 37
+    const val CompileSdkMinorVersion = 1
     const val MinSdkVersion = 26
 
     /**
@@ -22,7 +25,9 @@ object AndroidConfigs {
 
 object KotlinConfigs {
     val jvmTarget : JvmTarget = JvmTarget.JVM_11
-    const val FreeCompilerArgs = "-Xjvm-default=all"
+    // Real default methods on interface members. The old -Xjvm-default=all is
+    // spelled -jvm-default=enable now; "all" is not a value the new form takes.
+    const val FreeCompilerArgs = "-jvm-default=enable"
 }
 
 object JavaConfigs {
@@ -34,7 +39,8 @@ object JavaConfigs {
  * android app and library modules).
  */
 fun CommonExtension.setDefaultConfigs() {
-    compileSdkVersion(AndroidConfigs.CompileSdkVersion)
+    compileSdk = AndroidConfigs.CompileSdkVersion
+    compileSdkMinor = AndroidConfigs.CompileSdkMinorVersion
     defaultConfig.minSdk = AndroidConfigs.MinSdkVersion
     compileOptions.sourceCompatibility = JavaConfigs.javaVersion
     compileOptions.targetCompatibility = JavaConfigs.javaVersion

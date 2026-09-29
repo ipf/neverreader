@@ -21,7 +21,8 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
@@ -70,11 +71,17 @@ class MyListViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             // Every keystroke otherwise tears down the Pager and re-runs the query.
-            // A blank query clears immediately so closing search is instant.
+            // collectLatest cancels the pending delay when the next character
+            // arrives, which debounces without the preview-API overload, whose
+            // per-value timeout is exactly what is wanted here. A blank query
+            // clears immediately so closing search is instant.
+            // A StateFlow already conflates equal values, so no
+            // distinctUntilChanged is needed on the way in.
             searchInput
-                .debounce { if (it.isBlank()) 0L else SEARCH_DEBOUNCE_MS }
-                .distinctUntilChanged()
-                .collect { listManager.setSearch(it.ifBlank { null }) }
+                .collectLatest { query ->
+                    if (query.isNotBlank()) delay(SEARCH_DEBOUNCE_MS)
+                    listManager.setSearch(query.ifBlank { null })
+                }
         }
     }
 

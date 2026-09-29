@@ -2,7 +2,6 @@ package com.neverreader.util.android.view
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.WindowManager
 import com.neverreader.app.R
 import com.neverreader.ui.util.DimenUtil.dpToPxInt
 import com.neverreader.ui.view.button.ButtonBoxDrawable
@@ -26,13 +25,11 @@ class DialogSizeWrapper : FrameLayout {
     constructor(context: Context) : super(context) {
         setMaxWidth(getResources().getDimension(R.dimen.dialog_max_width))
         setMaxHeight(getResources().getDimension(R.dimen.dialog_max_height))
-        setBackgroundDrawable(
-            ButtonBoxDrawable(
-                context,
-                com.neverreader.ui.R.color.nr_bg,
-                R.color.add_overlay_free_stroke,
-                 4f
-            )
+        background = ButtonBoxDrawable(
+            context,
+            com.neverreader.ui.R.color.nr_bg,
+            R.color.add_overlay_free_stroke,
+            4f,
         )
     }
 
@@ -47,21 +44,18 @@ class DialogSizeWrapper : FrameLayout {
         )
         setMaxHeight(getResources().getDimension(R.dimen.dialog_max_height))
         a.recycle()
-        setBackgroundDrawable(
-            ButtonBoxDrawable(
-                context,
-                com.neverreader.ui.R.color.nr_bg,
-                R.color.add_overlay_free_stroke,
-                 4f
-            )
+        background = ButtonBoxDrawable(
+            context,
+            com.neverreader.ui.R.color.nr_bg,
+            R.color.add_overlay_free_stroke,
+            4f,
         )
     }
 
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val windowManager = (getContext().getSystemService(Context.WINDOW_SERVICE) as WindowManager)
-        val displayWidth = getScreenWidth(windowManager)
-        val displayHeight = getScreenHeight(windowManager)
+        val displayWidth = getScreenWidth(context)
+        val displayHeight = getScreenHeight(context)
 
         val res = getResources()
         val minPadding = res.getDimension(R.dimen.dialog_min_padding).toInt()

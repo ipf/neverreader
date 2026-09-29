@@ -4,8 +4,8 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.ColorFilter
 import android.graphics.Paint
-import android.graphics.PixelFormat
 import android.graphics.Rect
+import android.graphics.PixelFormat
 import android.graphics.drawable.Drawable
 import com.neverreader.ui.util.LazyBitmap.Canceller.Companion.cancelAndRenew
 
@@ -74,9 +74,9 @@ class LazyBitmapDrawable(private val lazy: LazyBitmap) : Drawable() {
         paint.setColorFilter(colorFilter)
     }
 
-    override fun getOpacity(): Int {
-        return PixelFormat.TRANSLUCENT
-    }
+    /** The base declaration is deprecated and has done nothing since API 3. */
+    @Deprecated("Deprecated in the Drawable base class")
+    override fun getOpacity(): Int = PixelFormat.TRANSLUCENT
 
     override fun isStateful(): Boolean {
         return true

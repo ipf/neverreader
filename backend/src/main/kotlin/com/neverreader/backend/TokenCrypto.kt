@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Base64
 import com.google.crypto.tink.Aead
 import com.google.crypto.tink.KeyTemplates
+import com.google.crypto.tink.RegistryConfiguration
 import com.google.crypto.tink.aead.AeadConfig
 import com.google.crypto.tink.integration.android.AndroidKeysetManager
 
@@ -20,7 +21,7 @@ object TokenCrypto {
             .withMasterKeyUri("android-keystore://neverreader_master")
             .build()
             .keysetHandle
-            .getPrimitive(Aead::class.java)
+            .getPrimitive(RegistryConfiguration.get(), Aead::class.java)
 
     fun encrypt(aead: Aead, plaintext: String): String =
         Base64.encodeToString(aead.encrypt(plaintext.toByteArray(), null), Base64.NO_WRAP)

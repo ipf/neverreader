@@ -52,7 +52,7 @@ class ThumbnailRepository @Inject constructor(
         runCatching {
             client.newCall(request).execute().use { response ->
                 if (!response.isSuccessful) return@use null
-                response.body?.bytes()?.also { cache.put(url, it) }
+                response.body.bytes().also { cache.put(url, it) }
             }
         }.getOrNull()
     }

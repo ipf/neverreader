@@ -5,46 +5,41 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.view.View
 
-/**s
- * Helper methods related to [Context]
- */
+/** Helper methods related to [Context]. */
 object ContextUtil {
-    /**
-     * Gets an Activity instance from a view's context using [.getActivity].
-     * @param view
-     * @return
-     */
-    fun getActivity(view: View): Activity? {
-        return getActivity(view.context)
-    }
 
     /**
-     * Tries to cast a Context to an Activity. Can find even within ContextThemeWrapper. If context is null or the context is not an activity, returns null.
+     * The [Activity] behind this view's context, or null if there is not one.
+     *
+     * @return
+     */
+    fun getActivity(view: View): Activity? = getActivity(view.context)
+
+    /**
+     * The [Activity] behind this context, or null if the context is not one.
+     * Looks through [ContextWrapper]s, so a themed or Compose-hosted context
+     * still resolves.
+     *
      * @param context
      * @return
      */
-    fun getActivity(context: Context?): Activity? {
-        return getActivityInternal(context)
-    }
-
-    fun <T> findContext(view: View, clazz: Class<T>): T? {
-        return findContext(view.context, clazz)
-    }
+    fun getActivity(context: Context?): Activity? = findContext(context)
 
     /**
-     * Search this context and wrapped contexts for one that matches this class type
+     * The first context in this one, or in the contexts it wraps, that is a [T].
+     * Null if there is none.
+     *
+     * Reified so the test is a real type check at the call site. Taking a
+     * [Class] instead would have meant casting the result back to T unchecked,
+     * so nothing checked that the two agreed and a mismatch became a
+     * ClassCastException at runtime instead of a compile error.
      */
-    fun <T> findContext(context: Context?, clazz: Class<T>): T? {
-        return if (context == null) {
-            null
-        } else if (clazz.isAssignableFrom(context.javaClass)) {
-            context as T
-        } else if (context is ContextWrapper) {
-            findContext(context.baseContext, clazz)
-        } else {
-            null
+    inline fun <reified T : Context> findContext(context: Context?): T? {
+        var current = context
+        while (current != null) {
+            if (current is T) return current
+            current = (current as? ContextWrapper)?.baseContext
         }
+        return null
     }
-
-    private fun getActivityInternal(context: Context?): Activity? = findContext(context, Activity::class.java)
 }

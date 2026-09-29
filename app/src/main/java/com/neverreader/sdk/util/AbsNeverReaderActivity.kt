@@ -5,6 +5,7 @@ import androidx.activity.OnBackPressedCallback
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.ActivityManager.TaskDescription
+import androidx.core.view.WindowInsetsControllerCompat
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -14,9 +15,7 @@ import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.os.Handler
 import android.os.Process
-import android.util.Property
 import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
@@ -59,8 +58,6 @@ import com.neverreader.util.android.ApiLevel
 import com.neverreader.util.android.ContextUtil
 import com.neverreader.util.android.FormFactor
 import com.neverreader.util.android.ViewUtil
-import com.neverreader.util.android.WindowUtil.NavigationBarColorProperty
-import com.neverreader.util.android.WindowUtil.StatusBarColorProperty
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -101,7 +98,6 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
 
     protected var mIsHelpActivity: Boolean = false
 
-    protected var mHandler: Handler? = null
 
     private var mAccessReceiver: BroadcastReceiver? = null
     private var mFullShutdownReceiver: BroadcastReceiver? = null
@@ -213,7 +209,6 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         mTheme = app()!!.theme().get(this)
-        mHandler = Handler()
 
         setActivityTheme(app()!!.theme().get(this))
 
@@ -247,7 +242,13 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
         val label = getString(this.applicationInfo.labelRes)
         val colorPrimary = ContextCompat.getColor(this, com.neverreader.ui.R.color.nr_coral_2)
 
-        setTaskDescription(TaskDescription(label, null, colorPrimary))
+        setTaskDescription(
+            TaskDescription.Builder()
+                .setLabel(label)
+                .setIcon(0)
+                .setPrimaryColor(colorPrimary)
+                .build()
+        )
 
 
         app()!!.activities().onActivityCreate(this)
@@ -265,44 +266,24 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
         setBackgroundDrawable()
         mTheme = newTheme
 
-        invalidateStatusBarColor()
+        applySystemBarAppearance()
     }
 
     /**
-     * Update the system bar colors to the current theme.
+     * Match the system bar icons to the theme.
+     *
+     * Only the icon appearance is ours to set. enableEdgeToEdge leaves the bars
+     * transparent on API 35, and from 35 the platform ignores statusBarColor,
+     * navigationBarColor and systemUiVisibility outright, so the colours this
+     * used to animate were no-ops and the divider no longer exists. What is
+     * left is deciding whether the icons should be dark, which
+     * WindowInsetsControllerCompat still honours.
      */
-    fun invalidateStatusBarColor() {
-        val statusBarColor = Theme.getStatusBarColor(mTheme, this)
-        animateThemeColorChange(STATUS_BAR_COLOR, statusBarColor)
-
-        var systemUiFlags = 0
-        if (mTheme != Theme.DARK) {
-            systemUiFlags = systemUiFlags or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-        }
-        if (ApiLevel.isLightNavigationBarAvailable()) {
-            if (mTheme != Theme.DARK) {
-                systemUiFlags = systemUiFlags or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
-            }
-            animateThemeColorChange(NAVIGATION_BAR_COLOR, statusBarColor)
-            if (showNavigationBarDivider()) {
-                window.setNavigationBarDividerColor(
-                    Theme.getNavigationBarDividerColor(mTheme, this)
-                )
-            }
-        }
-        window.decorView.systemUiVisibility = systemUiFlags
-    }
-
-    private fun animateThemeColorChange(property: Property<Window, Int>, value: Int) {
-        val animator = ObjectAnimator.ofInt<Window>(window, property, value)
-        animator.duration = ThemeChange.DURATION.toLong()
-        animator.setEvaluator(ThemeChange.ARGB_EVALUATOR)
-        animator.start()
-    }
-
-    /** Override to hide the navigation bar divider.  */
-    protected fun showNavigationBarDivider(): Boolean {
-        return true
+    fun applySystemBarAppearance() {
+        val controller = WindowInsetsControllerCompat(window, window.decorView)
+        val lightBars = mTheme != Theme.DARK
+        controller.isAppearanceLightStatusBars = lightBars
+        controller.isAppearanceLightNavigationBars = lightBars
     }
 
     /**
@@ -354,7 +335,7 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
 
     protected fun onCreateOrRestart() {
         Brightness.applyBrightnessIfSet(this)
-        invalidateStatusBarColor()
+        applySystemBarAppearance()
     }
 
     /**
@@ -601,7 +582,6 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
         for (listener in mOnLifeCycleChangedListeners) {
             listener.onActivityDestroy(this)
         }
-        mHandler!!.removeCallbacksAndMessages(null) // Otherwise we can accidentally keep the activity around for a few seconds after destroy.
     }
 
     override fun onLowMemory() {
@@ -825,8 +805,6 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
         const val MENU_ITEM_HELP: Int = 2
 
         private val THEME_CHANGE = ThemeChange()
-        private val STATUS_BAR_COLOR = StatusBarColorProperty()
-        private val NAVIGATION_BAR_COLOR = NavigationBarColorProperty()
 
         /**
          * Since we seem to do this type casting a lot, this is a helper method for cleaner code. Pass a context

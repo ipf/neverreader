@@ -1,22 +1,12 @@
 package utils.neverreader
 
-object Flavors {
-    const val DEVELOP = "develop"
-    const val TEAM_REVIEW = "teamReview"
-    const val PREMIUM_REVIEW = "premiumReview"
-    const val TEAM_A = "teamA"
-    const val PLAY = "play"
-}
+/**
+ * Build types the app actually registers. The flavor, signing-config and
+ * flavor-dimension constants that used to sit here described a Play/team build
+ * matrix this project no longer has: no flavors are declared, so they were
+ * never read and only the buildType names below survived.
+ */
 object BuildTypes {
     const val DEBUG = "debug"
-    const val TEAM_RELEASE = "teamRelease"
     const val UNSIGNED_RELEASE = "unsignedRelease"
-}
-
-object SigningConfigs {
-    const val TEAM = "team"
-}
-
-object FlavorDimensions {
-    const val TARGET = "target"
 }
