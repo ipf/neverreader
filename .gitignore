@@ -13,3 +13,9 @@ gradle.deps
 /utils/bin/
 /.idea/
 /.kotlin/
+
+# Signing keys. A password-protected one was tracked from the original Pocket
+# history and is not referenced by any buildType here, but publishing it to a
+# public repository discloses the key permanently.
+*.keystore
+*.jks

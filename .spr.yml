@@ -1,5 +1,6 @@
-githubRepoOwner: Pocket
-githubRepoName: Android
+# git spr release-PR helper. See https://github.com/snapchat/spr
+githubRepoOwner: ipf
+githubRepoName: neverreader
 githubBranch: main
 prTemplatePath: .github/PULL_REQUEST_TEMPLATE.md
 prTemplateInsertStart: "<!-- If you opened this PR with `git spr` feel free to copy anything it generated here into the PR body."
