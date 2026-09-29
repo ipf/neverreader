@@ -62,9 +62,16 @@ interface Preferences {
     ): EnumPreference<E>
 
     /**
-     * Create a nested set of preferences.
-     * TODO flush out docs and expectations a bit more.
-     * @param name
+     * A nested set of preferences, where every key this returns is prefixed
+     * with [name], so a group cannot collide with a preference of the same name
+     * stored outside it.
+     *
+     * The prefix is applied to reads and writes alike; a prefixed key is not
+     * readable through the unprefixed accessor, and an unprefixed key is not
+     * visible from inside the group. Names are therefore positional - nesting
+     * the same name twice does not give you the group you expect.
+     *
+     * @param name the prefix, or null for a pass-through group
      * @return
      */
     fun group(name: String?): Preferences?

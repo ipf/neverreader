@@ -3,7 +3,20 @@
 
     <style name="Theme.NeverReaderDefault" parent="Theme.NeverReaderDefault.Light" />
 
-    <!-- These these are overridden in different api levels to provide the base theme TODO use the ui module's themes instead -->
+    <!--
+        The base themes live here rather than in the ui module because they have
+        to resolve before any composable runs: the activity picks one of these in
+        setActivityTheme, and the window background comes from it, so Compose
+        cannot supply them.
+
+        values-v23 and values-v28 replace these two styles wholesale to add the
+        windowLightStatusBar and windowLightNavigationBar items that did not
+        exist before those API levels. The copies in this file are therefore the
+        pre-23 fallback and are unreachable at minSdk 26; they are kept because
+        a style named here is still the declaration the qualified versions
+        override, and dropping them would leave the qualified files with no
+        unstyled baseline to read against.
+    -->
     <style name="Theme.NeverReaderBase.Dark" parent="Theme.AppCompat.NoActionBar">
         
         <!-- NOTE! These values should be duplicated in the Theme.NeverReaderBase.Light theme. -->

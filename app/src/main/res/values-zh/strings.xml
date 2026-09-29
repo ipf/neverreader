@@ -110,12 +110,5 @@
 	<string name="add_url_hint" comment="Hint for an input field where you can paste a URL to save (add to your saves)">例如 https://neverreader.app</string>
 	<string name="add_url_error">请输入有效的 URL</string>
 	<!-- All the remaining pieces of notes copy, for Smartling to translate in a single job. -->
-	<!-- TODO(notes): remove unused ignores -->
-	<string tools:ignore="UnusedResources" name="add_url_note_hint" comment="Hint for an input field where you can optionally add a note when add a URL to your saves">备注（可选）</string>
-	<string tools:ignore="UnusedResources" name="add_note_title_hint" comment="Hint for an input field to optionally add a title for a note you&apos;re creating">标题（可选）</string>
-	<string tools:ignore="UnusedResources" name="add_note_hint" comment="Hind for an input field where you put the body/content of a note you&apos;re creating">备注</string>
-	<string tools:ignore="UnusedResources" name="edit_note_title">编辑备注</string>
-	<string tools:ignore="UnusedResources" name="delete_note_prompt_title">删除备注</string>
-	<string tools:ignore="UnusedResources" name="delete_note_prompt_message">确定要删除此项目吗？删除后无法恢复。</string>
 
 </resources>

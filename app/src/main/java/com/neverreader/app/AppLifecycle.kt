@@ -96,7 +96,7 @@ interface AppLifecycle {
      *
      *
      * If you are relying on other components or using logout safe apis like the forUser() pref apis
-     * or [AppThreads.async], you may not need a logout policy, but checkout the methods
+     * a coroutine dispatcher, you may not need a logout policy, but checkout the methods
      * and consider if you do.
      *
      *

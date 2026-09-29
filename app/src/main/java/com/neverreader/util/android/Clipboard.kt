@@ -6,8 +6,6 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.os.Build
 import android.view.textclassifier.TextClassifier
-import android.widget.Toast
-import com.neverreader.app.R
 import com.neverreader.app.AppLifecycle
 import com.neverreader.app.AppLifecycleEventDispatcher
 import com.neverreader.app.AppMode
@@ -19,7 +17,11 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Provides easy access to the Clipboard based on whatever ClipboardManager is available for this device's api level.
+ * Reads urls off the clipboard so they can be offered for saving.
+ *
+ * Write-only: the app has no Copy Link action, so there is nothing to suppress
+ * the offer for, and [lastUrlHash] is only a "do not offer the same url twice"
+ * guard.
  */
 @Singleton
 class Clipboard @Inject constructor(
@@ -89,37 +91,6 @@ class Clipboard @Inject constructor(
 
         val item = clipData.getItemAt(0)
         return item.text?.toString() ?: item.uri?.toString()
-    }
-
-    /**
-     * Paste some text to the clipboard.
-     *
-     * @param text
-     * @param name Optional. If not null a toast will be shown along the lines of
-     * "name copied to clipboard". If null no toast is shown.
-     */
-    fun setText(text: String, name: String?) {
-        performSetText(text)
-        if (name == null) return
-        Toast
-            .makeText(context, context.getString(R.string.ts_copied, name), Toast.LENGTH_SHORT)
-            .show()
-    }
-
-    /**
-     * Safely sets a url to the clip avoiding the app prompting to save it.
-     * @param url
-     * @param name
-     */
-    fun setUrl(url: String, name: String?) {
-        // Save this url hash so the clipboard url detection doesn't ask about it.
-        lastUrlHash.set(url.hashCode())
-        setText(url, name)
-    }
-
-    private fun performSetText(text: String) {
-        val clip = ClipData.newPlainText(context.getString(R.string.clipboard_label_url), text)
-        manager.setPrimaryClip(clip)
     }
 
 }

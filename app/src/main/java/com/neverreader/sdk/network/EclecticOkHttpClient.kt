@@ -80,11 +80,14 @@ class EclecticOkHttpClient(client: OkHttpClient) : EclecticHttp {
 
         // Query
         val params: MutableList<KeyValue> = request.params!!.filterNotNull().toMutableList()
-        request.clearQuery() // Moved query to post body, so clear it from the url. TODO don't do this in this way, it makes the request object change, so callers of this have their object change.
 
         okHttpRequestBuilder
             .tag(mReleaseTag)
-            .url(request.url!!)
+            // The query moves into the post body, so the url is read with the
+            // query dropped. Built from the caller's url rather than by clearing
+            // the query on their request, which used to leave the object they
+            // passed in mutated as a side effect of executing it.
+            .url(request.urlWithoutQuery())
 
         val body: RequestBody = body(request, params)
         okHttpRequestBuilder.method(method.name, body)
@@ -280,10 +283,7 @@ class EclecticOkHttpClient(client: OkHttpClient) : EclecticHttp {
                 return this
             }
 
-            override fun clearQuery(): EclecticHttpRequest {
-                builder.query(null)
-                return this
-            }
+            override fun urlWithoutQuery(): String = builder.build().newBuilder().query(null).build().toString()
 
             override val url: String
                 get() = builder.toString()

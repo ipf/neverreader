@@ -12,7 +12,6 @@ import com.neverreader.backend.sync.SyncWorker
 import com.neverreader.repository.BookmarkRepository
 import com.neverreader.sdk.http.HttpClientDelegate
 import com.neverreader.app.settings.Theme
-import com.neverreader.sdk.util.wakelock.WakeLockManager
 import com.neverreader.util.android.Clipboard
 import com.neverreader.sdk.preferences.AppPrefs
 import com.neverreader.sdk.util.AbsNeverReaderActivity
@@ -39,7 +38,6 @@ class App : Application(), Configuration.Provider {
     @Inject lateinit var legacyPrefs: com.neverreader.util.prefs.Preferences
     @Inject lateinit var activities: ActivityMonitor
     @Inject lateinit var clipboard: Clipboard
-    @Inject lateinit var wakelocks: WakeLockManager
 
     private val sOnUserPresenceChangedListeners =
         CopyOnWriteArraySet<OnUserPresenceChangedListener>()
@@ -74,8 +72,6 @@ class App : Application(), Configuration.Provider {
     fun bookmarks(): BookmarkRepository = bookmarkRepository
     fun activities(): ActivityMonitor = activities
     fun clipboard(): Clipboard = clipboard
-    fun wakelocks(): WakeLockManager = wakelocks
-
 
     interface OnUserPresenceChangedListener {
         fun onUserPresenceChanged(isInApp: Boolean)

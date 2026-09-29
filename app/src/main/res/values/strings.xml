@@ -117,13 +117,6 @@
 	<string name="add_url_hint" comment="Hint for an input field where you can paste a URL to save (add to your saves)">e.g. https://neverreader.app</string>
 	<string name="add_url_error">Please enter a valid URL</string>
 	<!-- All the remaining pieces of notes copy, for Smartling to translate in a single job. -->
-	<!-- TODO(notes): remove unused ignores -->
-	<string tools:ignore="UnusedResources" name="add_url_note_hint" comment="Hint for an input field where you can optionally add a note when add a URL to your saves">Note (optional)</string>
-	<string tools:ignore="UnusedResources" name="add_note_title_hint" comment="Hint for an input field to optionally add a title for a note you're creating">Title (optional)</string>
-	<string tools:ignore="UnusedResources" name="add_note_hint" comment="Hind for an input field where you put the body/content of a note you're creating">Note</string>
-	<string tools:ignore="UnusedResources" name="edit_note_title">Edit Note</string>
-	<string tools:ignore="UnusedResources" name="delete_note_prompt_title">Delete note</string>
-	<string tools:ignore="UnusedResources" name="delete_note_prompt_message">Are you sure you want to delete this item? This cannot be undone.</string>
 
     <string name="auth_title" translatable="false">Connect to your server</string>
     <string name="auth_subtitle" translatable="false">NeverReader is a read-it-later client for your self-hosted Readeck or Wallabag server.</string>

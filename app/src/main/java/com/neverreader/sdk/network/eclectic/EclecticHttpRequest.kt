@@ -10,7 +10,8 @@ interface EclecticHttpRequest {
     fun addFile(name: String?, file: File?): EclecticHttpRequest?
     fun setHeader(name: String?, value: String?): EclecticHttpRequest?
     fun setJson(body: String?): EclecticHttpRequest?
-    fun clearQuery(): EclecticHttpRequest?
+    /** [url] with any query string omitted. Does not modify this request. */
+    fun urlWithoutQuery(): String
 
     val url: String?
     val params: MutableList<KeyValue?>?

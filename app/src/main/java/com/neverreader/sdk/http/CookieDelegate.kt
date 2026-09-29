@@ -4,11 +4,14 @@ import android.webkit.CookieManager
 import com.neverreader.app.AppLifecycle
 import com.neverreader.app.AppLifecycle.LogoutPolicy
 import com.neverreader.app.AppLifecycleEventDispatcher
-import com.neverreader.app.AppThreads
 import com.neverreader.sdk.network.eclectic.EclecticHttp
 import com.neverreader.sdk.network.eclectic.EclecticHttpRequest
 import com.neverreader.sdk.network.eclectic.EclecticHttpUtil
 import com.neverreader.util.java.DomainUtils
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import java.net.HttpCookie
 import java.net.URI
 import java.net.URISyntaxException
@@ -20,18 +23,14 @@ import javax.inject.Singleton
  */
 @Singleton
 class CookieDelegate @Inject constructor(
-    http: HttpClientDelegate,
-    threads: AppThreads,
+    private val http: HttpClientDelegate,
     dispatcher: AppLifecycleEventDispatcher
 ) : AppLifecycle {
-    private val http: HttpClientDelegate
-    private val threads: AppThreads
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private var cookieSyncManager: CookieSyncManagerCompat? = null
 
     init {
         dispatcher.registerAppLifecycleObserver<CookieDelegate>(this)
-        this.http = http
-        this.threads = threads
     }
 
     private fun init() {
@@ -115,10 +114,12 @@ class CookieDelegate @Inject constructor(
      * in an async call. If a blocking call is needed at some point another method could be created.
      */
     fun sync() {
-        threads.async(Runnable {
+        // CookieManager.sync is blocking, so it cannot run on the caller's
+        // thread. A dispatcher replaces the task pool this used to go through.
+        scope.launch(Dispatchers.IO) {
             init()
             cookieSyncManager!!.sync()
-        })
+        }
     }
 
     override fun onLogoutStarted(): LogoutPolicy? {

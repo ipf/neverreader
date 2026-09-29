@@ -98,7 +98,6 @@ class Prefs(private val user: Store, private val app: Store) : Preferences {
     }
 
     override fun group(name: String?): Preferences {
-        // TODO also add some protection so someone can't create a preference with this prefix
         return PrefixPreferences(this, name)
     }
 

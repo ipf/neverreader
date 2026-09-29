@@ -97,7 +97,6 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
     protected var mIsHelpActivity: Boolean = false
 
 
-    private var mAccessReceiver: BroadcastReceiver? = null
     private var mFullShutdownReceiver: BroadcastReceiver? = null
     private val EXTRA_KILL_APP = "killApp"
 
@@ -118,7 +117,6 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
     /**
      * Whether or not the ask overlay is visible or in the process of becoming visible (animating).
      */
-    private var mAskUrlOverlayVisible = false
 
     /**
      * Every snackbar in the app renders here. Replaces the old AppSnackbar view,
@@ -335,22 +333,20 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
     }
 
     /**
-     * TODO REVIEW
-     * This mechanism is to make sure all activities are finished when the user logs out,
-     * so that no old activities with data from the logged-out user persist or are restored.
-     * The idea here is that it registers for a ACTION_LOGOUT broadcast and finishes when it
-     * receives it. This has been in here since the beginning of the app and for many many years.
+     * Makes sure an activity is not left on screen when the login state does
+     * not permit it to be there, and registers for a shutdown so that a logout
+     * can finish everything at once.
      *
-     * However, recently we discovered there is a case this does not properly handle.
-     * If the activity is removed from memory, it will not receive the broadcast and
-     * has the potential to be restored later.  An easy way to experiment with this is
-     * "Don't keep activities" in Developer Options.
+     * The login-state half is a plain check on the way in: if the activity
+     * requires a login and there is no active account, or it is the login
+     * activity and one is active, it finishes itself. That replaced an earlier
+     * design which registered for an ACTION_LOGOUT or ACTION_LOGIN broadcast;
+     * nothing ever sent either, so the receiver could never fire. An activity
+     * removed from memory would also have missed the broadcast and been
+     * restored later, which is the case the check sidesteps entirely.
      *
-     * For now, the easiest fix seemed to simply be to use [Activity.finishAffinity]
-     * in [com.neverreader.app.UserManager.logout] and that is the fix that was implemented for
-     * starters. But really, it means we likely don't need this complexity any more.
-     *
-     * At some point we should review how this works and see if we can remove these broadcasts.
+     * The shutdown receiver is live: [UserManager.logout] calls
+     * [finishAllActivities] to finish every activity and kill the process.
      */
     private fun installLogoutReceiver(accessType: ActivityAccessRestriction?) {
         // if the access restriction is ALLOWS_GUEST and this user is opted into
@@ -365,13 +361,9 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
         if (accessType != ActivityAccessRestriction.ANY) {
             // Register this activity to be finished if the login state changes
 
-            var action: String? = null
-
             if (accessType == ActivityAccessRestriction.REQUIRES_LOGIN) {
                 if (app()!!.accountManager().activeCached == null && !mIsHelpActivity) {
                     finish()
-                } else {
-                    action = ACTION_LOGOUT
                 }
             } else {
                 if (app()!!.accountManager().activeCached != null) {
@@ -381,23 +373,7 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
                     }
 
                     finish()
-                } else {
-                    action = ACTION_LOGIN
                 }
-            }
-
-            if (action != null && mAccessReceiver == null) {
-                val intentFilter = IntentFilter()
-                intentFilter.addAction(action)
-
-                mAccessReceiver = object : BroadcastReceiver() {
-                    override fun onReceive(context: Context?, intent: Intent?) {
-                        finish()
-                    }
-                }
-
-                LocalBroadcastManager.getInstance(this@AbsNeverReaderActivity)
-                    .registerReceiver(mAccessReceiver!!, intentFilter)
             }
         }
 
@@ -510,10 +486,14 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Offers to save a url found on the clipboard. Only a read of the clipboard
+     * is involved: the app has no Copy Link action, so there is no copy of its
+     * own to suppress the prompt for. [Clipboard] does still skip a url it has
+     * already offered, so the same link is not offered twice in a row.
+     */
     private fun showAskUrl(url: String) {
-        // TODO if you share Copy Link, don't show this for that link
         lifecycleScope.launch {
-            mAskUrlOverlayVisible = true
             val result = snackbarHostState.showSnackbar(
                 message = getString(R.string.lb_add_copied_url),
                 actionLabel = getString(com.neverreader.ui.R.string.ac_save),
@@ -521,8 +501,6 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
                 // Held until the user acts or swipes it away, as before.
                 duration = SnackbarDuration.Indefinite,
             )
-            mAskUrlOverlayVisible = false
-            onClipboardUrlPromptViewDismissed()
             if (result != SnackbarResult.ActionPerformed) return@launch
 
             val message = withContext(Dispatchers.IO) {
@@ -593,10 +571,6 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
     }
 
     private fun unregisterReceivers() {
-        if (mAccessReceiver != null) {
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(mAccessReceiver!!)
-            mAccessReceiver = null
-        }
 
         if (mFullShutdownReceiver != null) {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(mFullShutdownReceiver!!)
@@ -792,8 +766,6 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
         const val DEBUG_LIFECYCLE: Boolean = false
 
         const val ACTION_SHUTDOWN: String = "com.ideashower.readitlater.ACTION_SHUTDOWN"
-        const val ACTION_LOGOUT: String = "com.ideashower.readitlater.ACTION_LOGOUT"
-        const val ACTION_LOGIN: String = "com.ideashower.readitlater.ACTION_LOGIN"
 
         const val MENU_GROUP_APP: Int = -1
         const val MENU_GROUP_ACTIVITY: Int = -2

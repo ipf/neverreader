@@ -19,7 +19,9 @@ fun AppIconButton(
     CompositionLocalProvider(
         LocalContentColor provides AppTheme.colors.grey3,
     ) {
-        // TODO: IconButton doesn't show content description on long press.
+        // No long-press tooltip: the label reaches TalkBack through the icon's
+        // own contentDescription, which every AppIcons entry supplies, and a
+        // long press is a touch gesture rather than an accessibility one.
         IconButton(
             onClick,
             modifier.size(50.dp),

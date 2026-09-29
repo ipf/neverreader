@@ -341,52 +341,23 @@ object ViewUtil {
      * @return
      */
     fun isVisibleToUserCompat(view: View?, minVisiblePercent: Float): Boolean {
-        if (view == null || !view.isShown() || view.getWindowVisibility() != View.VISIBLE || view.getVisibility() != View.VISIBLE || view.getWidth() <= 0 || view.getHeight() <= 0 || !isAttachedToViewRoot(
-                view
-            )
+        if (view == null || !view.isShown() || view.getWindowVisibility() != View.VISIBLE ||
+            view.getVisibility() != View.VISIBLE || view.getWidth() <= 0 ||
+            view.getHeight() <= 0 || !isAttachedToViewRoot(view)
         ) {
-            if (false) {
-                val reason: String?
-                if (view == null) {
-                    reason = "null"
-                } else if (!view.isShown()) {
-                    reason = "not shown"
-                } else if (view.getWindowVisibility() != View.VISIBLE) {
-                    reason = "window vis"
-                } else if (view.getVisibility() != View.VISIBLE) {
-                    reason = "view vis"
-                } else if (view.getWidth() <= 0 || view.getHeight() <= 0) {
-                    reason = "view size"
-                } else if (!isAttachedToViewRoot(view)) {
-                    reason = "view root"
-                } else {
-                    reason = "unknown"
-                }
-                WIP.l("VISCHECK ~ HIDDEN ~ " + reason)
-            }
             return false
-        } else {
-            val visible =
-                view.getGlobalVisibleRect(mUiThreadRect) // Note this always returns true when the view is not attached to a window, hence the isAttachedToViewRoot() check above.
-            if (!visible) {
-                WIP.l("VISCHECK ~ HIDDEN ~ not visible in global rect")
-                return false
-            } else if (minVisiblePercent <= 0) {
-                WIP.l("VISCHECK ~ VISIBLE ~ any percent allowed")
-                return true
-            } else {
-                val visibleArea = (mUiThreadRect.width() * mUiThreadRect.height()).toFloat()
-                val totalArea = (view.getWidth() * view.getHeight()).toFloat()
-                val percent = visibleArea / totalArea
-                if (percent >= minVisiblePercent) {
-                    WIP.l("VISCHECK ~ VISIBLE ~ " + percent)
-                    return true
-                } else {
-                    WIP.l("VISCHECK ~ HIDDEN ~ " + percent)
-                    return false
-                }
-            }
         }
+        // Note getGlobalVisibleRect always returns true when the view is not
+        // attached to a window, hence the isAttachedToViewRoot check above.
+        if (!view.getGlobalVisibleRect(mUiThreadRect)) {
+            return false
+        }
+        if (minVisiblePercent <= 0) {
+            return true
+        }
+        val visibleArea = (mUiThreadRect.width() * mUiThreadRect.height()).toFloat()
+        val totalArea = (view.getWidth() * view.getHeight()).toFloat()
+        return visibleArea / totalArea >= minVisiblePercent
     }
 
     /**

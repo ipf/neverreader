@@ -55,9 +55,6 @@
             android:exported="true"
             />
 
-        <!-- Media && TTS -->
-        <service android:name="com.neverreader.sdk.util.wakelock.WakefulAppService" />
-
         <!-- Exported Components (Available to other apps) -->
         <activity
             android:name="com.neverreader.app.add.AddActivity"
