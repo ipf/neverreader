@@ -40,7 +40,7 @@ resolves are not in the local cache.
 app (UI) → repositories → Room DB → WorkManager sync
                               ↑
             :backend — Backend interface
-                ├─ ReadeckAdapter   (OpenAPI spec: api.json)
+                ├─ ReadeckAdapter   (Readeck's /api, OpenAPI-described)
                 └─ WallabagAdapter  (REST v2/v3)
 ```
 

@@ -43,7 +43,7 @@ data class DeviceSession(
 )
 
 object ReadeckAuth {
-    // Readeck serves the API under /api; api.json paths are relative to it.
+    // Readeck serves the API under /api.
     private fun base(serverUrl: String) = serverUrl.trimEnd('/') + "/api"
 
     /**
