@@ -6,8 +6,8 @@ import kotlin.math.min
 
 object Brightness {
     // OPT does software dimming this slow down drawing? what about hardware acceleration? is this worth the extra dimness?
-    // OPT i disabled software dimming for now as it seemed to be too dark in many cases and possibly? causes extra drawing calls.
-    // OPT if we stick with only hardware, clean up this code to remove the uneeded software dimming code.
+    // OPT I disabled software dimming for now as it seemed too dark in many cases and possibly? causes extra drawing calls.
+    // OPT if we stick with only hardware, clean up this code to remove the unneeded software dimming code.
     private var mUsingCustomBrightness = false
     private var mHardware = 0f // 0 to 1 // 0 is dim, 1 is bright
     private const val mSoftware =
@@ -28,7 +28,7 @@ object Brightness {
         val window = activity.getWindow()
         val lp = window.getAttributes()
         lp.screenBrightness = mHardware
-        window.setAttributes(lp)
+        window.attributes = lp
 
 
         //float nb = window.getAttributes().screenBrightness;
