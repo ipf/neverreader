@@ -59,7 +59,7 @@ class App : Application(), Configuration.Provider {
      * popped up for a few seconds when you turned the phone, with no settings
      * row anywhere, so there was nothing to miss - but a stored orientation
      * lock would be left behind with nothing reading it, and if it were ever
-     * reintroduced the user would come back to a lock they never set.
+     *  reintroduced, the user would come back to a lock they never set.
      */
     private fun clearLegacyRotationLock() {
         legacyPrefs.remove(LEGACY_ROTATION_ORIENTATION_KEY)

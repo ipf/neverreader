@@ -26,6 +26,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,7 +43,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -51,7 +51,6 @@ import com.neverreader.app.MainActivity
 import com.neverreader.app.R
 import com.neverreader.backend.model.BackendType
 import com.neverreader.sdk.util.AbsNeverReaderActivity
-import com.neverreader.sdk.util.AbsNeverReaderFragment
 import com.neverreader.ui.compose.AppBar
 import com.neverreader.ui.compose.FilterChips
 import com.neverreader.ui.theme.AppTheme
@@ -59,54 +58,31 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 /**
- * The server setup flow: pick a backend (Readeck or Wallabag), enter the server URL,
- * then authorize via the Readeck device flow or the Wallabag password grant.
+ * The server setup flow: pick a backend (Readeck or Wallabag), enter the server
+ * URL, then authorize via the Readeck device flow or the Wallabag password
+ * grant.
+ *
+ * A plain composable now - it lives in its own activity, so it needs no
+ * navigation host, only content.
  */
-@AndroidEntryPoint
-class AuthenticationFragment : AbsNeverReaderFragment() {
-
-    private val viewModel: AuthenticationViewModel by viewModels()
-
-    override fun onCreateViewImpl(
-        inflater: LayoutInflater?,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View = ComposeView(requireContext()).apply {
-        setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-        setContent {
-            AppTheme(darkTheme = isDarkTheme()) {
-                AuthenticationScreen(
-                    viewModel = viewModel,
-                    onOpenUrl = ::openVerificationUrl,
-                    onAuthenticated = ::goToMainScreen,
-                )
+@Composable
+fun AuthenticationScreen(
+    viewModel: AuthenticationViewModel = hiltViewModel(),
+    onAuthenticated: () -> Unit,
+) {
+    val context = LocalContext.current
+    LaunchedEffect(viewModel) {
+        viewModel.events.collect { event ->
+            when (event) {
+                is AuthenticationViewModel.Event.Success -> onAuthenticated()
             }
         }
     }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.events.collect { event ->
-                    when (event) {
-                        is AuthenticationViewModel.Event.Success -> goToMainScreen()
-                    }
-                }
-            }
-        }
-    }
-
-    private fun openVerificationUrl(url: String) {
-        runCatching { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
-    }
-
-    private fun goToMainScreen() {
-        (activity as? AbsNeverReaderActivity)?.let { activity ->
-            activity.startActivity(Intent(activity, MainActivity::class.java))
-            activity.finish()
-        }
-    }
+    AuthenticationScreen(
+        viewModel = viewModel,
+        onOpenUrl = { url -> runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) } },
+        onAuthenticated = onAuthenticated,
+    )
 }
 
 @Composable

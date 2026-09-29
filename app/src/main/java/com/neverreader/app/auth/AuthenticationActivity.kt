@@ -7,7 +7,6 @@ import com.neverreader.app.MainActivity
 import com.neverreader.app.R
 import com.neverreader.backend.model.BackendType
 import com.neverreader.sdk.util.AbsNeverReaderActivity
-import com.neverreader.sdk.util.AbsNeverReaderFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -32,10 +31,13 @@ class AuthenticationActivity : AbsNeverReaderActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                .add(android.R.id.content, AuthenticationFragment())
-                .commit()
+        setAppContent {
+            AuthenticationScreen(onAuthenticated = ::goToMainScreen)
         }
+    }
+
+    private fun goToMainScreen() {
+        startActivity(Intent(this, MainActivity::class.java))
+        finish()
     }
 }

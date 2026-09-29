@@ -34,10 +34,10 @@ class IntentItemUtil private constructor() {
         private fun findUrlsFromIntent(intent: Intent): ArrayList<String?> {
             if (Intent.ACTION_VIEW == intent.action) {
                 val urls = ArrayList<String?>(1)
-                if (intent.getData() != null) {
+                if (intent.data != null) {
                     val saveUrl: String?
                     try {
-                        saveUrl = intent.getData()!!.getQueryParameter("url")
+                        saveUrl = intent.data!!.getQueryParameter("url")
                         urls.add(saveUrl)
                     } catch (t: Throwable) {
                         // Not matching the format we are expecting
@@ -49,7 +49,7 @@ class IntentItemUtil private constructor() {
                 // SEND Action or other, search the extras
                 val urls =
                     getUrlsFromText(intent.getStringExtra(Intent.EXTRA_TEXT))
-                return if (urls != null) urls else ArrayList<String?>()
+                return urls ?: ArrayList()
             }
         }
     }

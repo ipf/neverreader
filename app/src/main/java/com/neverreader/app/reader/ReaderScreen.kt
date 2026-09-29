@@ -19,6 +19,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,13 +30,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.neverreader.app.R
 import com.neverreader.app.settings.Theme
 import com.neverreader.backend.model.Bookmark
 import com.neverreader.sdk.util.AbsNeverReaderActivity
-import com.neverreader.sdk.util.AbsNeverReaderFragment
 import com.neverreader.ui.compose.AppBar
 import com.neverreader.ui.theme.AppTheme
 import com.neverreader.ui.view.button.AppIconButton
@@ -50,52 +49,22 @@ import dagger.hilt.android.AndroidEntryPoint
  * (`assets/html/c/text.css`) is injected and driven by the body attributes it
  * expects, so articles are centred and legible instead of raw page HTML.
  */
-@AndroidEntryPoint
-class ReaderFragment : AbsNeverReaderFragment() {
-
-    private val viewModel: ReaderViewModel by viewModels()
-
-    override fun onCreateViewImpl(
-        inflater: LayoutInflater?,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View = ComposeView(requireContext()).apply {
-        setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-        setContent {
-            val dark = isDarkTheme()
-            AppTheme(darkTheme = dark) {
-                ReaderScreen(
-                    viewModel = viewModel,
-                    darkTheme = dark,
-                    onBack = { requireActivity().onBackPressedDispatcher.onBackPressed() },
-                    onShare = ::share,
-                )
-            }
-        }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        arguments?.getString("url")?.let { viewModel.load(it, arguments?.getString("id")) }
-    }
-
-    private fun share(url: String, title: String) {
-        val send = Intent(Intent.ACTION_SEND).apply {
-            type = "text/plain"
-            putExtra(Intent.EXTRA_SUBJECT, title)
-            putExtra(Intent.EXTRA_TEXT, url)
-        }
-        startActivity(Intent.createChooser(send, null))
-    }
-}
-
+/**
+ * The article reader: renders the backend's article HTML in a WebView.
+ *
+ * A navigation destination. The id and url arrive as parameters rather than as
+ * navigation arguments read back out of a Bundle.
+ */
 @Composable
-private fun ReaderScreen(
+fun ReaderScreen(
     viewModel: ReaderViewModel,
+    articleId: String?,
+    articleUrl: String,
     darkTheme: Boolean,
     onBack: () -> Unit,
     onShare: (String, String) -> Unit,
 ) {
+    LaunchedEffect(articleId, articleUrl) { viewModel.load(articleUrl, articleId) }
     val current by viewModel.state.collectAsStateWithLifecycle()
     val state = current
     val bookmark = (state as? ReaderViewModel.State.Content)?.bookmark

@@ -205,6 +205,5 @@ data class ListItemUiState(
 )
 
 sealed class MyListNavigationEvent {
-    data object ShowAddUrl : MyListNavigationEvent()
     data class OpenReader(val id: String, val url: String) : MyListNavigationEvent()
 }

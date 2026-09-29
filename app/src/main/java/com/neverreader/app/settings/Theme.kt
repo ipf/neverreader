@@ -2,12 +2,8 @@ package com.neverreader.app.settings
 
 import android.content.Context
 import android.content.res.Configuration
-import android.view.View
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import com.neverreader.sdk.util.AbsNeverReaderActivity
-import com.neverreader.sdk.util.AbsNeverReaderActivity.Companion.from
-import com.neverreader.sdk.util.AbsNeverReaderFragment
 import com.neverreader.ui.R
 import com.neverreader.util.prefs.IntPreference
 import com.neverreader.util.prefs.Preferences
@@ -26,68 +22,13 @@ class Theme @Inject constructor(prefs: Preferences) {
     }
 
     /**
-     * Get the int key of the current app theme.
-     *
-     * @param context The context the themed view will display in. This allows for checks to see if the view allows certain Themes.
-     * @return
-     */
-    // OPT there are some drawing and layout operations that hit this, is that ok?
-    /**
-     * Get the int key of the current app theme. This will not check if a theme is allowed in this context. When asking
-     * on behalf of a View or Activity, use get(Context) instead.
-     *
-     * @return
+     * The int key of the current app theme, resolving [SYSTEM] against the
+     * configuration of the last context to ask.
      */
     @JvmOverloads
     fun get(context: Context? = null as Context?): Int {
-        // Get the current setting
-        val theme = pref.get()
-
-
-        // If a context is available, use it to determine if any themes are not allowed in this context.
-        var allowedFlag: Int = FLAG_ALLOW_ALL
-        val activity = from(context)
-        if (activity != null) {
-            allowedFlag = activity.themeFlag
-        }
-        cachedContext = context ?: activity
-
-        return applyFlagsToTheme(theme, allowedFlag)
-    }
-
-    /**
-     * Get the int key of the current app theme.
-     *
-     * @param view This will search for the PageFragment that this view belongs to and check what themes are allowed for it.
-     * @param frag If the PageFragment is already known pass it here.
-     * @return int key of the current app theme
-     */
-    @JvmOverloads
-    fun get(view: View, frag: Fragment? = null): Int {
-        var frag = frag
-        if (view.isInEditMode()) return LIGHT
-
-        // Get the current setting
-        val theme = pref.get()
-
-
-        // If a context is available, use it to determine if any themes are not allowed in this context.
-        var allowedFlag: Int = FLAG_ALLOW_ALL
-        val activity = AbsNeverReaderActivity.from(view.getContext())
-        if (activity != null) {
-            if (frag == null) {
-                frag = activity.getFragmentParentOfView(view)
-            }
-            if (frag is AbsNeverReaderFragment) {
-                allowedFlag = frag.themeFlag
-            } else {
-                // This could happen because the view has not been added yet, if the view is created and then added, but then doesn't have its drawable state refreshed, or if the fragment isn't a AbsNeverReaderFragment.
-                // Just use the default for the context
-                return get(view.getContext())
-            }
-        }
-
-        return applyFlagsToTheme(theme, allowedFlag)
+        cachedContext = context ?: cachedContext
+        return applyFlagsToTheme(pref.get())
     }
 
     /**
@@ -157,31 +98,22 @@ class Theme @Inject constructor(prefs: Preferences) {
          */
         const val SYSTEM: Int = 3
 
-        // OPT this would be a good place to use bitwise ops instead
-        const val FLAG_ALLOW_ALL: Int = 0
-        const val FLAG_ONLY_DARK: Int = 1
-        const val FLAG_ONLY_LIGHT: Int = 2
-
-
         /** Whether [context] is currently in dark mode, per the system setting. */
         fun isSystemDark(context: Context?): Boolean {
             val mode = (context?.resources?.configuration?.uiMode ?: 0) and Configuration.UI_MODE_NIGHT_MASK
             return mode == Configuration.UI_MODE_NIGHT_YES
         }
 
-        private fun applyFlagsToTheme(theme: Int, flag: Int): Int {
-            return when (flag) {
-                FLAG_ONLY_DARK -> DARK
-                FLAG_ONLY_LIGHT -> LIGHT
-                // Resolved here rather than at every use, so the activity theme
-                // and Compose agree on one value.
-                else -> if (theme == SYSTEM) {
-                    if (isSystemDark(cachedContext)) DARK else LIGHT
-                } else {
-                    theme
-                }
+        /**
+         * Resolves [SYSTEM] here rather than at every use, so the activity theme
+         * and Compose agree on one value.
+         */
+        private fun applyFlagsToTheme(theme: Int): Int =
+            if (theme == SYSTEM) {
+                if (isSystemDark(cachedContext)) DARK else LIGHT
+            } else {
+                theme
             }
-        }
 
         /**
          * Is the supplied int value a dark theme variant?

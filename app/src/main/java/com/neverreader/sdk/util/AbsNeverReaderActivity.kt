@@ -49,15 +49,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.transition.TransitionManager
 import com.neverreader.app.App
 import com.neverreader.app.R
 import com.neverreader.app.settings.Brightness
 import com.neverreader.app.settings.Theme
-import com.neverreader.sdk.util.fragment.NeverReaderFragmentManager
 import com.neverreader.ui.compose.AppSnackbarHost
 import com.neverreader.ui.theme.AppTheme
 import com.neverreader.util.android.ApiLevel
@@ -66,8 +63,6 @@ import com.neverreader.util.android.FormFactor
 import com.neverreader.util.android.ViewUtil
 import com.neverreader.util.android.WindowUtil.NavigationBarColorProperty
 import com.neverreader.util.android.WindowUtil.StatusBarColorProperty
-import com.neverreader.util.android.fragment.FragmentUtil
-import com.neverreader.util.android.fragment.FragmentUtil.FragmentLaunchMode
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -104,7 +99,6 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
     }
 
     private val mOnLifeCycleChangedListeners = ArrayList<OnLifeCycleChangedListener>()
-    private val mOnBackPressedListeners = ArrayList<OnBackPressedListener>()
     private val mOnConfigurationChangedListeners = ArrayList<OnConfigurationChangedListener>()
 
     protected var mIsHelpActivity: Boolean = false
@@ -126,7 +120,6 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
     fun currentTheme(): Int = mTheme
 
 
-    private var mThemeFlag = 0
 
     private var themeJob: Job? = null
 
@@ -176,33 +169,6 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
         appContent.value = content
     }
 
-    /**
-     * For the activities that still host a fragment. The container is only
-     * created once something asks for it, so an activity using [setAppContent]
-     * is not covered by an empty one.
-     */
-    protected fun hostFragment(fragment: Fragment, afterAttach: (() -> Unit)? = null) {
-        val id = fragmentContainerId
-        setAppContent {
-            AndroidView(
-                modifier = Modifier.fillMaxSize(),
-                factory = { ctx ->
-                    FrameLayout(ctx).apply {
-                        this.id = id
-                        // The fragment manager resolves a container by this id, and
-                        // the id only resolves once the view is attached. This
-                        // factory runs during composition, which is after onCreate
-                        // has returned, so the commit has to wait for that.
-                        post {
-                            supportFragmentManager.commit { replace(id, fragment) }
-                            afterAttach?.invoke()
-                        }
-                    }
-                },
-            )
-        }
-    }
-
     /** Shows a message on the shared host. Fire and forget. */
     protected fun snack(message: String, long: Boolean = false) {
         lifecycleScope.launch {
@@ -215,8 +181,6 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
 
     private var mToasty: Toast? = null
 
-    val neverReaderFragmentManager: NeverReaderFragmentManager =
-        NeverReaderFragmentManager(super.getSupportFragmentManager(), this)
     private var mIsContentSet = false
 
     fun app(): App? {
@@ -250,7 +214,6 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
 
-        mThemeFlag = this.defaultThemeFlag
         mTheme = app()!!.theme().get(this)
         mHandler = Handler()
 
@@ -264,10 +227,8 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if (neverReaderFragmentManager.onBackPressed()) return  // Handled
-                for (listener in ArrayList<OnBackPressedListener>(mOnBackPressedListeners)) { // Iterates on a copy to allow listeners to remove themselves during callback/iteration without a concurrent mod exceptions.
-                    if (listener.onBackPressed()) return  // Handled
-                }
+                // Nothing intercepts ahead of the dispatcher: destinations pop
+                // their own back stack, and dialogs handle back themselves.
                 isEnabled = false
                 onBackPressedDispatcher.onBackPressed()
             }
@@ -277,10 +238,6 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
 
         if (!isFinishing) {
             installLogoutReceiver(this.accessType)
-        }
-
-        if (savedInstanceState != null) {
-            this.neverReaderFragmentManager.onRestoreInstanceState(savedInstanceState)
         }
 
         onCreateOrRestart()
@@ -313,19 +270,6 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
      */
 
     
-    public override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        this.neverReaderFragmentManager.onSaveInstanceState(outState)
-    }
-
-    val defaultThemeFlag: Int
-        /**
-         * The default Theme Flag to use when creating this Activity.
-         * Subclasses can override this to change the flag for their activity, or change it at runtime with [.setThemeFlag].
-         * See [.getThemeFlag] for the current value.
-         */
-        get() = Theme.FLAG_ALLOW_ALL
-
 
     /**
      * Something has modified the theme (dark/light mode), the UI should update as needed.
@@ -338,10 +282,6 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
 
         setBackgroundDrawable()
         mTheme = newTheme
-
-
-        // Dispatch to any visible fragments
-        neverReaderFragmentManager.onThemeChanged(newTheme)
 
         invalidateStatusBarColor()
     }
@@ -421,14 +361,9 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
         val theme = app()!!.theme().get(this)
         if (mTheme != theme) {
             mTheme = theme
-            neverReaderFragmentManager.onThemeChanged(theme)
         }
 
         onCreateOrRestart()
-
-
-        // Dispatch to any visible fragments
-        neverReaderFragmentManager.onActivityRestart()
 
         for (listener in mOnLifeCycleChangedListeners) {
             listener.onActivityRestart(this)
@@ -438,10 +373,6 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
     protected fun onCreateOrRestart() {
         Brightness.applyBrightnessIfSet(this)
         invalidateStatusBarColor()
-    }
-
-    override fun getSupportFragmentManager(): FragmentManager {
-        return this.neverReaderFragmentManager
     }
 
     /**
@@ -781,51 +712,6 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
     }
 
 
-    var themeFlag: Int
-        /**
-         * Gets a flag for which themes are currently allowed.  Should be one of the FLAG_ values in Theme
-         * To change the flag for your activity override [.getDefaultThemeFlag]
-         * @return
-         */
-        get() = mThemeFlag
-        /**
-         * Set what themes are currently allowed to display in the app. Will refresh views if it causes a theme change.
-         *
-         * One of [Theme.FLAG_ALLOW_ALL], [Theme.FLAG_ONLY_DARK], [Theme.FLAG_ONLY_LIGHT]
-         * @param flag
-         */
-        set(flag) {
-            val currentTheme = app()!!.theme().get(this)
-            mThemeFlag = flag
-            val newTheme = app()!!.theme().get(this)
-
-            if (newTheme != currentTheme) {
-                onThemeChanged(newTheme)
-            }
-        }
-
-
-    /**
-     * Searches these Activities' fragments to find which one holds a certain view. If the parent view is found, it is returned. Otherwise null.
-     * @param view
-     * @return
-     */
-    fun getFragmentParentOfView(view: View?): Fragment? {
-        val fragments: MutableList<Fragment?> = this.neverReaderFragmentManager.getFragments()
-        for (frag in fragments) {
-            if (FragmentUtil.isDetachedOrFinishing(frag)) {
-                continue
-            }
-
-            val root = FragmentUtil.getRootView(frag) ?: continue
-
-            if (ViewUtil.containsView(root, view)) {
-                return frag
-            }
-        }
-        return null
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         for (listener in mOnLifeCycleChangedListeners) {
@@ -863,14 +749,6 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
         mOnLifeCycleChangedListeners.remove(listener)
     }
 
-    fun addOnBackPressedListener(listener: OnBackPressedListener?) {
-        mOnBackPressedListeners.add(listener!!)
-    }
-
-    fun removeOnBackPressedListener(listener: OnBackPressedListener?) {
-        mOnBackPressedListeners.remove(listener)
-    }
-
     interface OnLifeCycleChangedListener {
         fun onActivityCreate(savedInstanceState: Bundle?, activity: AbsNeverReaderActivity?)
         fun onActivityRestart(activity: AbsNeverReaderActivity?)
@@ -892,13 +770,6 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
             permissions: Array<out String>,
             grantResults: IntArray
         ) //		void onFocusedFragmentChange(AbsNeverReaderActivity activity, Fragment focus);
-    }
-
-    interface OnBackPressedListener {
-        /**
-         * @return true if handled.
-         */
-        fun onBackPressed(): Boolean
     }
 
     fun addOnConfigurationChangedListener(listener: OnConfigurationChangedListener?) {

@@ -14,15 +14,15 @@ Sentry, or any similar SDK.
 ## Build & test
 
 Requires **JDK 21** (Gradle 8.x cannot run on Java 25) and the Android SDK
-(`ANDROID_HOME` or `local.properties`).
+(`ANDROID_HOME` or `local.properties`). `targetSdk` is 35, `minSdk` 26.
 
 ```bash
 export JAVA_HOME=/usr/lib/jvm/java-1.21.0-openjdk-amd64
-./gradlew assembleDebug          # debug APK
-./gradlew :app:testDebugUnitTest # unit tests
-./gradlew :app:lintDebug         # lint
-./gradlew :backend:test          # backend adapter tests (MockWebServer)
+./gradlew :app:assembleDebug :app:testDebugUnitTest :backend:test :utils-android:testReleaseUnitTest :app:lintDebug
 ```
+
+Run it without `--offline`: the lower viewBinding artifacts the app module
+resolves are not in the local cache.
 
 ## Modules
 
@@ -47,10 +47,15 @@ app (UI) → repositories → Room DB → WorkManager sync
 - **Domain model:** `Bookmark`, `Tag`, `Annotation`, `Account`. All backends map
   their entries into these types. UI code must only use the domain types, never
   backend-specific DTOs.
-- **UI:** Jetpack Compose with Material 3. Screens use
-  `ComposeView` + `setViewCompositionStrategy(DisposeOnViewTreeLifecycleDestroyed)`
-  inside the existing `AbsNeverReaderFragment` base classes. There is no XML
-  layout for screen content and none should be added.
+- **UI:** Jetpack Compose with Material 3, and Compose only — there are no
+  fragments and no XML layout for screen content, and none should be added. Each
+  activity extends `AbsNeverReaderActivity` and calls `setAppContent { … }`.
+  Navigation is Compose Navigation: routes are declared in `app/…/AppNavHost.kt`
+  (no `res/navigation` graph), destinations are plain `@Composable` screens named
+  `*Screen.kt`, and each gets its ViewModel from `hiltViewModel()`. Add a screen
+  as a `composable(route) { … }` entry in `AppNavHost`, not as an activity.
+  Note `setAppContent` may be called again (e.g. to swap content), which
+  **replaces** the whole composition — do not use it to push a screen.
 - **Design system:** `ui/theme/` is the only source of colour, type and shape.
   Reach for `AppTheme.colors` / `AppTheme.typography` / `AppTheme.dimensions`,
   never a raw hex or a `res/values` colour. `AppTheme(darkTheme = …)` takes the

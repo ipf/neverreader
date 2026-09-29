@@ -102,7 +102,7 @@ class AddActivity : AbsNeverReaderActivity() {
     }
 
     private fun onSaved(item: Bookmark?, status: AddItemFromIntentUtil.ErrorStatus?) {
-        // If there's an error we show a message and don't show any actions.
+        // If there's an error, we show a message and don't show any actions.
         if (status == AddItemFromIntentUtil.ErrorStatus.ADD_INVALID_URL) {
             showToast(R.string.ts_add_invalid_url)
             return

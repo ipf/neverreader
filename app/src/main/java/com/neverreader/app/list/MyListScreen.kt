@@ -20,7 +20,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,21 +38,17 @@ import androidx.core.os.bundleOf
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.fragment.findNavController
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.neverreader.app.R
-import com.neverreader.app.list.add.AddUrlBottomSheetFragment
 import com.neverreader.app.repository.ThumbnailRepository
 import com.neverreader.app.list.list.ListManager
 import com.neverreader.backend.model.Bookmark
 import com.neverreader.backend.model.BookmarkSort
 import com.neverreader.backend.sync.SyncWorker
-import com.neverreader.sdk.util.AbsNeverReaderFragment
 import com.neverreader.ui.compose.AppBar
 import com.neverreader.ui.compose.FilterChips
 import com.neverreader.ui.compose.SearchField
@@ -59,68 +57,7 @@ import com.neverreader.ui.compose.ItemRow
 import com.neverreader.ui.theme.AppTheme
 import com.neverreader.ui.view.button.AppIconButton
 import com.neverreader.ui.view.button.UpIcon
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 import kotlinx.coroutines.launch
-
-/**
- * The save list: unread / favorites / archive with filtering.
- */
-@AndroidEntryPoint
-class MyListFragment : AbsNeverReaderFragment() {
-
-    private val viewModel: MyListViewModel by viewModels()
-
-    @Inject
-    lateinit var thumbnailRepository: ThumbnailRepository
-
-    override fun onCreateViewImpl(
-        inflater: LayoutInflater?,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View = ComposeView(requireContext()).apply {
-        setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-        setContent {
-            AppTheme(darkTheme = isDarkTheme()) {
-                MyListScreen(
-                    viewModel = viewModel,
-                    onOpenAddUrl = ::showAddUrl,
-                    onOpenSettings = ::openSettings,
-                    loadImage = { url -> thumbnailRepository.load(url) },
-                )
-            }
-        }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.navigationEvents.collect { event ->
-                    when (event) {
-                        is MyListNavigationEvent.ShowAddUrl -> showAddUrl()
-                        is MyListNavigationEvent.OpenReader -> openReader(event.id, event.url)
-                    }
-                }
-            }
-        }
-    }
-
-    private fun openReader(id: String, url: String) {
-        // Tapping an article used to emit OpenReader into a no-op: both this
-        // fragment and MainActivity deferred to each other, so the reader was
-        // unreachable.
-        findNavController().navigate(R.id.goToReader, bundleOf("id" to id, "url" to url))
-    }
-
-    private fun showAddUrl() {
-        AddUrlBottomSheetFragment().show(parentFragmentManager, AddUrlBottomSheetFragment::class.java.name)
-    }
-
-    private fun openSettings() {
-        findNavController().navigate(R.id.goToSettings)
-    }
-}
 
 /** Kept out of :ui, which has no dependency on :backend. */
 private fun BookmarkSort.labelRes(): Int = when (this) {
@@ -130,16 +67,31 @@ private fun BookmarkSort.labelRes(): Int = when (this) {
     BookmarkSort.TITLE_DESC -> com.neverreader.ui.R.string.sort_title_desc
 }
 
+/**
+ * The saves list, a navigation destination.
+ *
+ * Navigation is passed in as callbacks rather than reached for through a
+ * NavController, so this has no dependency on how the host is structured.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun MyListScreen(
+fun MyListScreen(
     viewModel: MyListViewModel,
+    loadImage: suspend (String) -> ByteArray?,
     onOpenAddUrl: () -> Unit,
     onOpenSettings: () -> Unit,
-    loadImage: suspend (String) -> ByteArray?,
+    onOpenReader: (id: String, url: String) -> Unit,
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+
+    LaunchedEffect(viewModel) {
+        viewModel.navigationEvents.collect { event ->
+            when (event) {
+                is MyListNavigationEvent.OpenReader -> onOpenReader(event.id, event.url)
+            }
+        }
+    }
     val items = viewModel.pagedBookmarks.collectAsLazyPagingItems()
     var refreshing by remember { mutableStateOf(false) }
     val sortFilter by viewModel.sortFilterState.collectAsStateWithLifecycle()
@@ -150,6 +102,15 @@ private fun MyListScreen(
     var searching by remember { mutableStateOf(viewModel.searchText.value.isNotBlank()) }
     var query by remember { mutableStateOf(viewModel.searchText.value) }
 
+    val exitSearch = {
+        searching = false
+        query = ""
+        viewModel.clearSearch()
+    }
+    // Search mode is local UI state with no screen of its own, so back has to be
+    // consumed here or it would leave the app instead of closing the field.
+    BackHandler(enabled = searching) { exitSearch() }
+
     // One root layout: a bare ComposeView positions every top-level child at
     // (0,0), so the app bar, the filter chips and the list all drew on top
     // of each other.
@@ -159,13 +120,7 @@ private fun MyListScreen(
                 // While searching the bar's actions would crowd out the field, so
                 // they are replaced by a way out.
                 if (searching) {
-                    AppIconButton(
-                        onClick = {
-                            searching = false
-                            query = ""
-                            viewModel.clearSearch()
-                        },
-                    ) { UpIcon() }
+                    AppIconButton(onClick = exitSearch) { UpIcon() }
                 }
             },
             title = {

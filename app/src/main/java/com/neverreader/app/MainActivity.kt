@@ -8,23 +8,18 @@ import android.os.Looper
 import android.view.KeyEvent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.NavController
-import androidx.navigation.fragment.NavHostFragment
 import com.neverreader.app.R
 import com.neverreader.app.auth.AuthenticationActivity
-import com.neverreader.app.list.MyListFragment
-import com.neverreader.app.settings.PrefsFragment
+import com.neverreader.app.repository.ThumbnailRepository
+import com.neverreader.app.settings.isDarkAppTheme
+import com.neverreader.sdk.preferences.AppPrefs
 import com.neverreader.sdk.util.AbsNeverReaderActivity
-import com.neverreader.sdk.util.AbsNeverReaderFragment
-import com.neverreader.util.BackPressedUtil
-import com.neverreader.util.android.navigateSafely
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 import kotlinx.coroutines.flow.onSubscription
 import kotlinx.coroutines.launch
 
@@ -33,15 +28,11 @@ class MainActivity : AbsNeverReaderActivity() {
 
     private val viewModel: MainViewModel by viewModels()
 
-    /**
-     * Held directly rather than looked up by view id: there is no
-     * FragmentContainerView in a layout any more, so the container is created in
-     * code and the graph attached afterwards.
-     */
-    private val navHost = NavHostFragment()
+    @Inject lateinit var thumbnailRepository: ThumbnailRepository
 
-    private val navController: NavController?
-        get() = navHost.navController
+    @Inject lateinit var userManager: UserManager
+
+    @Inject lateinit var appPrefs: AppPrefs
 
     override val accessType: ActivityAccessRestriction = ActivityAccessRestriction.ANY
 
@@ -59,33 +50,32 @@ class MainActivity : AbsNeverReaderActivity() {
                 return@launch
             }
 
-            // The graph cannot be set before the fragment exists, and
-            // NavHostFragment would normally read it from activity_main.xml.
-            hostFragment(navHost) {
-                supportFragmentManager.executePendingTransactions()
-                navController?.setGraph(R.navigation.main_graph)
+            // The NavHost pops its own back stack, so there is no activity-level
+            // callback to install. BackPressedUtil and the clipboard prompt keep
+            // theirs in the base class.
+            setAppContent {
+                AppNavHost(
+                    thumbnailRepository = thumbnailRepository,
+                    userManager = userManager,
+                    appPrefs = appPrefs,
+                    darkTheme = isDarkAppTheme(this@MainActivity),
+                )
             }
-            onBackPressedDispatcher.addCallback(this@MainActivity, backPressedCallback)
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 setupEventsObserver()
             }
         }
     }
 
+    /**
+     * Nothing to route: the app declares no VIEW filter, so an intent can only be
+     * the launch one. Sharing a page in arrives as SEND and is handled by
+     * [AddActivity] instead.
+     */
     @SuppressLint("MissingSuperCall")
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-    }
-
-    private val backPressedCallback = object : OnBackPressedCallback(true) {
-        override fun handleOnBackPressed() {
-            if (BackPressedUtil.onBackPressed(supportFragmentManager)) return
-            if (navController?.popBackStack() != true) {
-                isEnabled = false
-                this@MainActivity.onBackPressedDispatcher.onBackPressed()
-                isEnabled = true
-            }
-        }
+        setIntent(intent)
     }
 
     private suspend fun setupEventsObserver() {
@@ -93,20 +83,6 @@ class MainActivity : AbsNeverReaderActivity() {
             viewModel.onEventCollectionStarted()
         }.collect { event ->
             when (event) {
-                is MainViewModel.Event.GoToSaves -> {
-                    val current = currentFragment
-                    if (current !is MyListFragment) {
-                        navController?.popBackStack(R.id.saves, false)
-                    }
-                }
-                is MainViewModel.Event.GoToSettings -> {
-                    if (currentFragment !is PrefsFragment) {
-                        navController?.navigate(R.id.settings)
-                    }
-                }
-                is MainViewModel.Event.OpenReader -> {
-                    // handled by the list fragment navigating to the reader
-                }
                 is MainViewModel.Event.ShowBadCredentialsToast ->
                     // Long and dismissable: the user has been logged out and has to
                     // read this before signing in again.
@@ -118,6 +94,4 @@ class MainActivity : AbsNeverReaderActivity() {
         }
     }
 
-    private val currentFragment: Fragment?
-        get() = navHost.childFragmentManager.primaryNavigationFragment
 }

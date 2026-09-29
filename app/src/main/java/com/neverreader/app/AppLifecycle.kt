@@ -107,8 +107,8 @@ interface AppLifecycle {
     interface LogoutPolicy {
         /**
          * Attempt to stop and/or wait for all work that might modify or add state/data
-         * that belongs to the current logged in user.
-         * Also stop accepting requests from outside this component that would trigger further work
+         * that belongs to the current logged-in user.
+         * Also, stop accepting requests from outside this component that would trigger further work
          * until after [.restart] is invoked.
          * Avoid interacting with other components as they may have also already stopped.
          * Block this thread until complete.
@@ -129,9 +129,9 @@ interface AppLifecycle {
         /**
          * Start accepting requests again if you stopped in [.stopModifyingUserData].
          * Do whatever you need to do so other components and features can start interacting with you again.
-         * This should not be a long running operation. Should be very fast.
+         * This should not be a long-running operation. Should be very fast.
          * Don't interact with other components yet, they may not all be restarted.
-         * See [.onLoggedOut] for when all log out processes are complete and it is safe to use other components.
+         * See [.onLoggedOut] for when all logout processes are complete and it is safe to use other components.
          * Exceptions thrown here will be ignored.
          */
         fun restart()
