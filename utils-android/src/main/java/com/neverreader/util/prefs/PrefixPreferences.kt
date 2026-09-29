@@ -6,8 +6,8 @@ import kotlinx.coroutines.flow.onStart
 
 /**
  * A [Preferences] that wraps another and when getting preference instances, it adds a prefix to the key and invokes it on the parent.
- * All methods like [.userKeys], [.clear] etc will only affect preferences with that prefix.
- * This is an implementation of a nested preferences for use in [Preferences.group].
+ * All methods like [.userKeys], [.clear], etc. will only affect preferences with that prefix.
+ * This is an implementation of a nested preference for use in [Preferences.group].
  */
 class PrefixPreferences(private val wrapped: Preferences, private val prefix: String?) :
     Preferences {
@@ -23,7 +23,7 @@ class PrefixPreferences(private val wrapped: Preferences, private val prefix: St
         val keys: MutableSet<String?> = HashSet<String?>()
         val prefixLen = prefix?.length
         for (key in wrapped.userKeys()!!) {
-            prefix?.let { if (key?.startsWith(it) == true) keys.add(key?.substring(prefixLen!!)) }
+            prefix?.let { if (key?.startsWith(it) == true) keys.add(key.substring(prefixLen!!)) }
         }
         return keys
     }
@@ -32,7 +32,7 @@ class PrefixPreferences(private val wrapped: Preferences, private val prefix: St
         val keys: MutableSet<String?> = HashSet<String?>()
         val prefixLen = prefix?.length
         for (key in wrapped.appKeys()!!) {
-            if (key!!.startsWith(prefix!!)) keys.add(key?.substring(prefixLen ?: 0))
+            if (key!!.startsWith(prefix!!)) keys.add(key.substring(prefixLen ?: 0))
         }
         return keys
     }

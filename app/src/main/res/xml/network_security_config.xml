@@ -1,28 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    Cleartext stays permitted because this app talks to exactly one host: the
-    server the user configured, and nothing else. Scoping the permission to that
-    host is not possible - the host is chosen at runtime, and the only API for
-    changing this at runtime, NetworkSecurityPolicy.Builder plus
-    Application.setNetworkSecurityPolicy, is @hide, so it is not callable from
-    app code. Denying cleartext outright would break the plain-HTTP
-    self-hosted instances on a LAN that this app exists to serve.
+    User-installed certificate authorities are not trusted. A self-hosted server
+    therefore needs a certificate from an authority the device already trusts: a
+    private CA installed system-wide, or a public one. A certificate the server
+    operator generated themselves is rejected.
 
-    User-installed CAs stay trusted for the same reason: a self-hosted server
-    with a self-signed certificate is the common case, and dropping them would
-    lock those users out of their own server. The trade-off is that an MDM or
-    root CA in the device's user store can intercept this app's traffic,
-    including the OAuth token exchange.
+    That is the point. Trusting the user store means any app that can put up a
+    "install a CA certificate?" prompt can intercept this app's traffic,
+    including the OAuth token exchange, and a self-signed certificate the app
+    never validates is the weakest link in a local-first client.
 
-    Both of these raise lint's InsecureBaseConfiguration, which is demoted to a
-    warning in lint.xml with the reasoning recorded there. It stays in the
-    report rather than being silenced.
+    Cleartext remains permitted, which is a separate decision and the weaker of
+    the two. The host is chosen at runtime, and the only API for scoping
+    cleartext to a single host - NetworkSecurityPolicy.Builder plus
+    Application.setNetworkSecurityPolicy - is @hide, so it cannot be called from
+    app code. Denying cleartext outright would break the plain-HTTP instances on
+    a LAN this app exists to serve, so it stays and is baselined in lint.
 -->
 <network-security-config>
     <base-config cleartextTrafficPermitted="true">
         <trust-anchors>
             <certificates src="system" />
-            <certificates src="user" />
         </trust-anchors>
     </base-config>
 </network-security-config>

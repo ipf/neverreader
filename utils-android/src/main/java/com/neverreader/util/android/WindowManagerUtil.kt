@@ -4,7 +4,7 @@ import android.os.Build
 import android.view.WindowManager
 
 /**
- * Methods for getting screen width and height depending on API level
+ * Methods for getting screen width and height depending on the API level
  */
 object WindowManagerUtil {
     fun getScreenWidth(windowManager: WindowManager): Int {
@@ -23,6 +23,3 @@ object WindowManagerUtil {
         }
     }
 }
-
-fun WindowManager.getScreenWidth(): Int = WindowManagerUtil.getScreenWidth(this)
-fun WindowManager.getScreenHeight(): Int = WindowManagerUtil.getScreenHeight(this)

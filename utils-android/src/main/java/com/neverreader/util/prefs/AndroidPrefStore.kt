@@ -15,7 +15,7 @@ import java.util.Collections
 class AndroidPrefStore(private val prefs: SharedPreferences) : Store {
     /**
      * Cold: the listener is registered when the flow is collected and unregistered
-     * when collection stops.
+     * when a collection stops.
      */
     override fun changes(): Flow<String> = callbackFlow {
         val listener = OnSharedPreferenceChangeListener { _, key ->
@@ -68,14 +68,14 @@ class AndroidPrefStore(private val prefs: SharedPreferences) : Store {
     override fun set(key: String?, value: MutableSet<String?>?) {
         var value = value
         value =
-            if (value != null) HashSet<String?>(value) else null // Make a copy so the set we are writing won't throw concurrent mod exceptions
+            if (value != null) HashSet(value) else null // Make a copy so the set we are writing won't throw concurrent mod exceptions
         prefs.edit().putStringSet(key, value).apply()
     }
 
     override fun stringSetChanges(key: String?): Flow<MutableSet<String?>?> {
         return changes<MutableSet<String?>?>(
-            key,
-            AndroidPrefStore.Get { key: String? -> this.getStringSet(key) })
+            key
+        ) { key: String? -> this.getStringSet(key) }
     }
 
 
@@ -88,7 +88,7 @@ class AndroidPrefStore(private val prefs: SharedPreferences) : Store {
     }
 
     override fun intChanges(key: String?): Flow<Int?> {
-        return changes<Int?>(key, AndroidPrefStore.Get { key: String? -> this.getInt(key) })
+        return changes<Int?>(key) { key: String? -> this.getInt(key) }
     }
 
 
@@ -101,7 +101,7 @@ class AndroidPrefStore(private val prefs: SharedPreferences) : Store {
     }
 
     override fun floatChanges(key: String?): Flow<Float?> {
-        return changes<Float?>(key, AndroidPrefStore.Get { key: String? -> this.getFloat(key) })
+        return changes<Float?>(key) { key: String? -> this.getFloat(key) }
     }
 
 
@@ -114,7 +114,7 @@ class AndroidPrefStore(private val prefs: SharedPreferences) : Store {
     }
 
     override fun longChanges(key: String?): Flow<Long?> {
-        return changes<Long?>(key, AndroidPrefStore.Get { key: String? -> this.getLong(key) })
+        return changes<Long?>(key) { key: String? -> this.getLong(key) }
     }
 
 
@@ -127,7 +127,7 @@ class AndroidPrefStore(private val prefs: SharedPreferences) : Store {
     }
 
     override fun booleanChanges(key: String?): Flow<Boolean?> {
-        return changes<Boolean?>(key, AndroidPrefStore.Get { key: String? -> this.getBoolean(key) })
+        return changes<Boolean?>(key) { key: String? -> this.getBoolean(key) }
     }
 
     override fun clear() {

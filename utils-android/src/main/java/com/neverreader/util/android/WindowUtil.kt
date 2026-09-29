@@ -6,22 +6,22 @@ import android.view.Window
 abstract class WindowUtil {
     class StatusBarColorProperty : Property<Window, Int>(Int::class.java, "statusBarColor") {
         override fun set(`object`: Window, value: Int) {
-            `object`.setStatusBarColor(value)
+            `object`.statusBarColor = value
         }
 
         override fun get(`object`: Window): Int {
-            return `object`.getStatusBarColor()
+            return `object`.statusBarColor
         }
     }
 
     class NavigationBarColorProperty :
         Property<Window, Int>(Int::class.java, "navigationBarColor") {
         override fun set(`object`: Window, value: Int) {
-            `object`.setNavigationBarColor(value)
+            `object`.statusBarColor = value
         }
 
         override fun get(`object`: Window): Int {
-            return `object`.getNavigationBarColor()
+            return `object`.navigationBarColor
         }
     }
 }

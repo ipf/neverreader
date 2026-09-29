@@ -46,6 +46,9 @@
         from app code. Denying cleartext instead would break the plain-HTTP
         self-hosted instances on a LAN this app exists to serve.
 
+        This is now only about cleartext. User-installed CAs are not trusted, so
+        the baseline covers a weaker finding than it did when both were enabled.
+
         It is baselined in app/lint-baseline.xml rather than ignored, so it stays
         in the lint report as a known issue instead of being silenced. Note that
         severity="warning" does not survive the "all ignore" above, so this has to

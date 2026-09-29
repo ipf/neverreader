@@ -8,7 +8,7 @@
         errorLine2="                                            ~~~~">
         <location
             file="src/main/res/xml/network_security_config.xml"
-            line="22"
+            line="21"
             column="45"/>
     </issue>
 

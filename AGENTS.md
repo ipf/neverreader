@@ -95,5 +95,3 @@ app (UI) → repositories → Room DB → WorkManager sync
 2. Register it in the backend registry/factory and the server-type picker in setup.
 3. Add capabilities flags for unsupported features.
 4. Add MockWebServer tests for auth + one list + one mutation.
-
-See [`PLAN.md`](PLAN.md) for the migration plan and deferred work.
