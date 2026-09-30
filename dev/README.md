@@ -60,16 +60,14 @@ the two application ports are.
 
 ## Wallabag client
 
-The seeded OAuth client is `3_neverreader` / `neverreader`, printed by
-`seed.sh`. The row id is part of the client id and changes if you recreate the
-volume, so re-run `seed.sh` and read the value it prints.
+The seeded OAuth client id and secret are printed by `seed.sh` when it creates
+the client, and read back out of the database by `smoke-test.sh`. The row id is
+part of the client id (`3_neverreader`) and changes if you recreate the volume,
+so take the value from `seed.sh` rather than assuming it.
 
-**This does not match the app's built-in default, and that is a bug in the app
-rather than a quirk of this setup.** `AuthenticationViewModel` hardcodes
-`WALLABAG_CLIENT_ID = "wallabag"`, on the assumption that self-hosted instances
-have Wallabag's own public client registered. They do not, and it could not work
-if they did: Wallabag resolves a client by the public id `"<row id>_<random
-id>"`, and
+The setup screen asks for both, under the Wallabag tab. **There is no default,
+and there cannot be one.** Wallabag resolves a client by the public id
+`"<row id>_<random id>"`, and
 
 ```php
 // friendsofsymfony/oauth-server-bundle, Model/ClientManager.php
@@ -81,11 +79,16 @@ public function findClientByPublicId($publicId)
     ...
 ```
 
-A client id with no underscore returns null before any lookup, so `wallabag` can
-never match a client. `AuthenticationViewModel` already has
-`loginWallabagWithClient` for a custom client, but nothing in the UI calls it, so
-Wallabag sign-in cannot succeed as the app stands. To test Wallabag, point
-`WALLABAG_CLIENT_ID` at the value `seed.sh` prints.
+returns null for any id without an underscore, before it looks at the database
+at all. A self-hosted instance has no Wallabag-owned client to fall back on, so
+the only credentials that can work are the ones from that instance's own
+Settings → API clients page.
+
+The app used to send a hardcoded `"wallabag"`, which that lookup can never match.
+It is why sign-in could not succeed at all, and why `smoke-test.sh` has a check
+that the seeded client really does authenticate and a bare name really does not.
+`WALLABAG_CLIENT_SECRET` overrides the secret `smoke-test.sh` uses; the app takes
+whatever is typed into the form.
 
 ## Readeck
 
@@ -112,7 +115,8 @@ waits while you approve it in a browser. Open the verification URL it shows and
 log in as `demo` / `password`. No client needs seeding, because the app registers
 one itself.
 
-Wallabag uses the password grant, so it does need the client above.
+Wallabag uses the password grant, so it does need the client above, pasted into
+the setup screen's Wallabag tab.
 
 ## Tearing down
 

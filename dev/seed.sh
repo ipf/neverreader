@@ -134,9 +134,10 @@ if [ "$WHICH" = "all" ] || [ "$WHICH" = "wallabag" ]; then
      user    $DEMO_USER / $DEMO_PASSWORD
      client  $CLIENT_ID / $WALLABAG_CLIENT_SECRET
 
-   The client_id is NOT "wallabag". Wallabag's token endpoint looks a client up
-   by the public id "<row id>_<random id>", and returns null for anything
-   without that underscore, so the app's hardcoded default cannot authenticate
-   against any Wallabag. See README.md.
+   Paste these into the app's setup screen, on the Wallabag tab. It asks for
+   them because there is no default that could work: Wallabag's token endpoint
+   looks a client up by the public id "<row id>_<random id>" and returns null
+   for anything without that underscore, so only the credentials from your own
+   instance will do. See README.md.
 EOF
 fi

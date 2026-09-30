@@ -140,4 +140,39 @@ class WallabagAdapterTest {
         val body = request.body.readUtf8()
         assertTrue(body.contains("url=https%3A%2F%2Fexample.com"))
     }
+
+
+    @Test
+    fun `login sends the client id and secret the user supplied`() = runTest {
+        server.enqueue(
+            MockResponse().setBody("""{"access_token":"at","refresh_token":"rt","expires_in":3600}"""),
+        )
+
+        val result = WallabagAuth.login(
+            serverUrl = server.url("/").toString().trimEnd('/'),
+            username = "demo",
+            password = "password",
+            clientId = "1_neverreader",
+            clientSecret = "neverreader",
+        )
+
+        assertEquals("at", result.accessToken)
+        assertEquals("rt", result.refreshToken)
+
+        val request = server.takeRequest()
+        assertEquals("/oauth/v2/token", request.path)
+        val form = request.body.readUtf8()
+            .split("&")
+            .map { it.split("=", limit = 2) }
+            .associate { (k, v) -> k to java.net.URLDecoder.decode(v, "UTF-8") }
+        // Wallabag resolves a client by the public id "<row id>_<random id>" and
+        // returns null for anything without an underscore, so whatever the user
+        // typed has to reach the token endpoint verbatim. The app used to send a
+        // hardcoded bare name here, which could never match a real client.
+        assertEquals("1_neverreader", form["client_id"])
+        assertEquals("neverreader", form["client_secret"])
+        assertEquals("demo", form["username"])
+        assertEquals("password", form["password"])
+        assertEquals("password", form["grant_type"])
+    }
 }
