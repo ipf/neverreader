@@ -39,9 +39,6 @@ class NeverReaderModule {
         )
 
     @Provides @Singleton
-    fun provideAppMode(): AppMode = if (BuildConfig.DEBUG) AppMode.DEV else AppMode.PRODUCTION
-
-    @Provides @Singleton
     fun provideNeverReaderDatabase(
         @ApplicationContext context: Context
     ): NeverReaderDatabase = com.neverreader.backend.DataGraph.database(context)

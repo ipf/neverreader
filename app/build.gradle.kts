@@ -138,8 +138,6 @@ android {
 licensee {
     allow("Apache-2.0")
     allow("MIT")
-    allowUrl("https://jsoup.org/license") { because("self-hosted MIT") }
-    allowUrl("https://github.com/facebook/shimmer-android/blob/master/LICENSE") { because("self-hosted BSD") }
     allow("BSD-2-Clause")
     allowUrl("http://opensource.org/licenses/BSD-2-Clause")
     allowUrl("https://raw.githubusercontent.com/ThreeTen/threetenbp/master/LICENSE.txt") { because("self-hosted BSD") }
@@ -186,11 +184,18 @@ dependencies {
     implementation(libs.dagger.hilt)
     ksp(libs.dagger.hilt.compiler)
 
+    // The XML themes sit on Theme.AppCompat, and AbsNeverReaderActivity is an
+    // AppCompatActivity. This was arriving transitively through :utils-android's
+    // Material dependency; declared here because that is where it is used.
+    implementation(libs.androidx.appcompat)
+
+    // finishAllActivities, so logout can close every activity. Deprecated, but
+    // it was arriving transitively rather than being declared.
+    implementation(libs.androidx.localbroadcastmanager)
+
     implementation(libs.okhttp)
     implementation(libs.okhttp.logginginterceptor)
 
-    implementation(Deps.JSoup.jsoup)
-    implementation(Deps.Google.JUniversalCharDet.juniversalchardet)
 
     implementation(Deps.JakeWharton.ThreeTenAbp.threeTen)
 

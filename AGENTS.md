@@ -48,7 +48,9 @@ resolves are not in the local cache.
 - [`ui/`](ui) — the Compose design system and shared components (`ui/theme/` for
   colour, type, shape and `AppTheme`; `ui/compose/` for `AppBar`, `ItemRow`,
   `FilterChips`, `SettingsList`).
-- [`utils/`](utils), [`utils-android/`](utils-android) — shared utilities.
+- [`utils-android/`](utils-android) — the preference store (`prefs/`) and the
+  few Android helpers. There is no pure-JVM `utils` module: everything in it was
+  dead, and what remains belongs next to the code that uses it.
 
 ## Architecture
 

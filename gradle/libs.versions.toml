@@ -2,6 +2,8 @@
 aboutlibraries = "12.2.4"
 aboutlibraries-plugin = "15.2.0"
 androidx-activity = "1.10.1"
+androidx-appcompat = "1.7.1"
+androidx-localbroadcastmanager = "1.1.0"
 androidx-navigation = "2.10.1"
 androidx-paging = "3.3.6"
 coil = "3.4.0"
@@ -17,6 +19,7 @@ aboutlibraries = { module = "com.mikepenz:aboutlibraries-compose-m3", version.re
 accompanist-drawablepainter = { module = "com.google.accompanist:accompanist-drawablepainter", version = "0.37.3" }
 androidx-activity = { module = "androidx.activity:activity-ktx", version.ref = "androidx-activity" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
+androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
 androidx-browser = { module = "androidx.browser:browser", version = "1.8.0" }
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version = "2026.09.00" }
 androidx-compose-material3 = { module = "androidx.compose.material3:material3" }
@@ -30,6 +33,7 @@ androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling
 androidx-compose-ui-viewbinding = { module = "androidx.compose.ui:ui-viewbinding" }
 androidx-core = { module = "androidx.core:core-ktx", version = "1.16.0" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version = "1.2.0" }
+androidx-localbroadcastmanager = { module = "androidx.localbroadcastmanager:localbroadcastmanager", version.ref = "androidx-localbroadcastmanager" }
 androidx-media = { module = "androidx.media:media", version = "1.7.1" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "androidx-navigation" }
 androidx-paging = { module = "androidx.paging:paging-runtime", version.ref = "androidx-paging" }

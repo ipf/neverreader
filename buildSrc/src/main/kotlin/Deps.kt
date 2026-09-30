@@ -47,21 +47,11 @@ object Deps {
             private const val VERSION = "1.8.0"
             const val material = "com.google.android.material:material:$VERSION"
         }
-        object JUniversalCharDet {
-            private const val VERSION = "1.0.3"
-            const val juniversalchardet = "com.googlecode.juniversalchardet:juniversalchardet:$VERSION"
-        }
     }
     object AirBnb {
         object Lottie {
             private const val VERSION = "5.2.0"
             const val lottie = "com.airbnb.android:lottie:$VERSION"
-        }
-    }
-    object Facebook {
-        object Shimmer {
-            private const val VERSION = "0.5.0"
-            const val shimmer = "com.facebook.shimmer:shimmer:$VERSION"
         }
     }
     object Picocli {
@@ -111,10 +101,6 @@ object Deps {
     object AssertJ {
         private const val VERSION = "2.6.0"
         const val core = "org.assertj:assertj-core:$VERSION"
-    }
-    object JSoup {
-        private const val VERSION = "1.14.3"
-        const val jsoup = "org.jsoup:jsoup:$VERSION"
     }
     object MockK {
         private const val VERSION = "1.12.4"

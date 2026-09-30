@@ -6,7 +6,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.os.Build
 import android.view.textclassifier.TextClassifier
-import com.neverreader.app.AppMode
+import com.neverreader.app.BuildConfig
 import com.neverreader.util.java.UrlFinder
 import com.neverreader.util.prefs.IntPreference
 import com.neverreader.util.prefs.Preferences
@@ -24,7 +24,6 @@ import javax.inject.Singleton
 @Singleton
 class Clipboard @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val mode: AppMode,
     prefs: Preferences
 ) {
 
@@ -67,13 +66,15 @@ class Clipboard @Inject constructor(
         }
     }
 
-    fun getText(): String? {
+    private fun getText(): String? {
         var clipData: ClipData? = null
         try {
             clipData = manager.primaryClip
         } catch (t: Throwable) {
-            // Looks like just checking clipboard contents can crash the app on some devices.
-            if (mode.isForInternalCompanyOnly) {
+            // Just reading the clipboard can throw on some devices. In a debug
+            // build that is worth seeing, so it is rethrown rather than
+            // swallowed into a silent "no url found".
+            if (BuildConfig.DEBUG) {
                 throw t
             }
         }

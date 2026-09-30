@@ -14,7 +14,6 @@ rootProject.name = "neverreader"
 include(":app")
 include(":backend")
 include(":ui")
-include(":utils")
 include(":utils-android")
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")

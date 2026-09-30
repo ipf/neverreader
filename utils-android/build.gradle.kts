@@ -7,11 +7,8 @@ android {
     testOptions.unitTests.isIncludeAndroidResources = true
 }
 dependencies {
-    api(projects.utils)
     api(platform(libs.kotlinx.coroutines.bom))
     api(libs.kotlinx.coroutines.android)
-    api(Deps.Google.Material.material)
-    api(libs.androidx.core)
 
     testImplementation(libs.kotlin.junit)
     testImplementation(libs.androidx.test.core)
