@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <lint>
     <!--
-        Pocket's original config ignored every check and then opted a handful back
+        Pocket's original config ignored every check and then opted for a handful back
         in. That is fine for style, but it also meant the security checks that
         enforce this project's "no tracking, no third parties" rule never ran:
         SetJavaScriptEnabled, the WebView file-access checks, the X509 trust
         manager checks and InsecureBaseConfiguration were all silent.
 
-        So keep the cosmetic checks off, and opt the security set back in
+        So keep the cosmetic checks off and opt the security set back in
         explicitly. Adding a check here makes it fatal in CI.
     -->
     <issue id="all" severity="ignore" />
@@ -30,7 +30,7 @@
     <issue id="WebViewClientOnReceivedSslError" severity="error" />
 
     <!--
-        Transport security. These are UAST detectors, so unlike the WebView ones
+        Transport security. These are UAST detectors, so unlike the WebView ones,
         they do fire on Kotlin - verified by planting a trust-all X509TrustManager
         and watching the build fail.
     -->
