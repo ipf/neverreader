@@ -65,11 +65,11 @@ class Prefs(private val user: Store, private val app: Store) : Preferences {
 
 
     override fun forUser(key: String?, defaultValue: String?): StringPreference {
-        return StringPref(key, defaultValue, user, false)
+        return StringPref(key, defaultValue, user)
     }
 
     override fun forApp(key: String?, defaultValue: String?): StringPreference {
-        return StringPref(key, defaultValue, app, false)
+        return StringPref(key, defaultValue, app)
     }
 
 
@@ -90,15 +90,11 @@ class Prefs(private val user: Store, private val app: Store) : Preferences {
     }
 
     override fun forUser(key: String?, defaultValue: MutableSet<String?>?): StringSetPreference {
-        return StringSetPref(key, defaultValue, user, false)
+        return StringSetPref(key, defaultValue, user)
     }
 
     override fun forApp(key: String?, defaultValue: MutableSet<String?>?): StringSetPreference {
-        return StringSetPref(key, defaultValue, app, false)
-    }
-
-    override fun group(name: String?): Preferences {
-        return PrefixPreferences(this, name)
+        return StringSetPref(key, defaultValue, app)
     }
 
     override fun changes(): Flow<String?> {

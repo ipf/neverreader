@@ -47,7 +47,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import com.neverreader.util.java.Logs
 
 /**
  * The base activity for NeverReader's screens. Owns the window theme and the
@@ -161,11 +160,6 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
 
 
     public override fun onCreate(savedInstanceState: Bundle?) {
-        if (DEBUG_LIFECYCLE) Logs.i(
-            "Lifecycle",
-            "onCreate " + (if (savedInstanceState != null) "restore " else "new ") + this.toString()
-        )
-
         // targetSdk 35 enforces edge-to-edge, so the window no longer fits the
         // system bars and the content has to inset itself. One place: the
         // Compose root, so every screen and the reader's WebView inherit it.
@@ -268,8 +262,6 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
     }
 
     protected override fun onRestart() {
-        if (DEBUG_LIFECYCLE) Logs.i("Lifecycle", "onRestart $this")
-
         installLogoutReceiver(this.accessType)
 
         super.onRestart()
@@ -382,8 +374,6 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
     }
 
     public override fun onResume() {
-        if (DEBUG_LIFECYCLE) Logs.i("Lifecycle", "onResume $this")
-
         super.onResume()
     }
 
@@ -460,14 +450,10 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
     }
 
     public override fun onPause() {
-        if (DEBUG_LIFECYCLE) Logs.i("Lifecycle", "onPause $this")
-
         super.onPause()
     }
 
     override fun onDestroy() {
-        if (DEBUG_LIFECYCLE) Logs.i("Lifecycle", "onDestroy $this")
-
         super.onDestroy()
 
         unregisterReceivers()
@@ -512,8 +498,6 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
     }
 
     companion object {
-        const val DEBUG_LIFECYCLE: Boolean = false
-
         const val ACTION_SHUTDOWN: String = "com.ideashower.readitlater.ACTION_SHUTDOWN"
 
         /**

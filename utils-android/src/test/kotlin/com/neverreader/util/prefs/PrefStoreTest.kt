@@ -142,18 +142,33 @@ class PrefStoreTest {
     @Test
     fun `withChanges starts with the current value`() = runTest {
         store.set("k", "first")
-        val pref = StringPref("k", "default", store, store.contains("k"))
+        val pref = StringPref("k", "default", store)
         assertEquals("first", pref.withChanges.first())
     }
 
     @Test
     fun `preference reports its default until set`() {
-        val pref = StringPref("unset", "fallback", store, isSet = false)
+        val pref = StringPref("unset", "fallback", store)
         assertEquals("fallback", pref.get())
         assertFalse(pref.isSet)
 
         pref.set("real")
-        assertEquals("real", StringPref("unset", "fallback", store, true).get())
+        // The same instance has to see its own write. isSet used to be a
+        // constructor argument, which Prefs hardcoded to false, so get() kept
+        // answering with the default no matter what had been stored.
+        assertTrue(pref.isSet)
+        assertEquals("real", pref.get())
+        assertEquals("real", StringPref("unset", "fallback", store).get())
+    }
+
+    @Test
+    fun `string set preference round trips its value`() {
+        val pref = StringSetPref("s", mutableSetOf<String?>("default"), store)
+        assertEquals(setOf<String?>("default"), pref.get()?.toSet())
+
+        pref.set(mutableSetOf("written"))
+        assertTrue(pref.isSet)
+        assertEquals(setOf<String?>("written"), pref.get()?.toSet())
     }
 
     @Test

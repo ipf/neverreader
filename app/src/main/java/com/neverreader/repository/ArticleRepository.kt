@@ -14,6 +14,11 @@ class ArticleRepository @Inject constructor(
         id: String,
     ): String {
         val account = accounts.active() ?: error("No active account")
-        return Backends.create(account).fetchArticleHtml(id)
+        // Without the callback, a Wallabag access token that expires mid-read is
+        // refreshed in memory and thrown away: the reader would refresh again on
+        // every article, and a failed refresh surfaces as a load error rather
+        // than a retry. The sync path already passes this.
+        return Backends.create(account, onTokensRefreshed = { accounts.update(it) })
+            .fetchArticleHtml(id)
     }
 }

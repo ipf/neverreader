@@ -67,7 +67,7 @@
 
 	<!-- TOAST MESSAGES  Prefix: ts   -->
 	<string name="ts_add_invalid_url" comment="An error message that appears when an article link could not be saved">Ups! NeverReader nie może zapisać tego łącza.</string>
-	<string name="ts_add_saved_to_ril">Zapisano w Pockecie</string>
+	<string name="ts_add_saved_to_ril">Zapisano w NeverReader</string>
 	<string name="ts_add_added">Zapisano!</string>
 	<string name="ts_add_already">Już to zapisano!</string>
 	<string name="ts_add_already_overlay" comment="A message notifying the user an article they saved is already in their list, and that we will move (bump) it to the top for them">Masz to już zapisane zapisane. Podbijemy to na górę Twojej listy.</string>

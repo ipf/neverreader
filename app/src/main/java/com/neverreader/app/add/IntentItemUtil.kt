@@ -1,7 +1,6 @@
 package com.neverreader.app.add
 
 import android.content.Intent
-import com.neverreader.util.java.Logs.printStackTrace
 import com.neverreader.util.java.UrlFinder.getUrlsFromText
 
 class IntentItemUtil private constructor() {
@@ -40,8 +39,9 @@ class IntentItemUtil private constructor() {
                         saveUrl = intent.data!!.getQueryParameter("url")
                         urls.add(saveUrl)
                     } catch (t: Throwable) {
-                        // Not matching the format we are expecting
-                        printStackTrace(t)
+                        // Not matching the format we are expecting. A malformed
+                        // url extra is not worth reporting: the activity answers
+                        // with "that does not look like a link" either way.
                     }
                 }
                 return urls

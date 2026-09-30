@@ -70,10 +70,6 @@ object Deps {
         const val codeGen = "info.picocli:picocli-codegen:$VERSION"
     }
     object Apache {
-        object Commons {
-            private const val VERSION = "3.5"
-            const val commonsLang = "org.apache.commons:commons-lang3:$VERSION"
-        }
         object Mime4j {
             private const val VERSION = "0.8.5"
             const val core = "org.apache.james:apache-mime4j-core:$VERSION"
@@ -102,15 +98,6 @@ object Deps {
         }
     }
 
-    object Jackson {
-        private const val VERSION = "2.8.6"
-        const val core = "com.fasterxml.jackson.core:jackson-core:$VERSION"
-        const val databind = "com.fasterxml.jackson.core:jackson-databind:$VERSION"
-    }
-    object ThreeTen {
-        private const val VERSION = "1.6.0:no-tzdb"
-        const val threeTenBp = "org.threeten:threetenbp:$VERSION"
-    }
     object Jooq {
         private const val VERSION = "0.9.14"
         const val joor = "org.jooq:joor:$VERSION"

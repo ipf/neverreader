@@ -13,14 +13,18 @@ internal object BookmarkQuery {
     fun build(filter: ListFilter): SimpleSQLiteQuery =
         SimpleSQLiteQuery(sql(filter), args(filter).toTypedArray())
 
-    /** Split from [args] so the statement and its bindings are both assertable. */
+    /**
+     * The statement on its own. The bound values come from [args]; this only has
+     * to emit placeholders in the same order. It used to build a parallel list
+     * of arguments as it went and then throw it away, which read as though the
+     * two were being kept in step.
+     */
     fun sql(filter: ListFilter): String {
-        val args = mutableListOf<Any>()
         return buildString {
             append("SELECT * FROM bookmarks WHERE 1=1")
-            filter.unread?.let { append(" AND unread = ?"); args.add(it) }
-            filter.favorite?.let { append(" AND favorite = ?"); args.add(it) }
-            filter.tag?.let { append(" AND tagsJson LIKE ? ESCAPE '\\'"); args.add(likePattern(it)) }
+            filter.unread?.let { append(" AND unread = ?") }
+            filter.favorite?.let { append(" AND favorite = ?") }
+            filter.tag?.let { append(" AND tagsJson LIKE ? ESCAPE '\\'") }
             filter.search?.let {
                 // likePattern, not a bare "%$it%": unescaped, a % in the query
                 // matches every row and _ matches any character.
@@ -29,10 +33,6 @@ internal object BookmarkQuery {
                         " OR excerpt LIKE ? ESCAPE '\\'" +
                         " OR url LIKE ? ESCAPE '\\')",
                 )
-                val pattern = likePattern(it)
-                args.add(pattern)
-                args.add(pattern)
-                args.add(pattern)
             }
             // id breaks ties. Without a total order, paging can repeat or skip
             // rows whenever two bookmarks share a timestamp or a title.

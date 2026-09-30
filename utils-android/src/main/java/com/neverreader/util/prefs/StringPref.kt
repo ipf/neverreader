@@ -7,9 +7,11 @@ import kotlinx.coroutines.flow.onStart
 class StringPref(
     private val key: String?,
     private val defaultValue: String?,
-    private val store: Store,
-    override val isSet: Boolean
+    private val store: Store
 ) : StringPreference {
+    override val isSet: Boolean
+        get() = store.contains(key)
+
     override fun get(): String? {
         return if (this.isSet) store.getString(key) else defaultValue
     }

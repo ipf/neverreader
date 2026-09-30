@@ -8,10 +8,12 @@ import kotlinx.coroutines.flow.onStart
 class StringSetPref(
     private val key: String?,
     defaultValue: MutableSet<String?>?,
-    private val store: Store,
-    override val isSet: Boolean
+    private val store: Store
 ) : StringSetPreference {
     private val defaultValue: MutableSet<String?>? = if (defaultValue != null) Collections.unmodifiableSet<String?>(defaultValue) else null
+
+    override val isSet: Boolean
+        get() = store.contains(key)
 
     override fun get(): MutableSet<String?>? {
         return if (this.isSet) store.getStringSet(key) else defaultValue

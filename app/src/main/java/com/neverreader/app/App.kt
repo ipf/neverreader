@@ -8,7 +8,6 @@ import com.neverreader.backend.sync.SyncWorker
 import com.neverreader.repository.BookmarkRepository
 import com.neverreader.app.settings.Theme
 import com.neverreader.util.android.Clipboard
-import com.neverreader.util.android.FormFactor
 import com.neverreader.util.prefs.Preferences
 import com.neverreader.sdk.util.AbsNeverReaderActivity
 import androidx.work.Configuration
@@ -32,7 +31,6 @@ class App : Application(), Configuration.Provider {
     override fun onCreate() {
         super.onCreate()
         AndroidThreeTen.init(this)
-        FormFactor.init(this)
         clearLegacyRotationLock()
         SyncWorker.schedule(this)
     }
