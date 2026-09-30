@@ -1,5 +1,8 @@
 local.properties
 
+# dev/.env holds throwaway local credentials; .env.example is the committed one.
+dev/.env
+
 *.iml
 
 .gradle/

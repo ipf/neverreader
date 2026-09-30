@@ -13,7 +13,7 @@ Sentry, or any similar SDK.
 
 ## Build & test
 
-Requires **JDK 21** (Gradle 8.x cannot run on Java 25) and the Android SDK
+Requires **JDK 21** (what CI pins, via `.java-version`) and the Android SDK
 (`ANDROID_HOME` or `local.properties`). `targetSdk` is 35, `minSdk` 26.
 
 ```bash
@@ -84,28 +84,34 @@ app (UI) → repositories → Room DB → WorkManager sync
   display and reading text, both OFL-1.1. Compose loads them via
   `AppFontFamily`; the reader loads them by name through the `@font-face` rules
   in `app/src/main/assets/html/c/text.css`. If you change a face, change both.
-- **`Backend` interface** (`backend/…/Backend.kt`): auth, `fetchEntries(cursor)`,
-  `fetchArticle(id)`, add/archive/favorite/delete, tags, annotations. Each adapter
-  exposes a `BackendCapabilities` for what it does not support (e.g. highlights,
-  collections, server-side search). UI hides unsupported features.
-- **Sync:** local-first. Reads come from Room; `SyncManager` (WorkManager) syncs
+- **`Backend` interface** (`backend/…/Backend.kt`): `listBookmarks(filter, limit,
+  offset)`, `fetchArticleHtml(id)`, add/archive/favourite/delete, tags,
+  annotations, and `changedBookmarks(since)` / `deletedBookmarkIds(since)` for
+  delta sync. Auth is *not* on the interface — it is `ReadeckAuth` and
+  `WallabagAuth`, and the active account is `AccountManager`.
+- **`BackendCapabilities`** carries `highlights`, `serverSearch` and `deltaSync`.
+  Both adapters currently set all three to true and no UI reads it, so treat it
+  as a declaration a new backend can state its limits against, not a switch the
+  UI consults.
+- **Sync:** local-first. Reads come from Room; `SyncWorker` (WorkManager) syncs
   pending mutations upstream and pulls changes downstream (delta via Readeck
-  `/bookmarks/sync`, Wallabag `updatedSince`).
+  `/bookmarks/sync`, Wallabag `updatedSince` with a periodic full refresh,
+  because that API cannot report deletions).
 - **Accounts:** one active account. Tokens encrypted with Tink. Readeck uses the
   OAuth authorization-code flow with PKCE, redirecting from the browser back into
   the app (device code is the fallback); Wallabag uses OAuth2 password grant.
 
 ## Conventions
 
-- Kotlin, official Kotlin style; checked-in Android Studio code style in
-  `.idea/codeStyles/Project.xml` as a base.
+- Kotlin, official Kotlin style. There is no checked-in Android Studio code
+  style; `.idea/` is gitignored.
 - Coroutines and Flow only. RxJava has been removed: the preference
   change-notification API (`utils-android/…/prefs/Store.kt`) returns `Flow`,
   backed by `SharedPreferences.OnSharedPreferenceChangeListener` in a
   `callbackFlow`. Do not reintroduce Rx.
 - Version catalog in [`gradle/libs.versions.toml`](gradle/libs.versions.toml);
   Renovate keeps it updated.
-- No DI framework additions; Hilt/kapt exists — use it or plain constructors.
+- No DI framework additions; Hilt via KSP exists — use it or plain constructors.
 - Keep comments rare; explain *why*, not *what*.
 
 ## Adding a new backend

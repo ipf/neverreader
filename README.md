@@ -19,11 +19,12 @@ rebuilt around open backends. See [Lineage](#lineage) for what changed and
 - Save an article from any app's share sheet, or by pasting a URL.
 - Unread, favourites and archive, with sorting by date or title and local
   search.
-- Read articles in an in-app reader, fetched from your server as cleaned-up HTML.
+- Read articles in an in-app reader, using the HTML your server returns for
+  the article. Readeck cleans it; Wallabag does not.
 - One active account. Tokens are stored encrypted with a Tink keyset held in
   the Android keystore.
 
-The backend interface also covers tags and highlights, and both adapters
+The backend interface also covers tags and annotations, and both adapters
 implement them, but no screen exposes them yet. They are plumbing, not
 features.
 
@@ -39,15 +40,22 @@ This is a constraint the project holds to, not a feature list:
 - **No tracking.** No analytics, no crash reporting, no ads, no telemetry of any
   kind. Snowplow, AppCenter, Adjust, Braze, Firebase and Sentry were all removed
   and must not come back.
-- **Two permissions.** `INTERNET` and `ACCESS_NETWORK_STATE`. Nothing else.
+- **Two permissions of its own.** `INTERNET` and `ACCESS_NETWORK_STATE`, and
+  nothing else declared in `app/src/main/AndroidManifest.xml`. The merged
+  manifest also carries `WAKE_LOCK`, `RECEIVE_BOOT_COMPLETED` and
+  `FOREGROUND_SERVICE`, which WorkManager contributes for the sync job; they are
+  not in the app's own manifest, so a new one there is a deliberate decision
+  rather than a dependency's doing.
 - **No user-installed certificate authorities.** A self-hosted server needs a
   certificate from an authority the device already trusts — a private CA
   installed system-wide, or a public one. A certificate the operator generated
   themselves is rejected. Trusting the user store would let any app that can
   prompt for a CA install intercept this app's traffic, including the OAuth
   token exchange.
-- **Images are same-host by default.** Article images are only loaded from the
-  article's own origin unless you turn on loading from other sites.
+- **Third-party images are off by default.** The list thumbnails only load from
+  the article's own origin unless you turn on loading from other sites. The
+  reader is not covered: it renders the backend's HTML in a WebView, where
+  images are subresources of the article itself.
 - **The reader disables JavaScript.** It renders HTML fetched from your server
   and does not execute script from it.
 
@@ -58,7 +66,7 @@ the plain-HTTP instances on a LAN this app exists to serve.
 
 ## Requirements
 
-- JDK 21. Gradle 8.x will not run on newer JDKs.
+- JDK 21, which is what CI pins. The build runs on Gradle 9.6.
 - The Android SDK, via `ANDROID_HOME` or `local.properties`.
 - `minSdk` 26, `targetSdk` 35.
 
@@ -75,19 +83,38 @@ That is the full gate: debug APK, all unit tests, and lint. Run it without
 the local cache.
 
 Backend adapters are tested against `MockWebServer`, so the suite needs no
-network and no server. The only build type that produces an installable release
-is `unsignedRelease`; there is no signing config, so you will need to add your
-own before distributing.
+network and no server.
 
-CI runs two checks on every pull request, both of which you can run locally:
+## Signing
+
+Signing is opt-in and all-or-nothing. The build reads `ANDROID_SIGNING_storeFile`,
+`storePassword`, `keyAlias` and `keyPassword` (or the `android.signing.*` Gradle
+properties) and ignores them entirely unless all four are set and the store file
+exists — a partial set is ignored rather than half-applied.
+
+So `./gradlew :app:assembleRelease` produces an **unsigned** APK unless you
+supply credentials, and `unsignedRelease` is always unsigned. That is the
+artifact F-Droid wants, because F-Droid builds and signs its own copy.
+
+`scripts/make-signing-secrets.sh` generates a key and the matching GitHub
+secrets. The key is gitignored and lives only in the secrets store; there is no
+signing material in this repository.
+
+CI runs these on every pull request, all of which you can also run locally:
 
 ```bash
 ./scripts/run-android-lint.sh     # :app:lintDebug
-./scripts/run-license-checks.sh   # :app:licensee
+./scripts/run-license-checks.sh   # the licensee check
 ```
 
 The license check is the one that would reject an unapproved or analytics
-dependency, so it is worth keeping passing.
+dependency, so it is worth keeping passing. A fourth job boots the real Readeck
+and Wallabag containers, seeds them, and runs `dev/smoke-test.sh` against them;
+it reports rather than blocks, because a container registry being unreachable is
+not a verdict on your change. See [`dev/README.md`](dev/README.md).
+
+APKs are not built on pull requests. `build-apk.yml` runs on `main`, on tags, and
+on demand, and signs the release if the signing secrets are present.
 
 ## Modules
 
@@ -96,7 +123,7 @@ dependency, so it is worth keeping passing.
 | [`app`](app) | The Android app: activities, navigation, screens, ViewModels. |
 | [`backend`](backend) | Domain model, Room database, the `Backend` interface, the Readeck and Wallabag adapters, and sync. |
 | [`ui`](ui) | Compose design system: colour, type, shape, and the shared components. |
-| [`utils`](utils), [`utils-android`](utils-android) | Utilities shared across modules. |
+| [`utils-android`](utils-android) | The preference store and a few Android helpers. There is no pure-JVM `utils` module; what it held was dead. |
 
 ```
 app (UI) → repositories → Room DB → WorkManager sync
@@ -109,14 +136,13 @@ app (UI) → repositories → Room DB → WorkManager sync
 The domain model is `Bookmark`, `Tag`, `Annotation`, `Account`. Both adapters
 map their own entries into it, so UI code never sees a backend-specific type.
 Each adapter declares a `BackendCapabilities` — highlights, server-side search
-and delta sync — for what it cannot do. The UI does not read that yet; it is
-there for a new backend to declare its limits against, not to gate features
-today.
+and delta sync — for what it cannot do. The UI does not read it yet; it is there
+for a new backend to declare its limits against, not to gate features today.
 
 ## Conventions
 
-- Kotlin, official Kotlin style, with the checked-in
-  [code style](.idea/codeStyles/Project.xml) as a base.
+- Kotlin, official Kotlin style. There is no checked-in Android Studio code
+  style.
 - Coroutines and Flow only. RxJava was removed; do not reintroduce it.
 - **UI is Compose and only Compose.** There are no fragments and no XML
   layouts for screen content, and none should be added. Each activity extends

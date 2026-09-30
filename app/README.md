@@ -1,43 +1,44 @@
-# Pocket App
+# The app module
 
-This module is Pocket's flagship Android app. https://play.google.com/store/apps/details?id=com.ideashower.readitlater.pro
+The Android app: the activities, the Compose screens, the ViewModels, and the
+sign-in flow. See the [root README](../README.md) for the build and the privacy
+constraints, and [`AGENTS.md`](../AGENTS.md) for the conventions to follow.
 
-The main packages are:
+Everything here is `com.neverreader.*`. The `com.pocket.*` packages this module
+was imported as are gone, along with the Play Store listing, the sync engine and
+the analytics. What is left is a thin shell over [`:backend`](../backend): the UI
+never sees a backend-specific type, it only ever sees the domain model.
 
-* `com.pocket.app` Android components that power the app. Activities, Services, etc. If you are looking for a specific part of the app, jump in here.
-* `com.pocket.sdk` Pocket tools and components that have shared use thorough-out the entire app.
-* `com.pocket.util` Java and Android utilities, tools and helpers that aren't specific to Pocket.
+## Layout
 
-Note there is also `com.pocket.sdk2` which may host some experiments or refactors during the sdk / syncing refactor project.
+| | |
+|---|---|
+| `settings/Theme.kt` | The light/dark preference. `SYSTEM` is the default and resolves against the calling context. |
+| `settings/SystemDarkTheme.kt` | Gone. It was the only writer of the `appTheme` preference and was never constructed, so the preference sat at its default. |
+| `list/` | The saved list: `MyListViewModel`, `MyListScreen`, and the paging/filtering in `list/ListManager.kt`. |
+| `reader/` | The in-app reader. The article HTML comes from the backend; the WebView is only there because it is the platform's renderer. |
+| `add/` | `AddActivity`, the `ACTION_SEND` share target, and the URL-from-intent parsing behind it. |
+| `auth/` | Server setup. `AuthenticationActivity` is also the OAuth redirect target. |
+| `repository/` | Thin wrappers over `:backend`, injected by Hilt. |
+| `sdk/util/AbsNeverReaderActivity.kt` | The activity base class: the window theme, the Compose root, and the clipboard prompt. |
+| `sdk/preferences/AppPrefs.kt` | App-level preferences. There is exactly one, `LOAD_THIRD_PARTY_IMAGES`. |
 
-In addition to diving into the package structure, here are some additional jumping off points for core functionality:
+## Adding a screen
 
-#### Pocket API
+Not an activity. A screen is a `@Composable` in a `*Screen.kt` file, registered
+as a `composable(route)` in [`AppNavHost.kt`](src/main/java/com/neverreader/app/AppNavHost.kt),
+and given its ViewModel with `hiltViewModel()`. Each activity extends
+`AbsNeverReaderActivity` and hands its content over with `setAppContent { … }`.
 
-A great starting point for getting an intro to the concepts in entire, cross-platform Pocket platform is [The Spec](https://github.com/Pocket/spec).
+`setAppContent` may be called again to replace the composition, so it is not a
+way to push another screen.
 
-Working with Pocket's v3 API.
+## Signing in
 
-The main package is `com.pocket.sdk.api`. If you haven't yet, be sure to view [The Spec](https://github.com/Pocket/spec).
+`AuthenticationActivity` handles two very different things: it hosts the setup
+screen, and it is the destination of Readeck's OAuth redirect. The redirect
+arrives either as a cold start or through `onNewIntent` (`launchMode` is
+`singleTask`), and both paths go through `handleRedirect`.
 
-All communication with Pocket's api is through the sync engine. See [sync](/sync), [sync-pocket](/sync-pocket)
-and all the related modules.
-
-
-#### Offline Items / Image & File Caching
-
-All resource downloading and caching is managed with the `com.pocket.sdk.offline` package. Managed by `Assets`, and `OfflineDownloading`.
-
-Images can be obtained and resized with the `Image` class.
-
-#### Async
-
-See `AppThreads` component.
-
-#### Account Management
-
-The logged in user is managed through `Pocket.user()`.
-
-#### Views
-
-All collection views are powered by `DataSourceView`.
+See the root README for what the flow does and `dev/README.md` for how to run a
+real Readeck or Wallabag to try it against.

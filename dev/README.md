@@ -4,16 +4,22 @@ Readeck and Wallabag in Docker, with a demo user and dummy articles, for
 exercising the app against real servers instead of mocks.
 
 ```
+cp .env.example .env        # without this, `up` starts nothing - see below
 docker compose up -d        # both
 ./seed.sh                   # demo user + 20 articles in each
 ```
+
+The `.env` is not optional. Both halves sit behind a compose profile so either
+can run alone, which means a bare `docker compose up` selects no services at
+all and exits quietly. `.env.example` sets `COMPOSE_PROFILES=readeck,wallabag`,
+which is what makes the plain command above work.
 
 Then point the app at them:
 
 | | URL | Sign-in |
 |---|---|---|
 | Readeck | `http://localhost:8000` | pick Readeck, tap Authorize, log in as `demo` / `password` and approve in the browser |
-| Wallabag | `http://localhost:8080` | pick Wallabag, `demo` / `password` |
+| Wallabag | `http://localhost:8080` | pick Wallabag, then `demo` / `password` **plus the client ID and secret** `seed.sh` prints |
 
 From an Android emulator the host machine is `10.0.2.2`, so use
 `http://10.0.2.2:8000` and `http://10.0.2.2:8080` there instead of `localhost`.
@@ -39,8 +45,12 @@ sort without touching anything. Both servers get the same 20 articles, from one
 definition in `seed/generate.py`, so a difference between the two lists is a
 backend difference rather than a data difference.
 
-`seed.sh` is safe to re-run: the user is created only if missing, the OAuth
-client is reused if it exists, and entries are replaced rather than appended.
+`seed.sh` is safe to re-run: the user is created only if missing and the OAuth
+client is reused if it exists. The article load is idempotent for Readeck,
+which clears its table first; for Wallabag the import endpoint dedupes by URL,
+so a re-run does not multiply entries but it is not a reset either. Use
+`docker compose down -v` if you want a genuinely clean slate.
+
 It needs `python3` to regenerate the fixtures; the generated files are
 committed, so it only runs when they are missing.
 
