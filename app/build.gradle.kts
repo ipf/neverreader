@@ -17,10 +17,15 @@ plugins {
  * A signing value, from gradle.properties or the environment, or null if unset.
  * Environment wins so CI can pass secrets without writing a file into the
  * checkout.
+ *
+ * Blank counts as unset. A CI step that has nothing to pass still exports its
+ * outputs, so the variable arrives as an empty string rather than being absent,
+ * and treating that as set turned "no credentials" into a crash on file("").
  */
 fun signingValue(key: String): String? =
-    providers.environmentVariable("ANDROID_SIGNING_$key").orNull
-        ?: providers.gradleProperty("android.signing.$key").orNull
+    (providers.environmentVariable("ANDROID_SIGNING_$key").orNull
+        ?: providers.gradleProperty("android.signing.$key").orNull)
+        ?.takeIf { it.isNotBlank() }
 
 val versionMajor = 1
 val versionMinor = 0
