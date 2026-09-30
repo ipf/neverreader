@@ -59,15 +59,8 @@ class ListManager @Inject constructor(
         _sortFilterState.update { it.copy(sort = sort) }
     }
 
-    fun setTag(tag: String?) {
-        _sortFilterState.update { it.copy(tag = tag, search = null) }
-    }
-
     fun setSearch(search: String?) {
         _sortFilterState.update { it.copy(search = search, tag = null) }
     }
 
-    fun clearFilter() {
-        _sortFilterState.update { SortFilterState(tab = it.tab, sort = it.sort) }
-    }
 }

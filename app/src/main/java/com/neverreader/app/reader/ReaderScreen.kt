@@ -88,8 +88,7 @@ fun ReaderScreen(
                 )
             },
             actions = {
-                val item = bookmark
-                if (item == null) return@AppBar
+                val item = bookmark ?: return@AppBar
                 AppIconButton(onClick = { viewModel.toggleFavorite(item) }) {
                     Icon(
                         painter = painterResource(
@@ -213,7 +212,7 @@ private fun ArticleWebView(
 }
 
 /** Injects the reader stylesheet and the body attributes it keys off. */
-/** Internal rather than private so the generated document can be asserted on. */
+/** Internal rather than private, so the generated document can be asserted on. */
 internal fun buildArticleHtml(context: Context, article: String, darkTheme: Boolean): String {
     val css = context.assets.open(READER_STYLESHEET).bufferedReader().use { it.readText() }
     val resources = context.resources

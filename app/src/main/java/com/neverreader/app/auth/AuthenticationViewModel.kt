@@ -1,5 +1,6 @@
 package com.neverreader.app.auth
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.neverreader.backend.model.Account
@@ -8,7 +9,9 @@ import com.neverreader.backend.readeck.ReadeckAuth
 import com.neverreader.backend.repo.AccountManager
 import com.neverreader.backend.sync.SyncWorker
 import com.neverreader.backend.wallabag.WallabagAuth
+import com.neverreader.util.android.Clipboard
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,7 +25,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthenticationViewModel @Inject constructor(
     private val accountManager: AccountManager,
-    @dagger.hilt.android.qualifiers.ApplicationContext private val appContext: android.content.Context,
+    private val clipboard: Clipboard,
+    @ApplicationContext private val appContext: Context,
 ) : ViewModel() {
 
     private val http = OkHttpClient()
@@ -128,6 +132,10 @@ class AuthenticationViewModel @Inject constructor(
     private suspend fun save(account: Account) {
         accountManager.save(account)
         SyncWorker.enqueueNow(appContext)
+        // The url the user just signed in with is often still on the clipboard.
+        // Record it as seen so the "save this url?" prompt does not greet them
+        // on the list screen.
+        clipboard.markCurrentUrlAsSeen()
         events.emit(Event.Success)
     }
 

@@ -108,7 +108,7 @@ fun MyListScreen(
         viewModel.clearSearch()
     }
     // Search mode is local UI state with no screen of its own, so back has to be
-    // consumed here or it would leave the app instead of closing the field.
+    // consumed here, or it would leave the app instead of closing the field.
     BackHandler(enabled = searching) { exitSearch() }
 
     // One root layout: a bare ComposeView positions every top-level child at
@@ -117,7 +117,7 @@ fun MyListScreen(
     Column(Modifier.fillMaxSize()) {
         AppBar(
             navigationIcon = {
-                // While searching the bar's actions would crowd out the field, so
+                // While searching, the bar's actions would crowd out the field, so
                 // they are replaced by a way out.
                 if (searching) {
                     AppIconButton(onClick = exitSearch) { UpIcon() }
@@ -153,7 +153,7 @@ fun MyListScreen(
                         tint = AppTheme.colors.grey3,
                     )
                 }
-                // Settings used to live in the options menu. The Compose screens
+                // Settings used to live in the options' menu. The Compose screens
                 // have no ActionBar, so without this the settings screen is
                 // unreachable - onOpenSettings was being passed in and never called.
                 AppIconButton(onClick = onOpenSettings) {

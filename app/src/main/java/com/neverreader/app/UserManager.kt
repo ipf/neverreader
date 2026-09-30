@@ -13,7 +13,6 @@ import com.neverreader.sdk.util.AbsNeverReaderActivity
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
-
 /**
  * App-level auth orchestration over the [AccountManager].
  *
@@ -24,37 +23,26 @@ import javax.inject.Singleton
 class UserManager @Inject constructor(
     @ApplicationContext private val appContext: Context,
     private val accountManager: AccountManager
-) : AppLifecycle {
+) {
     /**
      * Logout work outlives the Activity that started it, so it runs on a
      * singleton scope rather than one constructed per call and never cancelled.
      */
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
-    val isLoggedIn: Boolean
-        /**
-         * Whether the user has an active account.
-         */
-        get() = accountManager.activeCached != null
-
     /**
-     * Call after an auth flow has saved the active account; kicks off a sync.
+     * Whether the user has an active account.
      */
-    fun onAuthSuccess() {
-        SyncWorker.enqueueNow(appContext)
-    }
+    val isLoggedIn: Boolean
+        get() = accountManager.activeCached != null
 
     /**
      * Logs the user out: clears the account, its data, and finishes login-gated activities.
      */
     fun logout(activity: AbsNeverReaderActivity?) {
-        threads_logout(activity)
-    }
-
-    private fun threads_logout(activity: AbsNeverReaderActivity?) {
         // The application context, not the Activity's: this Activity may already be
-        //  finishing or be null when logout is triggered from a fragment whose host
-        // is not an AbsNeverReaderActivity.
+        //  finishing or be null when logout is triggered from a screen whose host
+        //  is not an AbsNeverReaderActivity.
         scope.launch {
             accountManager.logout()
             SyncWorker.enqueueNow(appContext)
@@ -69,31 +57,9 @@ class UserManager @Inject constructor(
      * Launches the default, starting Activity.
      */
     fun startDefaultActivity(activity: Activity) {
-        val activityClass = this.defaultActivity
-        activity.startActivity(Intent(activity, activityClass))
+        activity.startActivity(Intent(activity, defaultActivity))
     }
 
-    val defaultActivity: Class<out Activity>
-        /**
-         * The activity to launch by default.
-         */
-        get() = MainActivity::class.java
-
-
-    fun hasDeletedAccount(): Boolean {
-        return false
-    }
-
-    fun onShowedDeletedAccountToast() {
-    }
-
-    fun hadBadCredentials(): Boolean {
-        return false
-    }
-
-    fun onShowedBadCredentialsMessage() {
-    }
-
-    fun enableSignedOutExperience() {
-    }
+    val defaultActivity: Class<out Activity> = MainActivity::class.java
 }
+

@@ -24,17 +24,17 @@ class ReaderViewModel @Inject constructor(
         const val TAG = "ReaderViewModel"
     }
 
-    private val _state = MutableStateFlow<State>(State.Loading(""))
-    val state: StateFlow<State> get() = _state
+    val state: StateFlow<State>
+        field = MutableStateFlow<State>(State.Loading(""))
 
     /**
-     * @param id the bookmark to fetch, when the caller already knows it. Looking
+     * @param id the bookmark to fetch when the caller already knows it. Looking
      *   the article up by URL first meant a single mismatch between the URL the
      *   list holds and the one in the database left the reader with nothing to
      *   fetch and no way to say why.
      */
     fun load(url: String, id: String? = null) {
-        _state.value = State.Loading(url)
+        state.value = State.Loading(url)
         viewModelScope.launch {
             val bookmark = runCatching {
                 id?.let { bookmarks.bookmarkOnce(it) } ?: bookmarks.bookmarkByUrlOnce(url)
@@ -45,7 +45,7 @@ class ReaderViewModel @Inject constructor(
             }
             // Publish the bookmark before the fetch so the title shows straight
             // away rather than after the round trip.
-            _state.value = State.Loading(url, bookmark)
+            state.value = State.Loading(url, bookmark)
             val html = runCatching { articleRepository.getArticleHtml(bookmark.id) }
                 .onFailure { fail(url, it.message ?: it::class.java.simpleName, bookmark) }
                 .getOrNull()
@@ -53,7 +53,7 @@ class ReaderViewModel @Inject constructor(
                 if (html != null) fail(url, "the server returned an empty article", bookmark)
                 return@launch
             }
-            _state.value = State.Content(url, bookmark, html)
+            state.value = State.Content(url, bookmark, html)
         }
     }
 
@@ -61,7 +61,7 @@ class ReaderViewModel @Inject constructor(
         // runCatching{}.getOrNull() swallowed all of this: the reader just said
         // "failed to load" with nothing in logcat to act on.
         Log.e(TAG, "reader could not load $url: $reason")
-        _state.value = State.Error(url, reason, bookmark)
+        state.value = State.Error(url, reason, bookmark)
     }
 
     fun toggleFavorite(bookmark: Bookmark) {

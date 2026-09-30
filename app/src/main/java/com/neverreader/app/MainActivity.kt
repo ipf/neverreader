@@ -1,18 +1,8 @@
 package com.neverreader.app
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.view.KeyEvent
-import androidx.activity.result.ActivityResultLauncher
-import androidx.appcompat.app.AppCompatActivity
-import androidx.activity.viewModels
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
-import com.neverreader.app.R
 import com.neverreader.app.auth.AuthenticationActivity
 import com.neverreader.app.repository.ThumbnailRepository
 import com.neverreader.app.settings.isDarkAppTheme
@@ -20,13 +10,10 @@ import com.neverreader.sdk.preferences.AppPrefs
 import com.neverreader.sdk.util.AbsNeverReaderActivity
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
-import kotlinx.coroutines.flow.onSubscription
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : AbsNeverReaderActivity() {
-
-    private val viewModel: MainViewModel by viewModels()
 
     @Inject lateinit var thumbnailRepository: ThumbnailRepository
 
@@ -51,8 +38,8 @@ class MainActivity : AbsNeverReaderActivity() {
             }
 
             // The NavHost pops its own back stack, so there is no activity-level
-            // callback to install. BackPressedUtil and the clipboard prompt keep
-            // theirs in the base class.
+            // callback to install. The clipboard prompt keeps its hook in the
+            // base class.
             setAppContent {
                 AppNavHost(
                     thumbnailRepository = thumbnailRepository,
@@ -61,36 +48,16 @@ class MainActivity : AbsNeverReaderActivity() {
                     darkTheme = isDarkAppTheme(this@MainActivity),
                 )
             }
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                setupEventsObserver()
-            }
         }
     }
 
     /**
-     * Nothing to route: the app declares no VIEW filter, so an intent can only be
+     * Nothing to route: the app declares no VIEW filter, so intent can only be
      * the launch one. Sharing a page in arrives as SEND and is handled by
-     * [AddActivity] instead.
+     * [com.neverreader.app.add.AddActivity] instead.
      */
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
     }
-
-    private suspend fun setupEventsObserver() {
-        viewModel.events.onSubscription {
-            viewModel.onEventCollectionStarted()
-        }.collect { event ->
-            when (event) {
-                is MainViewModel.Event.ShowBadCredentialsToast ->
-                    // Long and dismissable: the user has been logged out and has to
-                    // read this before signing in again.
-                    snack(
-                        message = getString(R.string.dg_forced_logout_m),
-                        long = true,
-                    )
-            }
-        }
-    }
-
 }

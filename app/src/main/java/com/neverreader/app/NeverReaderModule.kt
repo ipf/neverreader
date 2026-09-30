@@ -1,12 +1,9 @@
 package com.neverreader.app
 
 import android.content.Context
+import com.neverreader.backend.db.NeverReaderDatabase
 import com.neverreader.repository.ItemRepository
 import com.neverreader.repository.NeverReaderItemRepository
-import com.neverreader.repository.NeverReaderUserRepository
-import com.neverreader.repository.UserRepository
-import com.neverreader.util.DrawableLoader
-import com.neverreader.util.StringLoader
 import com.neverreader.util.prefs.AndroidPrefStore
 import com.neverreader.util.prefs.Preferences
 import com.neverreader.util.prefs.Prefs
@@ -45,14 +42,9 @@ class NeverReaderModule {
     fun provideAppMode(): AppMode = if (BuildConfig.DEBUG) AppMode.DEV else AppMode.PRODUCTION
 
     @Provides @Singleton
-    fun provideStringLoader(@ApplicationContext context: Context): StringLoader = StringLoader(context)
-
-    @Provides @Singleton
-    fun provideNeverReaderDatabase(@ApplicationContext context: Context): com.neverreader.backend.db.NeverReaderDatabase =
-        com.neverreader.backend.DataGraph.database(context)
-
-    @Provides @Singleton
-    fun provideDrawableLoader(@ApplicationContext context: Context): DrawableLoader = DrawableLoader(context)
+    fun provideNeverReaderDatabase(
+        @ApplicationContext context: Context
+    ): NeverReaderDatabase = com.neverreader.backend.DataGraph.database(context)
 }
 
 @Module
@@ -60,7 +52,4 @@ class NeverReaderModule {
 abstract class NeverReaderInterfaces {
     @Binds @Singleton
     abstract fun itemRepository(impl: NeverReaderItemRepository): ItemRepository
-
-    @Binds @Singleton
-    abstract fun userRepository(impl: NeverReaderUserRepository): UserRepository
 }

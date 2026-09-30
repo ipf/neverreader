@@ -6,8 +6,6 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.os.Build
 import android.view.textclassifier.TextClassifier
-import com.neverreader.app.AppLifecycle
-import com.neverreader.app.AppLifecycleEventDispatcher
 import com.neverreader.app.AppMode
 import com.neverreader.util.java.UrlFinder
 import com.neverreader.util.prefs.IntPreference
@@ -27,23 +25,22 @@ import javax.inject.Singleton
 class Clipboard @Inject constructor(
     @ApplicationContext private val context: Context,
     private val mode: AppMode,
-    prefs: Preferences,
-    dispatcher: AppLifecycleEventDispatcher
-) : AppLifecycle {
+    prefs: Preferences
+) {
 
     private val lastUrlHash: IntPreference = prefs.forUser("lastClipUrlHash", 0)
     private val manager: ClipboardManager =
         context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 
-    init {
-        dispatcher.registerAppLifecycleObserver(this)
-    }
-
-    override fun onLoggedIn(isNewUser: Boolean) {
-        super.onLoggedIn(isNewUser)
-
-        // Prevent the save from clipboard prompt from showing immediately after sign up or login
-        // if the user has a url in their clipboard.
+    /**
+     * Records the current clipboard url as already seen.
+     *
+     * Called once the account exists, so a url the user copied in order to sign
+     * in is not offered back to them as something to save. This used to be an
+     * `AppLifecycle.onLoggedIn` hook, which never ran: the dispatcher that
+     * delivered it was never itself called from anywhere.
+     */
+    fun markCurrentUrlAsSeen() {
         getUrl()
     }
 

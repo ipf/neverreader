@@ -36,7 +36,7 @@ object Routes {
 
     /**
      * The url travels as a query argument rather than a path segment: an article
-     * url routinely contains slashes, question marks and fragments, and encoding
+     * url routinely contains slashes, question marks, and fragments, and encoding
      * all of that into a path segment is at best fragile and at worst silently
      * truncated.
      */
@@ -47,9 +47,9 @@ object Routes {
  * The app's navigation graph, in Kotlin.
  *
  * Destinations are composables, so there is no NavHostFragment, no
- * FragmentContainerView and no navigation XML. ViewModels are scoped to the back
+ * FragmentContainerView, and no navigation XML. ViewModels are scoped to the back
  * stack entry, which is what gives each screen the same instance across
- * recomposition and its own instance from its neighbours'.
+ * recomposition and its own instance from its neighbors'.
  */
 @Composable
 fun AppNavHost(
@@ -117,7 +117,7 @@ fun AppNavHost(
  * Navigate without stacking a duplicate of the same destination on top of
  * itself: the list can emit a tap twice while a scroll settles.
  *
- * [NavOptions.Builder.setLaunchSingleTop] is the built-in comparison, and it
+ * [androidx.navigation.NavOptionsBuilder.launchSingleTop] is the built-in comparison, and it
  * matches on the full route, so a different article still opens.
  */
 private fun NavHostController.navigateTop(route: String) {

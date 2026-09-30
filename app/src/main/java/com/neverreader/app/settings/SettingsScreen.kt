@@ -1,9 +1,5 @@
 package com.neverreader.app.settings
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.rememberScrollState
@@ -13,18 +9,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.activity.compose.BackHandler
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.neverreader.app.App
 import com.neverreader.app.R
 import com.neverreader.app.UserManager
 import com.neverreader.sdk.preferences.AppPrefs
@@ -35,13 +25,11 @@ import com.neverreader.ui.compose.SettingsHeader
 import com.neverreader.ui.compose.SettingsToggle
 import com.neverreader.ui.view.button.AppIconButton
 import com.neverreader.ui.view.button.UpIcon
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 private enum class SettingsOverlay { Account, Licenses }
 
 /**
- * The settings screen: account, privacy and open-source licenses. A navigation
+ * The settings screen: account, privacy, and open-source licenses. A navigation
  * destination, with the sub-screens as overlays rather than separate activities.
  */
 @Composable

@@ -31,16 +31,9 @@ class AddActivity : AbsNeverReaderActivity() {
     @Inject
     lateinit var accountManager: AccountManager
 
-    override val isUserPresent: Boolean
-        get() = false
-
     override fun checkClipboardForUrl() {
         // Do not check in this Activity
     }
-
-
-    override val isListenUiEnabled: Boolean
-        get() = false
 
     override val accessType: ActivityAccessRestriction
         get() = ActivityAccessRestriction.ANY // toasts an error and finishes if the user is not logged in

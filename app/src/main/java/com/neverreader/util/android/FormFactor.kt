@@ -4,8 +4,6 @@ import android.content.Context
 import android.content.res.Configuration
 import android.util.DisplayMetrics
 import android.util.TypedValue
-import com.neverreader.app.App
-import com.neverreader.app.App.Companion.getContext as appContextFn
 
 /**
  * Device form factor, measured once from the application context.
@@ -15,6 +13,11 @@ import com.neverreader.app.App.Companion.getContext as appContextFn
  * names and the human-readable label had no callers, and get(Context) measured
  * the window rather than the device, which is the mistake [get] exists to
  * avoid.
+ *
+ * The context arrives through [init] from the Application. It used to be
+ * fetched back out of a static field on `App`, which meant the first caller had
+ * to be an Activity and anything touching this before one existed read an
+ * uninitialised field.
  */
 object FormFactor {
     private const val SCREENLAYOUT_SIZE_XLARGE: Int = 0x04
@@ -34,12 +37,14 @@ object FormFactor {
 
     private var mMetrics: DisplayMetrics? = null
 
+    private var appContext: Context? = null
+
     fun get(): Int {
         if (mFormFactor == UNKNOWN) {
             // It is very important to use the Application based Context/Resources for this check!
             // Within an Activity's Context/Resources the Configuration.screenLayout will be for its window, not the device itself
             // and if the window is resized (split screen, multi window, etc), then you won't be looking at the device screen size, but the window size.
-            mFormFactor = determine(appContextFn())
+            mFormFactor = determine(appContext ?: return PHONE)
         }
 
         if (mFormFactor == UNKNOWN) {
@@ -89,7 +94,8 @@ object FormFactor {
         }
     }
 
-    fun init() {
+    fun init(context: Context) {
+        appContext = context.applicationContext
         get()
     }
 
@@ -104,7 +110,7 @@ object FormFactor {
 
     private fun dpToPxF(dp: Float): Float {
         if (mMetrics == null) {
-            mMetrics = appContextFn().resources.displayMetrics
+            mMetrics = appContext?.resources?.displayMetrics ?: return 0f
         }
         return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, mMetrics)
     }
