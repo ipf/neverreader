@@ -5,32 +5,13 @@
     <!-- LABELS, TITLES & NAMES - Prefix: nm  -->
     <string name="nm_add_to_ril" comment="try to use a string starting with A share target label">Dodaj do NeverReadera</string>
 
-	<string name="clipboard_label_url">Łącze skopiowane z NeverReadera</string>
 
 	<string name="nm_archive" comment="Title in the main menu of the action bar. This is a noun.">Archiwum</string>
 
 	<!-- Setting up as plural in case other languages want to vary the label depending on quantity -->
-	<plurals name="nm_time_estimate" comment="Short label showing the number of minutes to read a story, watch a video, or listen to an article e.g. &apos;5 min&apos;">
-        <item quantity="one">%1$d minuta</item>
-        <item quantity="few">%1$d minuty</item>
-        <item quantity="many">%1$d minut</item>
-        <item quantity="other">%1$d minuty</item>
-    </plurals>
 
-	<plurals name="nm_time_to_read_estimate" comment="Short label showing the number of minutes to read a story, watch a video, or listen to an article e.g. &apos;5 min read&apos;">
-        <item quantity="one">%1$d minuta czytania</item>
-        <item quantity="few">%1$d minuty czytania</item>
-        <item quantity="many">%1$d minut czytania</item>
-        <item quantity="other">%1$d minuty czytania</item>
-    </plurals>
 
 	<!-- Setting up as plural in case other languages want to vary the label depending on quantity -->
-	<plurals name="nm_time_left_estimate" comment="Short label showing the number of minutes to read a story, watch a video, or listen to an article e.g. &apos;5 min left&apos;">
-        <item quantity="one">Jeszcze %1$d minuta</item>
-        <item quantity="few">Jeszcze %1$d minuty</item>
-        <item quantity="many">Jeszcze %1$d minut</item>
-        <item quantity="other">Jeszcze %1$d minuty</item>
-    </plurals>
 
 	<string name="ac_ok">OK</string>
 
@@ -44,9 +25,7 @@
     </plurals>
 
 	<!-- MENU OPTIONS (Context and Option) - Prefix: mu  -->
-    <string name="mu_settings" comment="this text label should be short">Ustawienia</string>
 	<string name="mu_read_later" comment="this text label should be short">Zapisz w Pockecie</string>
-	<string name="mu_help" comment="this text label should be short">Pomoc</string>
 
 	<!-- smartling.character_limit = 14 -->
 
@@ -60,10 +39,7 @@
 	<string name="dg_no_email_app_m">Na tym urządzeniu nie zainstalowano żadnych aplikacji poczty e-mail.</string>
 	<string name="dg_no_email_app_m_support">Jeśli możesz spróbować z innego urządzenia, nasz adres to support@neverreader.app.</string>
 
-	<string name="dg_forced_logout_m">Wylogowano z innej lokalizacji. Zaloguj się ponownie.</string>
 
-	<string name="dg_browser_not_found_t">Nie odnaleziono przeglądarki</string>
-	<string name="dg_browser_not_found_m">W urządzeniu nie ma aplikacji przeglądarkowej umożliwiającej otworzenie tej witryny internetowej.</string>
 
 	<!-- TOAST MESSAGES  Prefix: ts   -->
 	<string name="ts_add_invalid_url" comment="An error message that appears when an article link could not be saved">Ups! NeverReader nie może zapisać tego łącza.</string>
@@ -73,40 +49,8 @@
 	<string name="ts_add_already_overlay" comment="A message notifying the user an article they saved is already in their list, and that we will move (bump) it to the top for them">Masz to już zapisane zapisane. Podbijemy to na górę Twojej listy.</string>
 	<string name="ts_add_error">Podczas zapisywania łącza w Pockecie wystąpił problem</string>
 	<string name="ts_add_logged_out">Zaloguj się, aby zapisywać w Pockecie</string>
-    <string name="ts_copied">%1$s – skopiowano do schowka</string>
 
-	<plurals name="ts_bulk_edit_archived">
-        <item quantity="one">Zarchiwizowano %1$s element</item>
-        <item quantity="few">Zarchiwizowano %1$s elementy</item>
-        <item quantity="many">Zarchiwizowano %1$s elementów</item>
-        <item quantity="other">Zarchiwizowano %1$s elementu</item>
-    </plurals>
-	<plurals name="ts_bulk_edit_readded">
-        <item quantity="one">Ponownie dodano %1$s element</item>
-        <item quantity="few">Ponownie dodano %1$s elementy</item>
-        <item quantity="many">Ponownie dodano %1$s elementów</item>
-        <item quantity="other">Ponownie dodano %1$s elementu</item>
-    </plurals>
-	<plurals name="ts_bulk_edit_deleted">
-        <item quantity="one">Usunięto %1$s element</item>
-        <item quantity="few">Usunięto %1$s elementy</item>
-        <item quantity="many">Usunięto %1$s elementów</item>
-        <item quantity="other">Usunięto %1$s elementu</item>
-    </plurals>
-	<plurals name="ts_bulk_edit_tagged_tags" comment="in &apos;Added X TAGS to 12 items&apos;">
-        <item quantity="one">%1$s tag</item>
-        <item quantity="few">%1$s tagi</item>
-        <item quantity="many">%1$s tagów</item>
-        <item quantity="other">%1$s taga</item>
-    </plurals>
-	<plurals name="ts_bulk_edit_tagged_items" comment="in &apos;Added 12 tags to X ITEMS&apos;">
-        <item quantity="one">%1$s element</item>
-        <item quantity="few">%1$s elementy</item>
-        <item quantity="many">%1$s elementów</item>
-        <item quantity="other">%1$s elementu</item>
-    </plurals>
 
-    <string name="ts_no_apps_for_intent">Nie zainstalowano aplikacji potrzebnych do wykonania tej czynności.</string>
 
 	<string name="list_empty_search_title">Nie znaleziono żadnych wyników</string>
 	<string name="list_empty_no_result_matched">Brak elementów pasujących do wyszukiwania.</string>
@@ -117,15 +61,6 @@
     <!-- Text displayed in the enter key slot when the recipientedittextview has focus.
          [CHAR LIMIT=12] -->
 
-	<string-array name="storage_location_specs_internal">
-        <item><b>Zalecenie.</b></item>
-        <item>Pliki pobrane do pamięci podręcznej widoczne jedynie dla aplikacji NeverReader.</item>
-	</string-array>
-	<string-array name="storage_location_specs_removable">
-		<item>Pliki pobrane do pamięci podręcznej widoczne dla innych aplikacji.</item>
-		<item>Aplikacja NeverReader może być niedostępna, jeśli lokalizacja przechowywania zostanie usunięta lub zmieniona.</item>
-		<item>Gdy urządzenie jest podłączone do gniazda USB komputera, korzystanie z aplikacji NeverReader może być niemożliwe.</item>
-	</string-array>
 
 	<string name="my_list_filter_favorites">Ulubione</string>
 

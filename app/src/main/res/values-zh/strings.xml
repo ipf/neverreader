@@ -5,23 +5,13 @@
     <!-- LABELS, TITLES & NAMES - Prefix: nm  -->
     <string name="nm_add_to_ril" comment="try to use a string starting with A share target label">添加到 NeverReader</string>
 
-	<string name="clipboard_label_url">从 NeverReader 复制的链接</string>
 
 	<string name="nm_archive" comment="Title in the main menu of the action bar. This is a noun.">存档</string>
 
 	<!-- Setting up as plural in case other languages want to vary the label depending on quantity -->
-	<plurals name="nm_time_estimate" comment="Short label showing the number of minutes to read a story, watch a video, or listen to an article e.g. &apos;5 min&apos;">
-        <item quantity="other">%1$d 分钟</item>
-    </plurals>
 
-	<plurals name="nm_time_to_read_estimate" comment="Short label showing the number of minutes to read a story, watch a video, or listen to an article e.g. &apos;5 min read&apos;">
-        <item quantity="other">读完需要 %1$d 分钟</item>
-    </plurals>
 
 	<!-- Setting up as plural in case other languages want to vary the label depending on quantity -->
-	<plurals name="nm_time_left_estimate" comment="Short label showing the number of minutes to read a story, watch a video, or listen to an article e.g. &apos;5 min left&apos;">
-        <item quantity="other">还剩 %1$d 分钟</item>
-    </plurals>
 
 	<string name="ac_ok">确定</string>
 
@@ -32,9 +22,7 @@
     </plurals>
 
 	<!-- MENU OPTIONS (Context and Option) - Prefix: mu  -->
-    <string name="mu_settings" comment="this text label should be short">设置</string>
 	<string name="mu_read_later" comment="this text label should be short">保存到 NeverReader</string>
-	<string name="mu_help" comment="this text label should be short">帮助</string>
 
 	<!-- smartling.character_limit = 14 -->
 
@@ -48,10 +36,7 @@
 	<string name="dg_no_email_app_m">此设备未安装任何电子邮件应用程序。</string>
 	<string name="dg_no_email_app_m_support">如果要从另一设备尝试，请发送电子邮件到 support@neverreader.app。</string>
 
-	<string name="dg_forced_logout_m">您已从另一个位置注销。请重新登录。</string>
 
-	<string name="dg_browser_not_found_t">找不到浏览器</string>
-	<string name="dg_browser_not_found_m">您的设备没有可以打开此网页的浏览器应用程序。</string>
 
 	<!-- TOAST MESSAGES  Prefix: ts   -->
 	<string name="ts_add_invalid_url" comment="An error message that appears when an article link could not be saved">糟糕！ NeverReader 无法保存此链接。</string>
@@ -61,25 +46,8 @@
 	<string name="ts_add_already_overlay" comment="A message notifying the user an article they saved is already in their list, and that we will move (bump) it to the top for them">您已保存此内容！我们会将其排在您列表的顶部。</string>
 	<string name="ts_add_error">保存链接到 NeverReader 时发生问题</string>
 	<string name="ts_add_logged_out">登录以保存到 NeverReader</string>
-    <string name="ts_copied">%1$s 已复制到剪贴板</string>
 
-	<plurals name="ts_bulk_edit_archived">
-        <item quantity="other">已存档 %1$s 个项目</item>
-    </plurals>
-	<plurals name="ts_bulk_edit_readded">
-        <item quantity="other">已重新添加 %1$s 个项目</item>
-    </plurals>
-	<plurals name="ts_bulk_edit_deleted">
-        <item quantity="other">已删除 %1$s 个项目</item>
-    </plurals>
-	<plurals name="ts_bulk_edit_tagged_tags" comment="in &apos;Added X TAGS to 12 items&apos;">
-        <item quantity="other">%1$s 个标记</item>
-    </plurals>
-	<plurals name="ts_bulk_edit_tagged_items" comment="in &apos;Added 12 tags to X ITEMS&apos;">
-        <item quantity="other">%1$s 个项目</item>
-    </plurals>
 
-    <string name="ts_no_apps_for_intent">没有已安装的应用程序适合执行此操作。</string>
 
 	<string name="list_empty_search_title">找不到结果</string>
 	<string name="list_empty_no_result_matched">没有与您的搜索匹配的项目。</string>
@@ -90,15 +58,6 @@
     <!-- Text displayed in the enter key slot when the recipientedittextview has focus.
          [CHAR LIMIT=12] -->
 
-	<string-array name="storage_location_specs_internal">
-        <item><b>推荐。</b></item>
-        <item>下载仅在 NeverReader 上可查看的缓存。</item>
-	</string-array>
-	<string-array name="storage_location_specs_removable">
-		<item>下载仅在其他应用程序上可查看的缓存。</item>
-		<item>如果已删除或更改存储位置，可能将无法使用 NeverReader。</item>
-		<item>如果您的设备是通过 USB 连接至计算机，可能将无法使用 NeverReader。</item>
-	</string-array>
 
 	<string name="my_list_filter_favorites">收藏夹</string>
 

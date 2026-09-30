@@ -7,8 +7,6 @@
     <string name="ic_archive" comment="Label for a button that archives an item. This is a verb.">Archief</string>
     <string name="ic_favorite">Favoriet</string>
     <string name="ic_share">Delen</string>
-    <string name="ic_highlight" comment="Label for button that highlights selected text">Markering</string>
-    <string name="ic_copy">Kopiëren</string>
 
     <string name="ac_save">Opslaan</string>
     

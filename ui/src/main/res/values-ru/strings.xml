@@ -7,8 +7,6 @@
     <string name="ic_archive" comment="Label for a button that archives an item. This is a verb.">Архив</string>
     <string name="ic_favorite">Избранное</string>
     <string name="ic_share">Поделиться</string>
-    <string name="ic_highlight" comment="Label for button that highlights selected text">Выделить</string>
-    <string name="ic_copy">Копировать</string>
 
     <string name="ac_save">Сохранить</string>
     

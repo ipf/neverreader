@@ -7,8 +7,6 @@
     <string name="ic_archive" comment="Label for a button that archives an item. This is a verb.">封存</string>
     <string name="ic_favorite">新增至我的最愛</string>
     <string name="ic_share">分享</string>
-    <string name="ic_highlight" comment="Label for button that highlights selected text">標記</string>
-    <string name="ic_copy">複製</string>
 
     <string name="ac_save">儲存</string>
     

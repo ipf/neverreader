@@ -7,8 +7,6 @@
     <string name="ic_archive" comment="Label for a button that archives an item. This is a verb.">보관소</string>
     <string name="ic_favorite">즐겨찾기</string>
     <string name="ic_share">공유</string>
-    <string name="ic_highlight" comment="Label for button that highlights selected text">하이라이트</string>
-    <string name="ic_copy">복사</string>
 
     <string name="ac_save">저장</string>
     

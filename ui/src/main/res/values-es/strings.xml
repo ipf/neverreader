@@ -7,8 +7,6 @@
     <string name="ic_archive" comment="Label for a button that archives an item. This is a verb.">Archivo</string>
     <string name="ic_favorite">Favorito</string>
     <string name="ic_share">Compartir</string>
-    <string name="ic_highlight" comment="Label for button that highlights selected text">Resaltar</string>
-    <string name="ic_copy">Copiar</string>
 
     <string name="ac_save">Guardar</string>
     

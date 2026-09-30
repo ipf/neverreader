@@ -6,13 +6,6 @@
 
     
 
-    <style name="FetchingDialog" parent="@android:style/Theme.Dialog">
-        <item name="android:windowBackground">@color/transparent</item>
-    </style>
-    
-    
-    
-
     <!-- The share-target and pick-target activities are transparent overlays. -->
     <style name="Theme.Transparent" parent="android:Theme">
         <item name="android:windowIsTranslucent">true</item>

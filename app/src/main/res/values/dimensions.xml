@@ -1,16 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="dialog_min_padding">33dp</dimen>
-    <dimen name="dialog_max_width">700dp</dimen>
-    <dimen name="dialog_max_height">700dp</dimen>
-    
-
-    
-
-    <dimen name="rainbow_bar_height">3dp</dimen>
-    
-    <dimen name="home_max_width">775dp</dimen>
-    
+    <!--
+        Kept deliberately: the ui module declares the same names, but a library
+        resource is resolved by name against the merged table at runtime, so
+        these values are what ui actually draws with on large screens.
+    -->
     <dimen name="saves_image_width">90dp</dimen>
     <dimen name="saves_image_height">60dp</dimen>
 </resources>

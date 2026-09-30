@@ -5,23 +5,13 @@
     <!-- LABELS, TITLES & NAMES - Prefix: nm  -->
     <string name="nm_add_to_ril" comment="try to use a string starting with A share target label">+ NeverReader에 추가</string>
 
-	<string name="clipboard_label_url">NeverReader에서 복사된 링크</string>
 
 	<string name="nm_archive" comment="Title in the main menu of the action bar. This is a noun.">보관소</string>
 
 	<!-- Setting up as plural in case other languages want to vary the label depending on quantity -->
-	<plurals name="nm_time_estimate" comment="Short label showing the number of minutes to read a story, watch a video, or listen to an article e.g. &apos;5 min&apos;">
-        <item quantity="other">%1$d분</item>
-    </plurals>
 
-	<plurals name="nm_time_to_read_estimate" comment="Short label showing the number of minutes to read a story, watch a video, or listen to an article e.g. &apos;5 min read&apos;">
-        <item quantity="other">%1$d분 읽기</item>
-    </plurals>
 
 	<!-- Setting up as plural in case other languages want to vary the label depending on quantity -->
-	<plurals name="nm_time_left_estimate" comment="Short label showing the number of minutes to read a story, watch a video, or listen to an article e.g. &apos;5 min left&apos;">
-        <item quantity="other">%1$d분 남음</item>
-    </plurals>
 
 	<string name="ac_ok">확인</string>
 
@@ -32,9 +22,7 @@
     </plurals>
 
 	<!-- MENU OPTIONS (Context and Option) - Prefix: mu  -->
-    <string name="mu_settings" comment="this text label should be short">설정</string>
 	<string name="mu_read_later" comment="this text label should be short">NeverReader에 저장</string>
-	<string name="mu_help" comment="this text label should be short">도움말</string>
 
 	<!-- smartling.character_limit = 14 -->
 
@@ -48,10 +36,7 @@
 	<string name="dg_no_email_app_m">이 장치에는 이메일 앱이 설치되어 있지 않습니다.</string>
 	<string name="dg_no_email_app_m_support">다른 장치에서 시도하려는 경우에는 이메일 주소로 support@neverreader.app을 사용하십시오.</string>
 
-	<string name="dg_forced_logout_m">다른 위치에서 로그아웃되었습니다. 다시 로그인하십시오.</string>
 
-	<string name="dg_browser_not_found_t">브라우저를 찾을 수 없습니다</string>
-	<string name="dg_browser_not_found_m">장치에는 이 웹 페이지를 여는 데 사용할 수 있는 브라우저 앱이 없습니다.</string>
 
 	<!-- TOAST MESSAGES  Prefix: ts   -->
 	<string name="ts_add_invalid_url" comment="An error message that appears when an article link could not be saved">이런! NeverReader에서 이 링크를 저장할 수 없습니다.</string>
@@ -61,25 +46,8 @@
 	<string name="ts_add_already_overlay" comment="A message notifying the user an article they saved is already in their list, and that we will move (bump) it to the top for them">이미 저장했습니다. 목록의 맨 위로 올립니다.</string>
 	<string name="ts_add_error">NeverReader에 링크를 저장하는 중 문제가 발생했습니다.</string>
 	<string name="ts_add_logged_out">NeverReader에 저장하려면 로그인하십시오</string>
-    <string name="ts_copied">클립보드에 %1$s 복사됨</string>
 
-	<plurals name="ts_bulk_edit_archived">
-        <item quantity="other">%1$s개 항목 보관됨</item>
-    </plurals>
-	<plurals name="ts_bulk_edit_readded">
-        <item quantity="other">%1$s개 항목 다시 추가됨</item>
-    </plurals>
-	<plurals name="ts_bulk_edit_deleted">
-        <item quantity="other">%1$s개 항목 삭제됨</item>
-    </plurals>
-	<plurals name="ts_bulk_edit_tagged_tags" comment="in &apos;Added X TAGS to 12 items&apos;">
-        <item quantity="other">%1$s개 태그</item>
-    </plurals>
-	<plurals name="ts_bulk_edit_tagged_items" comment="in &apos;Added 12 tags to X ITEMS&apos;">
-        <item quantity="other">%1$s개 항목</item>
-    </plurals>
 
-    <string name="ts_no_apps_for_intent">이 작업에 사용할 수 있는 앱이 설치되지 않았습니다.</string>
 
 	<string name="list_empty_search_title">결과 없음</string>
 	<string name="list_empty_no_result_matched">검색과 일치하는 항목이 없습니다.</string>
@@ -90,15 +58,6 @@
     <!-- Text displayed in the enter key slot when the recipientedittextview has focus.
          [CHAR LIMIT=12] -->
 
-	<string-array name="storage_location_specs_internal">
-        <item><b>추천됨.</b></item>
-        <item>NeverReader에 인식되는 캐시만 다운로드합니다.</item>
-	</string-array>
-	<string-array name="storage_location_specs_removable">
-		<item>다른 앱에 인식되는 캐시를 다운로드합니다.</item>
-		<item>저장소 위치를 제거하거나 변경하면 NeverReader을 사용하지 못할 수 있습니다.</item>
-		<item>USB를 통해 장치가 컴퓨터에 연결되있는 동안 NeverReader을 사용하지 못할 수 있습니다.</item>
-	</string-array>
 
 	<string name="my_list_filter_favorites">즐겨찾기</string>
 

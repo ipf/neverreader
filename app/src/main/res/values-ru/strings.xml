@@ -5,32 +5,13 @@
     <!-- LABELS, TITLES & NAMES - Prefix: nm  -->
     <string name="nm_add_to_ril" comment="try to use a string starting with A share target label">+ Добавить в NeverReader</string>
 
-	<string name="clipboard_label_url">Ссылка скопирована из NeverReader</string>
 
 	<string name="nm_archive" comment="Title in the main menu of the action bar. This is a noun.">Архив</string>
 
 	<!-- Setting up as plural in case other languages want to vary the label depending on quantity -->
-	<plurals name="nm_time_estimate" comment="Short label showing the number of minutes to read a story, watch a video, or listen to an article e.g. &apos;5 min&apos;">
-        <item quantity="one">%1$d мин.</item>
-        <item quantity="few">%1$d мин.</item>
-        <item quantity="many">%1$d мин.</item>
-        <item quantity="other">%1$d мин.</item>
-    </plurals>
 
-	<plurals name="nm_time_to_read_estimate" comment="Short label showing the number of minutes to read a story, watch a video, or listen to an article e.g. &apos;5 min read&apos;">
-        <item quantity="one">%1$d мин. прочитано</item>
-        <item quantity="few">%1$d мин. прочитано</item>
-        <item quantity="many">%1$d мин. прочитано</item>
-        <item quantity="other">%1$d мин. прочитано</item>
-    </plurals>
 
 	<!-- Setting up as plural in case other languages want to vary the label depending on quantity -->
-	<plurals name="nm_time_left_estimate" comment="Short label showing the number of minutes to read a story, watch a video, or listen to an article e.g. &apos;5 min left&apos;">
-        <item quantity="one">Осталось %1$d мин.</item>
-        <item quantity="few">Осталось %1$d мин.</item>
-        <item quantity="many">Осталось %1$d мин.</item>
-        <item quantity="other">Осталось %1$d мин.</item>
-    </plurals>
 
 	<string name="ac_ok">ОК</string>
 
@@ -44,9 +25,7 @@
     </plurals>
 
 	<!-- MENU OPTIONS (Context and Option) - Prefix: mu  -->
-    <string name="mu_settings" comment="this text label should be short">Настройки</string>
 	<string name="mu_read_later" comment="this text label should be short">Сохранить в NeverReader</string>
-	<string name="mu_help" comment="this text label should be short">Помощь</string>
 
 	<!-- smartling.character_limit = 14 -->
 
@@ -60,10 +39,7 @@
 	<string name="dg_no_email_app_m">В этом устройстве не установлен клиент email.</string>
 	<string name="dg_no_email_app_m_support">Если вы хотите отправить email c другого устройства, наш email адрес support@neverreader.app.</string>
 
-	<string name="dg_forced_logout_m">Ваш сеанс работы завершен с другого компьютера. Попробуйте войти снова.</string>
 
-	<string name="dg_browser_not_found_t">Браузер не найден</string>
-	<string name="dg_browser_not_found_m">На устройстве нет браузера, чтобы открыть эту страницу.</string>
 
 	<!-- TOAST MESSAGES  Prefix: ts   -->
 	<string name="ts_add_invalid_url" comment="An error message that appears when an article link could not be saved">К сожалению, NeverReader не удалось сохранить эту ссылку.</string>
@@ -73,40 +49,8 @@
 	<string name="ts_add_already_overlay" comment="A message notifying the user an article they saved is already in their list, and that we will move (bump) it to the top for them">Вы уже сохранили этот материал! Мы поднимем его в начало списка.</string>
 	<string name="ts_add_error">Не удалось сохранить в NeverReader</string>
 	<string name="ts_add_logged_out">Войдите, чтобы сохранить в NeverReader</string>
-    <string name="ts_copied">%1$s скопировано в буфер обмена</string>
 
-	<plurals name="ts_bulk_edit_archived">
-        <item quantity="one">%1$s материал перенесен в архив</item>
-        <item quantity="few">%1$s материала перенесено в архив</item>
-        <item quantity="many">%1$s материалов перенесено в архив</item>
-        <item quantity="other">%1$s материала перенесено в архив</item>
-    </plurals>
-	<plurals name="ts_bulk_edit_readded">
-        <item quantity="one">%1$s материал добавлен вновь</item>
-        <item quantity="few">%1$s материала добавлено вновь</item>
-        <item quantity="many">%1$s материалов добавлено вновь</item>
-        <item quantity="other">%1$s материала добавлено вновь</item>
-    </plurals>
-	<plurals name="ts_bulk_edit_deleted">
-        <item quantity="one">Удален %1$s материал</item>
-        <item quantity="few">Удалено %1$s материала</item>
-        <item quantity="many">Удалено %1$s материалов</item>
-        <item quantity="other">Удалено %1$s материала</item>
-    </plurals>
-	<plurals name="ts_bulk_edit_tagged_tags" comment="in &apos;Added X TAGS to 12 items&apos;">
-        <item quantity="one">%1$s тег</item>
-        <item quantity="few">%1$s тега</item>
-        <item quantity="many">%1$s тегов</item>
-        <item quantity="other">%1$s тега</item>
-    </plurals>
-	<plurals name="ts_bulk_edit_tagged_items" comment="in &apos;Added 12 tags to X ITEMS&apos;">
-        <item quantity="one">%1$s материал</item>
-        <item quantity="few">%1$s материала</item>
-        <item quantity="many">%1$s материалов</item>
-        <item quantity="other">%1$s материала</item>
-    </plurals>
 
-    <string name="ts_no_apps_for_intent">Для выполнения этого действия не установлено ни одного приложения.</string>
 
 	<string name="list_empty_search_title">Результатов нет</string>
 	<string name="list_empty_no_result_matched">Нет материалов, соответствующих критериям поиска.</string>
@@ -117,15 +61,6 @@
     <!-- Text displayed in the enter key slot when the recipientedittextview has focus.
          [CHAR LIMIT=12] -->
 
-	<string-array name="storage_location_specs_internal">
-        <item><b>Рекомендовано.</b></item>
-        <item>Кэш скачанных файлов доступен только для NeverReader.</item>
-	</string-array>
-	<string-array name="storage_location_specs_removable">
-		<item>Кэш скачанных файлов доступен другим приложениям.</item>
-		<item>NeverReader может работать некорректно, если местоположение хранилища изменено или удалено. </item>
-		<item>NeverReader может работать некорректно, если устройство подключено к компьютеру в качестве USB-накопителя.</item>
-	</string-array>
 
 	<string name="my_list_filter_favorites">Избранное</string>
 

@@ -5,23 +5,13 @@
     <!-- LABELS, TITLES & NAMES - Prefix: nm  -->
     <string name="nm_add_to_ril" comment="try to use a string starting with A share target label">新增到 NeverReader</string>
 
-	<string name="clipboard_label_url">連結複製自 NeverReader</string>
 
 	<string name="nm_archive" comment="Title in the main menu of the action bar. This is a noun.">封存</string>
 
 	<!-- Setting up as plural in case other languages want to vary the label depending on quantity -->
-	<plurals name="nm_time_estimate" comment="Short label showing the number of minutes to read a story, watch a video, or listen to an article e.g. &apos;5 min&apos;">
-        <item quantity="other">%1$d 分鐘</item>
-    </plurals>
 
-	<plurals name="nm_time_to_read_estimate" comment="Short label showing the number of minutes to read a story, watch a video, or listen to an article e.g. &apos;5 min read&apos;">
-        <item quantity="other">%1$d 分鐘閱讀時間</item>
-    </plurals>
 
 	<!-- Setting up as plural in case other languages want to vary the label depending on quantity -->
-	<plurals name="nm_time_left_estimate" comment="Short label showing the number of minutes to read a story, watch a video, or listen to an article e.g. &apos;5 min left&apos;">
-        <item quantity="other">還剩 %1$d 分鐘</item>
-    </plurals>
 
 	<string name="ac_ok">確定</string>
 
@@ -32,9 +22,7 @@
     </plurals>
 
 	<!-- MENU OPTIONS (Context and Option) - Prefix: mu  -->
-    <string name="mu_settings" comment="this text label should be short">設定</string>
 	<string name="mu_read_later" comment="this text label should be short">儲存到 NeverReader</string>
-	<string name="mu_help" comment="this text label should be short">說明</string>
 
 	<!-- smartling.character_limit = 14 -->
 
@@ -48,10 +36,7 @@
 	<string name="dg_no_email_app_m">此裝置未安裝任何電子郵件應用程式。</string>
 	<string name="dg_no_email_app_m_support">如果要從另一部裝置嘗試，我們的電子郵件地址為 support@neverreader.app。</string>
 
-	<string name="dg_forced_logout_m">您已從另一個位置登出。請重新登入。</string>
 
-	<string name="dg_browser_not_found_t">瀏覽器未找到</string>
-	<string name="dg_browser_not_found_m">您的裝置沒有可以開啟此網頁的瀏覽器應用程式。</string>
 
 	<!-- TOAST MESSAGES  Prefix: ts   -->
 	<string name="ts_add_invalid_url" comment="An error message that appears when an article link could not be saved">糟糕！ NeverReader 無法儲存此連結。</string>
@@ -61,25 +46,8 @@
 	<string name="ts_add_already_overlay" comment="A message notifying the user an article they saved is already in their list, and that we will move (bump) it to the top for them">您已儲存本文！我們會將其排在您的清單最上方。</string>
 	<string name="ts_add_error">儲存連結至 NeverReader 時發生問題 </string>
 	<string name="ts_add_logged_out">登入即可儲存至 NeverReader</string>
-    <string name="ts_copied">%1$s 已複製到剪貼簿</string>
 
-	<plurals name="ts_bulk_edit_archived">
-        <item quantity="other">已封存 %1$s 個項目</item>
-    </plurals>
-	<plurals name="ts_bulk_edit_readded">
-        <item quantity="other">已重新新增 %1$s 個項目</item>
-    </plurals>
-	<plurals name="ts_bulk_edit_deleted">
-        <item quantity="other">已刪除 %1$s 個項目</item>
-    </plurals>
-	<plurals name="ts_bulk_edit_tagged_tags" comment="in &apos;Added X TAGS to 12 items&apos;">
-        <item quantity="other">%1$s 個標籤</item>
-    </plurals>
-	<plurals name="ts_bulk_edit_tagged_items" comment="in &apos;Added 12 tags to X ITEMS&apos;">
-        <item quantity="other">%1$s 個項目</item>
-    </plurals>
 
-    <string name="ts_no_apps_for_intent">沒有安裝可供此動作使用的應用程式。</string>
 
 	<string name="list_empty_search_title">找不到結果</string>
 	<string name="list_empty_no_result_matched">沒有與您的搜尋相符的項目。</string>
@@ -90,15 +58,6 @@
     <!-- Text displayed in the enter key slot when the recipientedittextview has focus.
          [CHAR LIMIT=12] -->
 
-	<string-array name="storage_location_specs_internal">
-        <item><b>建議。</b></item>
-        <item>僅下載 NeverReader 可見的快取。</item>
-	</string-array>
-	<string-array name="storage_location_specs_removable">
-		<item>下載其他應用程式可見的快取。</item>
-		<item>若儲存位置經過移除或更動，NeverReader 可能變得無法使用。</item>
-		<item>當您的裝置經由 USB 連接電腦時，NeverReader 可能無法使用。</item>
-	</string-array>
 
 	<string name="my_list_filter_favorites">我的最愛</string>
 

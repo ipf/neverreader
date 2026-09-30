@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="rainbow_bar_height">4dp</dimen>
+    <!-- See the note in values/dimensions.xml. -->
     <dimen name="saves_image_width">105dp</dimen>
     <dimen name="saves_image_height">70dp</dimen>
 </resources>

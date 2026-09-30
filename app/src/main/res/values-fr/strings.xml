@@ -5,26 +5,13 @@
     <!-- LABELS, TITLES & NAMES - Prefix: nm  -->
     <string name="nm_add_to_ril" comment="try to use a string starting with A share target label">Ajouter à NeverReader</string>
 
-	<string name="clipboard_label_url">Lien copié à partir de NeverReader</string>
 
 	<string name="nm_archive" comment="Title in the main menu of the action bar. This is a noun.">Archives</string>
 
 	<!-- Setting up as plural in case other languages want to vary the label depending on quantity -->
-	<plurals name="nm_time_estimate" comment="Short label showing the number of minutes to read a story, watch a video, or listen to an article e.g. &apos;5 min&apos;">
-        <item quantity="one">%1$d min</item>
-        <item quantity="other">%1$d min</item>
-    </plurals>
 
-	<plurals name="nm_time_to_read_estimate" comment="Short label showing the number of minutes to read a story, watch a video, or listen to an article e.g. &apos;5 min read&apos;">
-        <item quantity="one">%1$d min de lecture</item>
-        <item quantity="other">%1$d min de lecture</item>
-    </plurals>
 
 	<!-- Setting up as plural in case other languages want to vary the label depending on quantity -->
-	<plurals name="nm_time_left_estimate" comment="Short label showing the number of minutes to read a story, watch a video, or listen to an article e.g. &apos;5 min left&apos;">
-        <item quantity="one">il reste %1$d min</item>
-        <item quantity="other">il reste %1$d min</item>
-    </plurals>
 
 	<string name="ac_ok">OK</string>
 
@@ -36,9 +23,7 @@
     </plurals>
 
 	<!-- MENU OPTIONS (Context and Option) - Prefix: mu  -->
-    <string name="mu_settings" comment="this text label should be short">Paramètres</string>
 	<string name="mu_read_later" comment="this text label should be short">Enregistrer dans NeverReader</string>
-	<string name="mu_help" comment="this text label should be short">Aide</string>
 
 	<!-- smartling.character_limit = 14 -->
 
@@ -52,10 +37,7 @@
 	<string name="dg_no_email_app_m">Aucune application de messagerie n\'est installée sur cet appareil.</string>
 	<string name="dg_no_email_app_m_support">Si vous voulez essayer depuis un autre appareil, notre adresse e-mail est support@neverreader.app.</string>
 
-	<string name="dg_forced_logout_m">Vous avez été déconnecté(e) depuis un autre emplacement. Veuillez vous connecter à nouveau.</string>
 
-	<string name="dg_browser_not_found_t">Navigateur introuvable</string>
-	<string name="dg_browser_not_found_m">Aucune application de navigation permettant d\'ouvrir cette page Web n\'est installée sur votre appareil.</string>
 
 	<!-- TOAST MESSAGES  Prefix: ts   -->
 	<string name="ts_add_invalid_url" comment="An error message that appears when an article link could not be saved">NeverReader n\'a pas pu sauvegarder ce lien.</string>
@@ -65,30 +47,8 @@
 	<string name="ts_add_already_overlay" comment="A message notifying the user an article they saved is already in their list, and that we will move (bump) it to the top for them">Vous avez déjà sauvegardé cet article ! Nous allons le déplacer en haut de votre liste.</string>
 	<string name="ts_add_error">Un problème s\'est produit lors de la sauvegarde du lien dans NeverReader.</string>
 	<string name="ts_add_logged_out">Connectez-vous pour sauvegarder dans NeverReader</string>
-    <string name="ts_copied">%1$s copié(e) dans le presse-papiers</string>
 
-	<plurals name="ts_bulk_edit_archived">
-        <item quantity="one">%1$s élément archivé</item>
-        <item quantity="other">%1$s éléments archivés</item>
-    </plurals>
-	<plurals name="ts_bulk_edit_readded">
-        <item quantity="one">%1$s élément ajouté à nouveau</item>
-        <item quantity="other">%1$s éléments ajoutés à nouveau</item>
-    </plurals>
-	<plurals name="ts_bulk_edit_deleted">
-        <item quantity="one">%1$s élément supprimé</item>
-        <item quantity="other">%1$s éléments supprimés</item>
-    </plurals>
-	<plurals name="ts_bulk_edit_tagged_tags" comment="in &apos;Added X TAGS to 12 items&apos;">
-        <item quantity="one">%1$s label</item>
-        <item quantity="other">%1$s labels</item>
-    </plurals>
-	<plurals name="ts_bulk_edit_tagged_items" comment="in &apos;Added 12 tags to X ITEMS&apos;">
-        <item quantity="one">%1$s élément</item>
-        <item quantity="other">%1$s éléments</item>
-    </plurals>
 
-    <string name="ts_no_apps_for_intent">Aucune des applications installées ne permet cette opération.</string>
 
 	<string name="list_empty_search_title">Aucun résultat</string>
 	<string name="list_empty_no_result_matched">Aucun élément ne correspond à votre recherche.</string>
@@ -99,15 +59,6 @@
     <!-- Text displayed in the enter key slot when the recipientedittextview has focus.
          [CHAR LIMIT=12] -->
 
-	<string-array name="storage_location_specs_internal">
-        <item><b>Recommandé.</b></item>
-        <item>Cache de téléchargement visible uniquement par NeverReader.</item>
-	</string-array>
-	<string-array name="storage_location_specs_removable">
-		<item>Cache de téléchargement visible par les autres applications.</item>
-		<item>NeverReader peut devenir indisponible si l\'emplacement de stockage est retiré ou modifié.</item>
-		<item>NeverReader peut être inutilisable pendant que votre appareil est connecté à votre ordinateur via USB.</item>
-	</string-array>
 
 	<string name="my_list_filter_favorites">Favoris</string>
 

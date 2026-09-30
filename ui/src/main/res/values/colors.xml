@@ -31,37 +31,16 @@
 
     <!-- Light Mode Color Palette -->
     <color name="nr_base_bg">@color/white</color>
-    <color name="nr_grey_2">#333333</color>
     <color name="nr_grey_3">#404040</color>
-    <color name="nr_grey_6">#D9D9D9</color>
-    <color name="nr_teal_2">#008078</color>
     <color name="nr_teal_3">#009990</color>
     <color name="nr_teal_4">#80BFBB</color>
     <color name="nr_coral_2">#EF4056</color>
 
     <!-- Dark Mode Color Palette -->
     <color name="nr_dm_base_bg">#1A1A1A</color>
-    <color name="nr_dm_grey_1">#F2F2F2</color>
-    <color name="nr_dm_grey_3">#CCCCCC</color>
-    <color name="nr_dm_grey_6">#404040</color>
-    <color name="nr_dm_teal_3">#00CCC0</color>
-    <color name="nr_dm_teal_4">#0D4643</color>
-    <color name="nr_dm_coral_2">#EF4056</color>
-    
-    <!-- Text Color Palette -->
-    
-    <!-- New Color System -->
-    <color name="amber_30">#FCB643</color>
 
-    <!--
-        Themed colours. These were state_dark selectors; the dark values now live in
-        values-night/colors.xml, which Android resolves natively.
-    -->
+    <!-- Background, resolved per uiMode. The other entries used to be
+         nr_themed_* aliases pairing a light colour with a dark one; they were
+         state_dark selectors that Android now resolves through values-night. -->
     <color name="nr_bg">@color/nr_base_bg</color>
-    <color name="nr_themed_coral_2">@color/nr_coral_2</color>
-    <color name="nr_themed_grey_6">@color/nr_grey_6</color>
-    <color name="nr_themed_teal_3">@color/nr_teal_3</color>
-    <color name="nr_themed_teal_4">@color/nr_teal_4</color>
-    <color name="nr_themed_amber_1">@color/amber_30</color>
-    <color name="nr_grey_4">#737373</color>
 </resources>

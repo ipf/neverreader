@@ -7,8 +7,6 @@
     <string name="ic_archive" comment="Label for a button that archives an item. This is a verb.">アーカイブ</string>
     <string name="ic_favorite">お気に入り</string>
     <string name="ic_share">共有</string>
-    <string name="ic_highlight" comment="Label for button that highlights selected text">ハイライト</string>
-    <string name="ic_copy">コピー</string>
 
     <string name="ac_save">保存</string>
     

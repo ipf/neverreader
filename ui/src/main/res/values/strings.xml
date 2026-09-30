@@ -15,8 +15,6 @@
     <string name="sort_oldest">Oldest</string>
     <string name="sort_title_asc">Title A-Z</string>
     <string name="sort_title_desc">Title Z-A</string>
-    <string name="ic_highlight" comment="Label for button that highlights selected text">Highlight</string>
-    <string name="ic_copy">Copy</string>
 
     <string name="ac_save">Save</string>
     
