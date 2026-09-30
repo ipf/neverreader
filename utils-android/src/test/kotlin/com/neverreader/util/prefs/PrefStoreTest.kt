@@ -162,21 +162,56 @@ class PrefStoreTest {
     }
 
     @Test
-    fun `string set preference round trips its value`() {
-        val pref = StringSetPref("s", mutableSetOf<String?>("default"), store)
-        assertEquals(setOf<String?>("default"), pref.get()?.toSet())
+    fun `int preference round trips`() {
+        val pref = IntPref("n", 7, store)
+        assertEquals(7, pref.get())
+        assertFalse(pref.isSet)
 
-        pref.set(mutableSetOf("written"))
+        pref.set(42)
         assertTrue(pref.isSet)
-        assertEquals(setOf<String?>("written"), pref.get()?.toSet())
+        assertEquals(42, pref.get())
+        // A fresh instance reads what was written, which is what the theme does
+        // when an activity starts.
+        assertEquals(42, IntPref("n", 7, store).get())
     }
 
     @Test
-    fun `string set is defensively copied on write`() {
-        val mutable = mutableSetOf<String?>("a")
-        store.set("s", mutable)
-        mutable.add("b")
-        // The stored value must not have picked up the caller's later mutation.
-        assertEquals(setOf<String?>("a"), store.getStringSet("s")?.toSet())
+    fun `boolean preference round trips`() {
+        val pref = BooleanPref("b", false, store)
+        assertFalse(pref.get())
+
+        pref.set(true)
+        assertTrue(pref.get())
+        assertTrue(BooleanPref("b", false, store).get())
+    }
+
+    @Test
+    fun `int withChanges emits the current value then each change`() = runTest {
+        val seen = mutableListOf<Int?>()
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            IntPref("n", 0, store).withChanges.collect { seen.add(it) }
+        }
+        runCurrent()
+
+        store.set("n", 1)
+        store.set("n", 2)
+        runCurrent()
+
+        // Starts with the default because nothing is set yet, then the writes.
+        assertEquals(listOf<Int?>(0, 1, 2), seen)
+    }
+
+    @Test
+    fun `withChanges ignores writes to other keys`() = runTest {
+        val seen = mutableListOf<Int?>()
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            IntPref("watched", 0, store).withChanges.collect { seen.add(it) }
+        }
+        runCurrent()
+
+        store.set("other", 99)
+        runCurrent()
+
+        assertEquals(listOf<Int?>(0), seen)
     }
 }

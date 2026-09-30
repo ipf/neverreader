@@ -5,7 +5,6 @@ import com.neverreader.backend.db.NeverReaderDatabase
 import com.neverreader.repository.ItemRepository
 import com.neverreader.repository.NeverReaderItemRepository
 import com.neverreader.util.prefs.AndroidPrefStore
-import com.neverreader.util.prefs.Preferences
 import com.neverreader.util.prefs.Prefs
 import dagger.Binds
 import dagger.Module
@@ -23,7 +22,7 @@ import javax.inject.Singleton
 class NeverReaderModule {
 
     @Provides @Singleton
-    fun providePrefs(@ApplicationContext context: Context): Preferences =
+    fun providePrefs(@ApplicationContext context: Context): Prefs =
         Prefs(
             AndroidPrefStore(
                 // android.preference.PreferenceManager is deprecated as a whole,
@@ -34,8 +33,7 @@ class NeverReaderModule {
                     context.packageName + "_preferences",
                     Context.MODE_PRIVATE,
                 )
-            ),
-            AndroidPrefStore(context.getSharedPreferences("neverreaderPrefs", 0))
+            )
         )
 
     @Provides @Singleton

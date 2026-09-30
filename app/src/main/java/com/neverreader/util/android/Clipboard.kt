@@ -9,7 +9,7 @@ import android.view.textclassifier.TextClassifier
 import com.neverreader.app.BuildConfig
 import com.neverreader.util.java.UrlFinder
 import com.neverreader.util.prefs.IntPreference
-import com.neverreader.util.prefs.Preferences
+import com.neverreader.util.prefs.Prefs
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -24,7 +24,7 @@ import javax.inject.Singleton
 @Singleton
 class Clipboard @Inject constructor(
     @ApplicationContext private val context: Context,
-    prefs: Preferences
+    prefs: Prefs
 ) {
 
     private val lastUrlHash: IntPreference = prefs.forUser("lastClipUrlHash", 0)

@@ -8,7 +8,7 @@ import com.neverreader.backend.sync.SyncWorker
 import com.neverreader.repository.BookmarkRepository
 import com.neverreader.app.settings.Theme
 import com.neverreader.util.android.Clipboard
-import com.neverreader.util.prefs.Preferences
+import com.neverreader.util.prefs.Prefs
 import com.neverreader.sdk.util.AbsNeverReaderActivity
 import androidx.work.Configuration
 import dagger.hilt.android.HiltAndroidApp
@@ -19,7 +19,7 @@ class App : Application(), Configuration.Provider {
 
     @Inject lateinit var appThreads: AppThreads
     @Inject lateinit var theme: Theme
-    @Inject lateinit var legacyPrefs: Preferences
+    @Inject lateinit var legacyPrefs: Prefs
     @Inject lateinit var bookmarkRepository: BookmarkRepository
     @Inject lateinit var accountManager: AccountManager
     @Inject lateinit var userManager: UserManager

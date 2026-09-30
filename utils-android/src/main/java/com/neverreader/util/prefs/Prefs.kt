@@ -1,103 +1,37 @@
 package com.neverreader.util.prefs
 
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.merge
-import kotlinx.coroutines.flow.onStart
-
-class Prefs(private val user: Store, private val app: Store) : Preferences {
-    override fun clearUser() {
-        user.clear()
-    }
-
-    override fun clear() {
-        user.clear()
-        app.clear()
-    }
-
-    override fun remove(key: String?) {
+/**
+ * The app's persisted preferences.
+ *
+ * This is a factory: [forUser] hands back a typed handle for one key, and the
+ * handle does the reading and writing. What is left here is the key list, which
+ * is three entries — `appTheme`, `lastClipUrlHash` and `loadThirdPartyImages`.
+ *
+ * There is no app-scoped half. There was one, for settings that outlive an
+ * account, but nothing in the app is stored that way, so it was a second
+ * SharedPreferences file and a second set of methods carrying no values.
+ *
+ * [remove] is the one raw key operation exposed. The rotation lock that needed
+ * it is gone, but the cleanup has to run once or a stored orientation lock
+ * outlives the feature.
+ *
+ * The [Store] underneath is what makes this testable without Android.
+ */
+class Prefs(private val user: Store) {
+    /** Reset the preference with this key, returning it back to unset. */
+    fun remove(key: String?) {
         user.remove(key)
-        app.remove(key)
     }
 
-    override fun appKeys(): MutableSet<String?>? {
-        return app.keys()
-    }
-
-    override fun userKeys(): MutableSet<String?>? {
-        return user.keys()
-    }
-
-
-    override fun forUser(key: String?, defaultValue: Boolean): BooleanPreference {
+    fun forUser(key: String?, defaultValue: Boolean): BooleanPreference {
         return BooleanPref(key, defaultValue, user)
     }
 
-    override fun forApp(key: String?, defaultValue: Boolean): BooleanPreference {
-        return BooleanPref(key, defaultValue, app)
-    }
-
-
-    override fun forUser(key: String?, defaultValue: Float): FloatPreference {
-        return FloatPref(key, defaultValue, user)
-    }
-
-    override fun forApp(key: String?, defaultValue: Float): FloatPreference {
-        return FloatPref(key, defaultValue, app)
-    }
-
-
-    override fun forUser(key: String?, defaultValue: Int): IntPreference {
+    fun forUser(key: String?, defaultValue: Int): IntPreference {
         return IntPref(key, defaultValue, user)
     }
 
-    override fun forApp(key: String?, defaultValue: Int): IntPreference {
-        return IntPref(key, defaultValue, app)
-    }
-
-
-    override fun forUser(key: String?, defaultValue: Long): LongPreference {
-        return LongPref(key, defaultValue, user)
-    }
-
-    override fun forApp(key: String?, defaultValue: Long): LongPreference {
-        return LongPref(key, defaultValue, app)
-    }
-
-
-    override fun forUser(key: String?, defaultValue: String?): StringPreference {
+    fun forUser(key: String?, defaultValue: String?): StringPreference {
         return StringPref(key, defaultValue, user)
-    }
-
-    override fun forApp(key: String?, defaultValue: String?): StringPreference {
-        return StringPref(key, defaultValue, app)
-    }
-
-
-    override fun <E : Enum<E>> forUser(
-        key: String?,
-        clazz: Class<E>?,
-        defaultValue: E?,
-    ): EnumPreference<E> {
-        return EnumPref(clazz!!, key, defaultValue, user)
-    }
-
-    override fun <E : Enum<E>> forApp(
-        key: String?,
-        clazz: Class<E>?,
-        defaultValue: E?,
-    ): EnumPreference<E> {
-        return EnumPref(clazz!!, key, defaultValue, app)
-    }
-
-    override fun forUser(key: String?, defaultValue: MutableSet<String?>?): StringSetPreference {
-        return StringSetPref(key, defaultValue, user)
-    }
-
-    override fun forApp(key: String?, defaultValue: MutableSet<String?>?): StringSetPreference {
-        return StringSetPref(key, defaultValue, app)
-    }
-
-    override fun changes(): Flow<String?> {
-        return merge(user.changes(), app.changes())
     }
 }

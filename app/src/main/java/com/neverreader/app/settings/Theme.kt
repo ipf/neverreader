@@ -6,7 +6,7 @@ import androidx.core.content.ContextCompat
 import com.neverreader.sdk.util.AbsNeverReaderActivity
 import com.neverreader.ui.R
 import com.neverreader.util.prefs.IntPreference
-import com.neverreader.util.prefs.Preferences
+import com.neverreader.util.prefs.Prefs
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -14,7 +14,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class Theme @Inject constructor(prefs: Preferences) {
+class Theme @Inject constructor(prefs: Prefs) {
     private val pref: IntPreference = prefs.forUser("appTheme", SYSTEM)
 
     /**

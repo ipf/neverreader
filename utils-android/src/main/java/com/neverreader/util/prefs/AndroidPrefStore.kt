@@ -7,10 +7,14 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
-import java.util.Collections
 
 /**
- * A [Store] backed by Android [SharedPreferences]
+ * A [Store] backed by Android [SharedPreferences].
+ *
+ * SharedPreferences rather than DataStore: there are three keys, it is not
+ * deprecated, and it reads synchronously. The theme is needed synchronously
+ * while the first activity is starting, and DataStore is an async API, so
+ * moving would mean caching a value that is currently just read.
  */
 class AndroidPrefStore(private val prefs: SharedPreferences) : Store {
     /**
@@ -43,8 +47,8 @@ class AndroidPrefStore(private val prefs: SharedPreferences) : Store {
         prefs.edit().remove(key).apply()
     }
 
-    override fun keys(): MutableSet<String?> {
-        return prefs.all.keys
+    override fun clear() {
+        prefs.edit().clear().apply()
     }
 
     override fun getString(key: String?): String? {
@@ -59,26 +63,6 @@ class AndroidPrefStore(private val prefs: SharedPreferences) : Store {
         return changes<String?>(key) { key: String? -> this.getString(key) }
     }
 
-
-    override fun getStringSet(key: String?): MutableSet<String?>? {
-        val v = prefs.getStringSet(key, null)
-        return if (v != null) Collections.unmodifiableSet<String?>(v) else null
-    }
-
-    override fun set(key: String?, value: MutableSet<String?>?) {
-        var value = value
-        value =
-            if (value != null) HashSet(value) else null // Make a copy so the set we are writing won't throw concurrent mod exceptions
-        prefs.edit().putStringSet(key, value).apply()
-    }
-
-    override fun stringSetChanges(key: String?): Flow<MutableSet<String?>?> {
-        return changes<MutableSet<String?>?>(
-            key
-        ) { key: String? -> this.getStringSet(key) }
-    }
-
-
     override fun getInt(key: String?): Int {
         return prefs.getInt(key, 0)
     }
@@ -91,33 +75,6 @@ class AndroidPrefStore(private val prefs: SharedPreferences) : Store {
         return changes<Int?>(key) { key: String? -> this.getInt(key) }
     }
 
-
-    override fun getFloat(key: String?): Float {
-        return prefs.getFloat(key, 0f)
-    }
-
-    override fun set(key: String?, value: Float) {
-        prefs.edit().putFloat(key, value).apply()
-    }
-
-    override fun floatChanges(key: String?): Flow<Float?> {
-        return changes<Float?>(key) { key: String? -> this.getFloat(key) }
-    }
-
-
-    override fun getLong(key: String?): Long {
-        return prefs.getLong(key, 0)
-    }
-
-    override fun set(key: String?, value: Long) {
-        prefs.edit().putLong(key, value).apply()
-    }
-
-    override fun longChanges(key: String?): Flow<Long?> {
-        return changes<Long?>(key) { key: String? -> this.getLong(key) }
-    }
-
-
     override fun getBoolean(key: String?): Boolean {
         return prefs.getBoolean(key, false)
     }
@@ -128,9 +85,5 @@ class AndroidPrefStore(private val prefs: SharedPreferences) : Store {
 
     override fun booleanChanges(key: String?): Flow<Boolean?> {
         return changes<Boolean?>(key) { key: String? -> this.getBoolean(key) }
-    }
-
-    override fun clear() {
-        prefs.edit().clear().apply()
     }
 }

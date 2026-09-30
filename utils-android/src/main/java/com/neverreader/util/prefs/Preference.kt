@@ -10,11 +10,13 @@ import kotlinx.coroutines.flow.onStart
  * non-android use cases such as unit tests.
  */
 interface Preference<T> {
-    /** @return true if this preference as been explicitly changed/set in the past, false if it has not and is returning its defaultValue.
+    /** @return true if this preference has been explicitly set in the past, false if it has not and is returning its defaultValue.
      */
     val isSet: Boolean
 
-    /** Emits anytime this preference's value changes in the future. */
+    /** Emits each time this preference's value changes, from the moment of
+     *  collection onwards. Nothing is emitted for changes made before then, so
+     *  use [withChanges] to also get the current value. */
     fun changes(): Flow<T?>
 
     /** Emits the current value on collection, then on every change. */
