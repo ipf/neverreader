@@ -12,7 +12,7 @@ Then point the app at them:
 
 | | URL | Sign-in |
 |---|---|---|
-| Readeck | `http://localhost:8000` | pick Readeck, tap through the device flow, log in as `demo` / `password` |
+| Readeck | `http://localhost:8000` | pick Readeck, tap Authorize, log in as `demo` / `password` and approve in the browser |
 | Wallabag | `http://localhost:8080` | pick Wallabag, `demo` / `password` |
 
 From an Android emulator the host machine is `10.0.2.2`, so use
@@ -110,10 +110,19 @@ knowing before you go looking for its source and reuse any of it.
 
 ## Signing in as the app
 
-Readeck uses the OAuth device flow, so the app registers its own client and then
-waits while you approve it in a browser. Open the verification URL it shows and
-log in as `demo` / `password`. No client needs seeding, because the app registers
-one itself.
+Readeck uses the OAuth authorization-code flow, so the app registers its own
+client and sends you to the instance's authorization page in the browser. Sign in
+there as `demo` / `password` and approve, and the browser redirects straight back
+into the app - there is no code to copy and nothing left to do. No client needs
+seeding, because the app registers one itself.
+
+That redirect is `com.neverreader.app://oauth-callback`, a custom scheme. PKCE
+means an app that intercepts the redirect gets a code it cannot redeem, and
+verified https App Links are not an option because the app does not control the
+domain your instance is on.
+
+If the device has no browser to redirect, "Sign in with a code instead" runs the
+device-code flow, where the app polls while you approve in a browser.
 
 Wallabag uses the password grant, so it does need the client above, pasted into
 the setup screen's Wallabag tab.

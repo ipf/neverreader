@@ -1,11 +1,6 @@
 package com.neverreader.app.auth
 
-import android.content.Intent
-import android.net.Uri
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,70 +21,39 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.runtime.LaunchedEffect
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
-import com.neverreader.app.MainActivity
 import com.neverreader.app.R
 import com.neverreader.backend.model.BackendType
-import com.neverreader.sdk.util.AbsNeverReaderActivity
 import com.neverreader.ui.compose.AppBar
 import com.neverreader.ui.compose.FilterChips
 import com.neverreader.ui.theme.AppTheme
-import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 
 /**
  * The server setup flow: pick a backend (Readeck or Wallabag), enter the server
- * URL, then authorize via the Readeck device flow or the Wallabag password
- * grant.
+ * URL, then sign in.
  *
- * A plain composable now - it lives in its own activity, so it needs no
- * navigation host, only content.
+ * Readeck opens the browser and is redirected straight back once the user
+ * approves, so there is nothing to do afterwards. The device-code flow is kept
+ * as a secondary action for a device with no browser to redirect.
  */
 @Composable
 fun AuthenticationScreen(
     viewModel: AuthenticationViewModel = hiltViewModel(),
-    onAuthenticated: () -> Unit,
-) {
-    val context = LocalContext.current
-    LaunchedEffect(viewModel) {
-        viewModel.events.collect { event ->
-            when (event) {
-                is AuthenticationViewModel.Event.Success -> onAuthenticated()
-            }
-        }
-    }
-    AuthenticationScreen(
-        viewModel = viewModel,
-        onOpenUrl = { url -> runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) } },
-        onAuthenticated = onAuthenticated,
-    )
-}
-
-@Composable
-private fun AuthenticationScreen(
-    viewModel: AuthenticationViewModel,
     onOpenUrl: (String) -> Unit,
-    onAuthenticated: () -> Unit,
 ) {
     val current by viewModel.state.collectAsStateWithLifecycle()
     val state = current
@@ -177,6 +141,19 @@ private fun AuthenticationScreen(
                     Text(state.message, style = AppTheme.typography.p4)
                 }
 
+                // The browser has the user; the redirect ends the flow, so this
+                // only has to say so.
+                is AuthenticationViewModel.State.AwaitingRedirect -> Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp)
+                    Spacer(Modifier.size(AppTheme.dimensions.spaceSmall))
+                    Text(
+                        text = stringResource(R.string.auth_waiting_for_browser),
+                        style = AppTheme.typography.p4,
+                    )
+                }
+
                 is AuthenticationViewModel.State.DeviceFlow -> {
                     Text(
                         text = stringResource(R.string.auth_enter_code_in_browser),
@@ -193,7 +170,17 @@ private fun AuthenticationScreen(
                     if (state.backendType == BackendType.READECK) {
                         PrimaryButton(
                             text = stringResource(R.string.auth_authorize),
-                            onClick = viewModel::startReadeckDeviceFlow,
+                            onClick = viewModel::startReadeckAuthorization,
+                        )
+                        Text(
+                            text = stringResource(R.string.auth_use_code_instead),
+                            style = AppTheme.typography.p4,
+                            color = AppTheme.colors.teal1,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable(onClick = viewModel::startReadeckDeviceFlow)
+                                .padding(vertical = AppTheme.dimensions.spaceSmall),
                         )
                     }
                 }

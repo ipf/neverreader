@@ -152,4 +152,111 @@ class ReadeckAuthTest {
 
         assertEquals("device flow failed: unknown client", message)
     }
+
+    @Test
+    fun `code verifier is 64 unreserved characters and challenge is unpadded base64url`() {
+        val verifier = ReadeckAuth.newCodeVerifier()
+        assertEquals(64, verifier.length)
+        assertTrue(verifier.all { it.isLetterOrDigit() })
+
+        // RFC 7636 appendix B's published example, so this pins the encoding
+        // rather than whatever base64 variant happens to be on the classpath.
+        assertEquals(
+            "E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM",
+            ReadeckAuth.codeChallenge("dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk"),
+        )
+        // Unpadded: a trailing '=' would not match what the server recomputes.
+        assertTrue(!ReadeckAuth.codeChallenge(verifier).contains('='))
+    }
+
+    @Test
+    fun `authorize url is built at the instance root, not under api`() {
+        val url = ReadeckAuth.buildAuthorizeUrl(
+            serverUrl = "https://readeck.example.com/api",
+            clientId = "abc",
+            redirectUri = ReadeckAuth.REDIRECT_URI,
+            scope = "bookmarks:read",
+            codeChallenge = "chal",
+            state = "st",
+        )
+        // /authorize is served from the root, unlike every other endpoint.
+        assertTrue(url, url.startsWith("https://readeck.example.com/authorize?"))
+        assertTrue(url, url.contains("client_id=abc"))
+        assertTrue(url, url.contains("code_challenge=chal"))
+        assertTrue(url, url.contains("code_challenge_method=S256"))
+        assertTrue(url, url.contains("state=st"))
+    }
+
+    @Test
+    fun `authorize url percent encodes the redirect uri and scope`() {
+        val url = ReadeckAuth.buildAuthorizeUrl(
+            serverUrl = "https://readeck.example.com",
+            clientId = "abc",
+            // The custom scheme's '://' and '/' are not legal unescaped in a
+            // query value; an unencoded redirect_uri does not match the
+            // registered one and the server refuses to redirect.
+            redirectUri = ReadeckAuth.REDIRECT_URI,
+            scope = "bookmarks:read bookmarks:write",
+            codeChallenge = "chal",
+            state = "st",
+        )
+        val redirect = url.substringAfter("redirect_uri=").substringBefore("&")
+        assertTrue(url, redirect.none { it == ':' || it == '/' })
+        assertTrue(url, url.contains("scope=bookmarks%3Aread%20bookmarks%3Awrite"))
+    }
+
+    @Test
+    fun `registration advertises both grants and the redirect uri`() = runTest {
+        server.enqueue(MockResponse().setResponseCode(201).setBody("""{"client_id":"abc"}"""))
+
+        ReadeckAuth.startAuthorization(serverUrl(), appVersion)
+
+        val body = server.takeRequest().body.readUtf8()
+        val json = Json.parseToJsonElement(body).jsonObject
+        // redirect_uris is rejected as missing unless authorization_code is in
+        // grant_types, and the two must be offered together.
+        assertTrue(body, body.contains("authorization_code"))
+        assertTrue(body, body.contains("urn:ietf:params:oauth:grant-type:device_code"))
+        assertTrue(
+            body,
+            json["redirect_uris"].toString().contains(ReadeckAuth.REDIRECT_URI),
+        )
+    }
+
+    @Test
+    fun `authorization flow returns an authorize url and the verifier to keep`() = runTest {
+        server.enqueue(MockResponse().setResponseCode(201).setBody("""{"client_id":"abc"}"""))
+
+        val pending = ReadeckAuth.startAuthorization(serverUrl(), appVersion)
+
+        assertEquals("abc", pending.clientId)
+        assertEquals(64, pending.codeVerifier.length)
+        assertTrue(pending.state.isNotBlank())
+        assertTrue(pending.authorizeUrl, pending.authorizeUrl.startsWith(server.url("/").toString().trimEnd('/')))
+        // The challenge on the wire has to be the one derived from the verifier
+        // we are about to be asked for, or the exchange fails at the last step.
+        assertTrue(
+            pending.authorizeUrl,
+            pending.authorizeUrl.contains(ReadeckAuth.codeChallenge(pending.codeVerifier)),
+        )
+        assertTrue(pending.authorizeUrl, pending.authorizeUrl.contains("state=${pending.state}"))
+    }
+
+    @Test
+    fun `exchanges the code with the verifier and no client id`() = runTest {
+        server.enqueue(MockResponse().setResponseCode(201).setBody("""{"access_token":"tok-abc"}"""))
+
+        val token = ReadeckAuth.exchangeCode(serverUrl(), "the-code", "the-verifier")
+
+        assertEquals("tok-abc", token)
+        val request = server.takeRequest()
+        assertEquals("/api/oauth/token", request.path)
+        val body = request.body.readUtf8()
+        assertTrue(body, body.contains("\"grant_type\":\"authorization_code\""))
+        assertTrue(body, body.contains("the-code"))
+        assertTrue(body, body.contains("the-verifier"))
+        // The authorization_code branch of oauthTokenCreate takes exactly these
+        // three; sending client_id as well fails validation.
+        assertTrue(body, !body.contains("client_id"))
+    }
 }

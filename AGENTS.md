@@ -91,8 +91,9 @@ app (UI) → repositories → Room DB → WorkManager sync
 - **Sync:** local-first. Reads come from Room; `SyncManager` (WorkManager) syncs
   pending mutations upstream and pulls changes downstream (delta via Readeck
   `/bookmarks/sync`, Wallabag `updatedSince`).
-- **Accounts:** one active account. Tokens encrypted with Tink. Readeck uses OAuth
-  device flow; Wallabag uses OAuth2 password grant.
+- **Accounts:** one active account. Tokens encrypted with Tink. Readeck uses the
+  OAuth authorization-code flow with PKCE, redirecting from the browser back into
+  the app (device code is the fallback); Wallabag uses OAuth2 password grant.
 
 ## Conventions
 

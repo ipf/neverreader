@@ -28,6 +28,9 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
+import java.security.MessageDigest
+import java.security.SecureRandom
+import java.util.Base64
 
 private val json = Json {
     ignoreUnknownKeys = true
@@ -42,18 +45,49 @@ data class DeviceSession(
     val interval: Long,
 )
 
+/**
+ * A pending authorization-code exchange: the PKCE verifier and CSRF state the
+ * flow was started with, which the redirect has to be matched against before
+ * the code can be redeemed.
+ */
+data class PendingAuthorization(
+    val clientId: String,
+    val serverUrl: String,
+    val codeVerifier: String,
+    val state: String,
+    val authorizeUrl: String,
+)
+
 object ReadeckAuth {
     // Readeck serves the API under /api.
     private fun base(serverUrl: String) = serverUrl.trimEnd('/') + "/api"
 
     /**
+     * Where the server sends the browser back to. Readeck's own documentation
+     * for the field allows "any other app link scheme", so a custom scheme is
+     * sanctioned; verified https App Links are not, because we do not control
+     * the domain a self-hosted instance runs on.
+     *
+     * PKCE is what makes this acceptable: an app that intercepts the redirect
+     * gets the code but not the verifier, so it cannot redeem it.
+     */
+    const val REDIRECT_URI: String = "com.neverreader.app://oauth-callback"
+
+    private const val SCOPE = "bookmarks:read bookmarks:write profile:read"
+
+    /**
      * @param softwareVersion the installed app version, reported to the server so
      *   Readeck can show which client a token was issued to. Readeck rejects the
      *   whole registration as `invalid_client_metadata` if it is missing.
+     * @param redirectUri required, and the only reason [registerClient] is not
+     *   simply "register a device-flow client": the field is rejected unless
+     *   `grant_types` contains `authorization_code`, and rejected as missing
+     *   when it does.
      */
     suspend fun registerClient(
         serverUrl: String,
         softwareVersion: String,
+        redirectUri: String? = null,
         http: OkHttpClient = OkHttpClient(),
     ): String {
         val body = buildJsonObject {
@@ -63,15 +97,126 @@ object ReadeckAuth {
             put("client_uri", "https://readeck.org")
             put("software_id", "com.neverreader")
             put("software_version", softwareVersion)
-            // Device flow only: with the default grant types (incl. authorization_code)
-            // Readeck requires redirect_uris, which we don't use.
-            put("grant_types", buildJsonArray { add("urn:ietf:params:oauth:grant-type:device_code") })
+            // Both grants, so one ephemeral client serves either sign-in path.
+            put(
+                "grant_types",
+                buildJsonArray {
+                    add("urn:ietf:params:oauth:grant-type:device_code")
+                    add("authorization_code")
+                },
+            )
             put("token_endpoint_auth_method", "none")
+            if (redirectUri != null) {
+                put("redirect_uris", buildJsonArray { add(redirectUri) })
+            }
         }.toString().toRequestBody("application/json".toMediaType())
         val request = Request.Builder().url(base(serverUrl) + "/oauth/client").post(body).build()
         val text = execute(http, request)
         return json.decodeFromString<ClientResponse>(text).clientId
             ?: error("client registration response missing client_id")
+    }
+
+    /**
+     * Starts an authorization-code flow and returns everything needed to finish
+     * it, including the url to hand to the browser.
+     *
+     * The verifier and state are generated here rather than by the caller so
+     * they cannot end up mismatched between the authorize url and the exchange.
+     */
+    suspend fun startAuthorization(
+        serverUrl: String,
+        softwareVersion: String,
+        redirectUri: String = REDIRECT_URI,
+        scope: String = SCOPE,
+        http: OkHttpClient = OkHttpClient(),
+    ): PendingAuthorization {
+        val clientId = registerClient(serverUrl, softwareVersion, redirectUri, http)
+        val codeVerifier = newCodeVerifier()
+        val state = newState()
+        val challenge = codeChallenge(codeVerifier)
+        val authorizeUrl = buildAuthorizeUrl(
+            serverUrl = serverUrl,
+            clientId = clientId,
+            redirectUri = redirectUri,
+            scope = scope,
+            codeChallenge = challenge,
+            state = state,
+        )
+        return PendingAuthorization(clientId, serverUrl, codeVerifier, state, authorizeUrl)
+    }
+
+    /**
+     * The page the user logs in and approves on.
+     *
+     * `/authorize` is served from the instance root, not under `/api` like every
+     * other endpoint, so the api suffix has to come off first.
+     */
+    fun buildAuthorizeUrl(
+        serverUrl: String,
+        clientId: String,
+        redirectUri: String,
+        scope: String,
+        codeChallenge: String,
+        state: String,
+    ): String {
+        val root = serverUrl.trimEnd('/').removeSuffix("/api").trimEnd('/')
+        // Built through HttpUrl rather than string concatenation: the custom
+        // scheme's '://' and the scope's spaces and colons are not legal
+        // unescaped in a query value, and an unencoded redirect_uri does not
+        // match the registered one, so the server refuses to redirect at all.
+        return (root + "/authorize").toHttpUrl().newBuilder()
+            .addQueryParameter("client_id", clientId)
+            .addQueryParameter("redirect_uri", redirectUri)
+            .addQueryParameter("scope", scope)
+            .addQueryParameter("code_challenge", codeChallenge)
+            .addQueryParameter("code_challenge_method", "S256")
+            .addQueryParameter("state", state)
+            .build()
+            .toString()
+    }
+
+    /**
+     * Redeems the code the redirect carried. Unlike the device-code branch, this
+     * request takes no `client_id`: the verifier is what identifies the exchange.
+     */
+    suspend fun exchangeCode(
+        serverUrl: String,
+        code: String,
+        codeVerifier: String,
+        http: OkHttpClient = OkHttpClient(),
+    ): String {
+        val body = buildJsonObject {
+            put("grant_type", "authorization_code")
+            put("code", code)
+            put("code_verifier", codeVerifier)
+        }.toString().toRequestBody("application/json".toMediaType())
+        val request = Request.Builder().url(base(serverUrl) + "/oauth/token").post(body).build()
+        val text = execute(http, request)
+        return json.decodeFromString<TokenResponse>(text).accessToken
+    }
+
+    /**
+     * A PKCE verifier: 43-128 characters from the RFC 7636 unreserved set.
+     * 64 alphanumeric characters, matching the example in the server's spec.
+     */
+    fun newCodeVerifier(random: SecureRandom = SecureRandom()): String {
+        val alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+        return buildString(64) {
+            repeat(64) { append(alphabet[random.nextInt(alphabet.length)]) }
+        }
+    }
+
+    /** base64url(SHA-256(verifier)), unpadded, as RFC 7636 requires. */
+    fun codeChallenge(verifier: String): String {
+        val digest = MessageDigest.getInstance("SHA-256").digest(verifier.toByteArray(Charsets.US_ASCII))
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(digest)
+    }
+
+    /** CSRF token, echoed back on the redirect and checked before redeeming. */
+    fun newState(random: SecureRandom = SecureRandom()): String {
+        val bytes = ByteArray(24)
+        random.nextBytes(bytes)
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes)
     }
 
     suspend fun startDeviceFlow(serverUrl: String, clientId: String, http: OkHttpClient = OkHttpClient()): DeviceSession {

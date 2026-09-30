@@ -53,7 +53,26 @@
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden"
             android:launchMode="singleTask"
             android:exported="true"
-            />
+            >
+            <!--
+                Where Readeck sends the browser back once the user has approved
+                the authorization. Must match ReadeckAuth.REDIRECT_URI exactly:
+                the server compares the redirect_uri it is given against the one
+                registered with the client and refuses to redirect on a
+                mismatch.
+
+                Exported and unverified, which is why the flow is PKCE - an
+                interceptor gets the code but not the verifier, so it cannot
+                redeem it. Verified https App Links are not an option, because
+                we do not control the domain a self-hosted instance runs on.
+            -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="com.neverreader.app" android:host="oauth-callback" />
+            </intent-filter>
+        </activity>
 
         <!-- Exported Components (Available to other apps) -->
         <activity
