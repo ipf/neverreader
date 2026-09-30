@@ -81,21 +81,24 @@ class AuthenticationViewModel @Inject constructor(
     /**
      * Wallabag: OAuth2 password grant.
      *
-     * Most self-hosted instances have Wallabag's own public client registered, so the
-     * credentials default to it. A server with only custom clients can override them
-     * via [loginWallabagWithClient].
+     * The client id and secret are asked for rather than defaulted. This used to
+     * send a hardcoded "wallabag"/"wallabag", on the assumption that instances have
+     * Wallabag's own public client registered. They do not, and it could not work
+     * if they did: Wallabag resolves a client by the public id "<row id>_<random
+     * id>", and findClientByPublicId returns null for any id without that
+     * underscore, so a bare name never matches anything. The user copies the
+     * credentials from their own Wallabag's API clients page instead.
      */
-    fun loginWallabag(username: String, password: String) =
-        loginWallabagWithClient(username, password, WALLABAG_CLIENT_ID, WALLABAG_CLIENT_SECRET)
-
-    fun loginWallabagWithClient(
+    fun loginWallabag(
         username: String,
         password: String,
         clientId: String,
         clientSecret: String,
     ) {
         val serverUrl = state.value.url
-        if (serverUrl.isBlank() || username.isBlank() || password.isBlank()) {
+        if (listOf(serverUrl, username, password, clientId, clientSecret)
+                .any { it.isBlank() }
+        ) {
             fail("All fields are required")
             return
         }
@@ -167,8 +170,12 @@ class AuthenticationViewModel @Inject constructor(
     }
 
     companion object {
-        /** Wallabag's own registered public OAuth2 client. */
-        const val WALLABAG_CLIENT_ID = "wallabag"
-        const val WALLABAG_CLIENT_SECRET = "wallabag"
+        /**
+         * Where a user finds the credentials, so the setup screen can point at it
+         * rather than leaving two bare fields unexplained.
+         */
+        const val WALLABAG_CLIENT_HELP =
+            "From your Wallabag: Settings -> API clients. The client_id it lists " +
+                "looks like 1_AbCdEf, and the secret is beside it."
     }
 }

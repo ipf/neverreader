@@ -126,6 +126,9 @@
     <string name="auth_authorize" translatable="false">Authorize</string>
     <string name="auth_username" translatable="false">Username</string>
     <string name="auth_password" translatable="false">Password</string>
+    <string name="auth_client_id" translatable="false">Client ID</string>
+    <string name="auth_client_secret" translatable="false">Client secret</string>
+    <string name="auth_client_help" translatable="false">Wallabag signs you in with an OAuth client. Find the client ID and secret in your own Wallabag under Settings, then API clients.</string>
     <string name="auth_enter_code_in_browser" translatable="false">Enter this code in your browser:</string>
     <string name="reader_load_failed">This article could not be loaded.</string>
     <string name="settings_title" translatable="false">Settings</string>

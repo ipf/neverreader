@@ -103,35 +103,45 @@ if [ -n "${token:-}" ]; then
     fi
 fi
 
-# Does the client id the app is actually configured with work? MockWebServer
-# cannot answer this: it agrees with whatever the app sends, so a client id that
-# no real Wallabag would ever accept passes every existing test. This is the
-# check that catches it.
-app_client_id="$(
-    grep -oE 'WALLABAG_CLIENT_ID = "[^"]*"' \
-        ../app/src/main/java/com/neverreader/app/auth/AuthenticationViewModel.kt \
-        | head -1 | sed 's/.*"\(.*\)"/\1/' || true
+# Does the client id the app is configured with work? MockWebServer cannot answer
+# this: it agrees with whatever the app sends, so a client id that no real
+# Wallabag would accept passes every existing test. This is the check that
+# catches it, and it is why the credentials are asked for in the setup screen
+# rather than defaulted.
+#
+# The app no longer carries a client id at all, so this asserts the one the seed
+# created, which is the same value a user would paste in.
+expected_client_id="$client_id"
+token_json="$(
+    curl -sS -X POST "$WALLABAG_URL/oauth/v2/token" \
+        -d grant_type=password \
+        -d "username=$DEMO_USER" \
+        -d "password=$DEMO_PASSWORD" \
+        -d "client_id=$expected_client_id" \
+        -d "client_secret=${WALLABAG_CLIENT_SECRET:-neverreader}" \
+        --max-time 30 2>/dev/null || true
 )"
-if [ -n "$app_client_id" ]; then
-    app_json="$(
-        curl -sS -X POST "$WALLABAG_URL/oauth/v2/token" \
-            -d grant_type=password \
-            -d "username=$DEMO_USER" \
-            -d "password=$DEMO_PASSWORD" \
-            -d "client_id=$app_client_id" \
-            -d "client_secret=${WALLABAG_CLIENT_SECRET:-neverreader}" \
-            --max-time 30 2>/dev/null || true
-    )"
-    app_token="$(printf '%s' "$app_json" | jqf "d.get('access_token','')")"
-    if [ -n "$app_token" ]; then
-        ok "the client id the app is configured with ($app_client_id) authenticates"
-    else
-        bad "the client id the app is configured with ($app_client_id) is rejected"
-        echo "         Wallabag resolves a client by the public id \"<row id>_<random id>\""
-        echo "         and returns null for any id without that underscore, so a bare"
-        echo "         name can never match. The seeded client works: $client_id"
-        echo "         See dev/README.md, and loginWallabagWithClient in the app."
-    fi
+if [ -n "$(printf '%s' "$token_json" | jqf "d.get('access_token','')")" ]; then
+    ok "the seeded client ($expected_client_id) authenticates, as a user-supplied one would"
+else
+    bad "the seeded client ($expected_client_id) does not authenticate"
+fi
+
+# The regression that mattered: a bare name with no underscore can never match,
+# because findClientByPublicId returns null without one. Assert that, so nobody
+# reintroduces a hardcoded default and believes it works.
+# --fail, so a 4xx is a non-zero exit. Without it curl exits 0 for any response
+# it managed to receive, and this check passes for the wrong reason.
+if curl -sSf -X POST "$WALLABAG_URL/oauth/v2/token" \
+    -d grant_type=password \
+    -d "username=$DEMO_USER" \
+    -d "password=$DEMO_PASSWORD" \
+    -d client_id=wallabag \
+    -d client_secret=wallabag \
+    --max-time 30 >/dev/null 2>&1; then
+    bad "a bare \"wallabag\" client id was accepted; the underscore rule is not what we think"
+else
+    ok "a bare name with no underscore is still rejected, as Wallabag requires"
 fi
 
 # ----------------------------------------------------------------- Readeck

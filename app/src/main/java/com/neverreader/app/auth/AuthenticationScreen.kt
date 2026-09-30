@@ -217,10 +217,12 @@ private fun AuthenticationScreen(
 @Composable
 private fun WallabagCredentials(
     enabled: Boolean,
-    onSubmit: (String, String) -> Unit,
+    onSubmit: (String, String, String, String) -> Unit,
 ) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var clientId by remember { mutableStateOf("") }
+    var clientSecret by remember { mutableStateOf("") }
 
     Column(verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.spaceSmall)) {
         OutlinedTextField(
@@ -240,14 +242,44 @@ private fun WallabagCredentials(
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Next,
+            ),
+            modifier = Modifier.fillMaxWidth(),
+        )
+        OutlinedTextField(
+            value = clientId,
+            onValueChange = { clientId = it },
+            label = { Text(stringResource(R.string.auth_client_id)) },
+            singleLine = true,
+            enabled = enabled,
+            modifier = Modifier.fillMaxWidth(),
+        )
+        OutlinedTextField(
+            value = clientSecret,
+            onValueChange = { clientSecret = it },
+            label = { Text(stringResource(R.string.auth_client_secret)) },
+            singleLine = true,
+            enabled = enabled,
+            visualTransformation = PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password,
                 imeAction = ImeAction.Done,
             ),
             modifier = Modifier.fillMaxWidth(),
         )
+        // Four blank fields with no explanation is a bad time to be told the
+        // password grant needs an OAuth client.
+        Text(
+            text = stringResource(R.string.auth_client_help),
+            style = AppTheme.typography.p4,
+            color = AppTheme.colors.textSecondary,
+        )
         PrimaryButton(
             text = stringResource(R.string.auth_authorize),
-            enabled = enabled && username.isNotBlank() && password.isNotBlank(),
-            onClick = { onSubmit(username, password) },
+            enabled = enabled &&
+                username.isNotBlank() && password.isNotBlank() &&
+                clientId.isNotBlank() && clientSecret.isNotBlank(),
+            onClick = { onSubmit(username, password, clientId, clientSecret) },
         )
     }
 }

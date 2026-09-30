@@ -48,7 +48,6 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.transition.TransitionManager
 import com.neverreader.app.App
 import com.neverreader.app.R
-import com.neverreader.app.settings.Brightness
 import com.neverreader.app.settings.Theme
 import com.neverreader.ui.compose.AppSnackbarHost
 import com.neverreader.ui.theme.AppTheme
@@ -328,7 +327,6 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
     }
 
     protected fun onCreateOrRestart() {
-        Brightness.applyBrightnessIfSet(this)
         applySystemBarAppearance()
     }
 
@@ -624,15 +622,6 @@ abstract class AbsNeverReaderActivity : AppCompatActivity() {
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-    }
-
-    /** NOTE currently disabled. if required again, uncomment out code below
-     * Set the software dimming level.
-     *
-     * @param alpha 0 - 255. 0 for no dimming, 255 for complete black out.
-     */
-    fun setBrightnessOverlay(alpha: Int) {
-
     }
 
     /**
