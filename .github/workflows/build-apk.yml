@@ -1,0 +1,89 @@
+name: Build APK
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+# Cancel superseded runs: a pushed commit makes the previous APK irrelevant.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build APKs
+    runs-on: ubuntu-24.04
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
+
+    - name: Set up environment
+      uses: ./.github/actions/setup-environment
+      with:
+        gradle: true
+
+    # Two variants, because they are for different things.
+    #
+    #   debug   - signed with the throwaway Android debug key, so it installs
+    #             and runs. This is the one to sideload.
+    #   release - unsigned. There is no signingConfig in this project by
+    #             design, so a release build cannot be installed until whoever
+    #             is distributing it signs it. F-Droid builds and signs its
+    #             own copy, and wants this unsigned artifact.
+    #
+    # The unit tests are not run here on purpose: this job is about producing
+    # artifacts. See on-pull-request.yml for the checks that gate a PR.
+    - name: Build debug and release
+      run: ./gradlew :app:assembleDebug :app:assembleRelease
+
+    # An upload step with no matching file fails the job, but only after the
+    # build has already spent several minutes. Check first, and fail with the
+    # paths that were actually produced.
+    - name: Check the APKs exist
+      run: |
+        set -eu
+        status=0
+        for apk in \
+          app/build/outputs/apk/debug/app-debug.apk \
+          app/build/outputs/apk/release/app-release-unsigned.apk
+        do
+          if [ -f "$apk" ]; then
+            printf 'ok       %8s bytes  %s\n' "$(stat -c%s "$apk")" "$apk"
+          else
+            printf 'MISSING  %s\n' "$apk" >&2
+            status=1
+          fi
+        done
+        echo "--- anything else that was built ---"
+        find app/build/outputs/apk -name '*.apk' | sort
+        exit $status
+
+    # Prints what a distributor and F-Droid both need to read off the artifact.
+    - name: Report version
+      run: |
+        aapt=$(find "${ANDROID_HOME}" -name aapt2 -o -name aapt | head -1)
+        if [ -n "$aapt" ]; then
+          "$aapt" dump badging app/build/outputs/apk/release/app-release-unsigned.apk \
+            | grep -E "^package:|sdkVersion|targetSdkVersion|application-label" || true
+        else
+          echo "aapt not found; skipping badging"
+        fi
+
+    - name: Upload debug APK
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+      with:
+        name: neverreader-debug
+        path: app/build/outputs/apk/debug/app-debug.apk
+        if-no-files-found: error
+        retention-days: 14
+
+    - name: Upload release APK (unsigned)
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+      with:
+        name: neverreader-release-unsigned
+        path: app/build/outputs/apk/release/app-release-unsigned.apk
+        if-no-files-found: error
+        retention-days: 14
