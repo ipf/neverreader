@@ -10,6 +10,31 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  unit-tests:
+    name: Unit tests
+    runs-on: ubuntu-24.04
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
+    - name: Set up environment
+      uses: ./.github/actions/setup-environment
+      with:
+        gradle: true
+    # The backend adapters' tests run against MockWebServer, so this needs no
+    # network and no server. Same task list as AGENTS.md documents.
+    - name: Run unit tests
+      run: ./gradlew :app:testDebugUnitTest :backend:test :utils-android:testReleaseUnitTest
+    - name: Publish test results
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+      with:
+        name: test-results
+        path: |
+          app/build/test-results/**
+          backend/build/test-results/**
+          utils-android/build/test-results/**
+        if-no-files-found: warn
+        retention-days: 7
+
   android-lint:
     name: Android Lint
     runs-on: ubuntu-24.04
@@ -35,3 +60,35 @@ jobs:
         gradle: true
     - name: Validate licenses
       run: scripts/run-license-checks.sh
+
+  integration:
+    name: Integration (real backends)
+    runs-on: ubuntu-24.04
+    # The stack is real containers talking real HTTP, so it is slower and can
+    # fail for reasons that have nothing to do with the change under review.
+    # It reports rather than blocks; see dev/README.md.
+    continue-on-error: true
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
+    - name: Set up environment
+      uses: ./.github/actions/setup-environment
+      with:
+        gradle: true
+    - name: Start the backends
+      working-directory: dev
+      run: docker compose up -d --wait --wait-timeout 300
+    - name: Seed them
+      working-directory: dev
+      run: ./seed.sh
+    - name: Smoke test the real servers
+      working-directory: dev
+      run: ./smoke-test.sh
+    - name: Logs on failure
+      if: failure()
+      working-directory: dev
+      run: docker compose logs --no-color --tail=200
+    - name: Tear down
+      if: always()
+      working-directory: dev
+      run: docker compose down -v

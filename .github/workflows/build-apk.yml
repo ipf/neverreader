@@ -1,10 +1,13 @@
 name: Build APK
 
+# Deliberately not triggered on pull_request. A PR should be checked by tests,
+# not spend CI minutes producing artifacts nobody will install; see
+# on-pull-request.yml. This runs when the code is on main, when a tag is
+# pushed, or when someone asks for it by hand.
 on:
   push:
     branches: [main]
     tags: ['v*']
-  pull_request:
   workflow_dispatch:
 
 # Cancel superseded runs: a pushed commit makes the previous APK irrelevant.
@@ -25,30 +28,69 @@ jobs:
       with:
         gradle: true
 
-    # Two variants, because they are for different things.
-    #
-    #   debug   - signed with the throwaway Android debug key, so it installs
-    #             and runs. This is the one to sideload.
-    #   release - unsigned. There is no signingConfig in this project by
-    #             design, so a release build cannot be installed until whoever
-    #             is distributing it signs it. F-Droid builds and signs its
-    #             own copy, and wants this unsigned artifact.
+    # The key is reconstructed from a secret rather than committed. All four
+    # values are required: a partial set is ignored by the build, which would
+    # otherwise quietly produce an unsigned APK and call it a success. Runs on
+    # a fork without the secrets skip this and fall back to unsigned.
+    - name: Reconstruct the release key
+      id: signing
+      env:
+        KEYSTORE_B64: ${{ secrets.ANDROID_SIGNING_KEYSTORE_B64 }}
+        STORE_PASSWORD: ${{ secrets.ANDROID_SIGNING_storePassword }}
+        KEY_ALIAS: ${{ secrets.ANDROID_SIGNING_keyAlias }}
+        KEY_PASSWORD: ${{ secrets.ANDROID_SIGNING_keyPassword }}
+      run: |
+        set -eu
+        if [ -z "$KEYSTORE_B64" ] || [ -z "$STORE_PASSWORD" ] \
+           || [ -z "$KEY_ALIAS" ] || [ -z "$KEY_PASSWORD" ]; then
+          echo "Signing secrets are not all present; building unsigned only."
+          echo "configured=false" >> "$GITHUB_OUTPUT"
+          exit 0
+        fi
+        # A key on disk would be a secret in the workspace, so remove it as soon
+        # as it is used.
+        printf '%s' "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/release.jks"
+        chmod 600 "$RUNNER_TEMP/release.jks"
+        {
+          echo "configured=true"
+          echo "store_file=$RUNNER_TEMP/release.jks"
+          echo "store_password=$STORE_PASSWORD"
+          echo "key_alias=$KEY_ALIAS"
+          echo "key_password=$KEY_PASSWORD"
+        } >> "$GITHUB_OUTPUT"
+
+    #   release       - signed when a key is available, so it installs and runs.
+    #                   This is the artifact to sideload.
+    #   unsignedRelease - never signed, whatever the environment says. F-Droid
+    #                   builds and signs its own copy and wants exactly this.
     #
     # The unit tests are not run here on purpose: this job is about producing
     # artifacts. See on-pull-request.yml for the checks that gate a PR.
-    - name: Build debug and release
-      run: ./gradlew :app:assembleDebug :app:assembleRelease
+    - name: Build APKs
+      env:
+        ANDROID_SIGNING_storeFile: ${{ steps.signing.outputs.store_file }}
+        ANDROID_SIGNING_storePassword: ${{ steps.signing.outputs.store_password }}
+        ANDROID_SIGNING_keyAlias: ${{ steps.signing.outputs.key_alias }}
+        ANDROID_SIGNING_keyPassword: ${{ steps.signing.outputs.key_password }}
+      run: ./gradlew :app:assembleRelease :app:assembleUnsignedRelease
+
+    - name: Remove the key
+      if: always()
+      run: rm -f "$RUNNER_TEMP/release.jks"
 
     # An upload step with no matching file fails the job, but only after the
     # build has already spent several minutes. Check first, and fail with the
     # paths that were actually produced.
     - name: Check the APKs exist
+      env:
+        SIGNED: ${{ steps.signing.outputs.configured }}
       run: |
         set -eu
         status=0
+        # app-release.apk when signed, app-release-unsigned.apk when not.
         for apk in \
-          app/build/outputs/apk/debug/app-debug.apk \
-          app/build/outputs/apk/release/app-release-unsigned.apk
+          app/build/outputs/apk/release/app-release*.apk \
+          app/build/outputs/apk/unsignedRelease/app-unsignedRelease-unsigned.apk
         do
           if [ -f "$apk" ]; then
             printf 'ok       %8s bytes  %s\n' "$(stat -c%s "$apk")" "$apk"
@@ -57,33 +99,50 @@ jobs:
             status=1
           fi
         done
-        echo "--- anything else that was built ---"
-        find app/build/outputs/apk -name '*.apk' | sort
+        if [ "$SIGNED" = "true" ]; then
+          if [ ! -f app/build/outputs/apk/release/app-release.apk ]; then
+            echo "signing secrets were present but the APK is not signed" >&2
+            status=1
+          fi
+        fi
         exit $status
 
-    # Prints what a distributor and F-Droid both need to read off the artifact.
-    - name: Report version
+    # Prints what a distributor and F-Droid both need to read off the artifact,
+    # and whether it is actually signed rather than just named that way.
+    - name: Report version and signature
       run: |
         aapt=$(find "${ANDROID_HOME}" -name aapt2 -o -name aapt | head -1)
         if [ -n "$aapt" ]; then
-          "$aapt" dump badging app/build/outputs/apk/release/app-release-unsigned.apk \
-            | grep -E "^package:|sdkVersion|targetSdkVersion|application-label" || true
+          "$aapt" dump badging app/build/outputs/apk/release/app-release*.apk \
+            | grep -E "^package:|^sdkVersion|targetSdkVersion" || true
         else
           echo "aapt not found; skipping badging"
         fi
+        apksigner=$(find "${ANDROID_HOME}" -name apksigner | head -1)
+        if [ -n "$apksigner" ]; then
+          for apk in app/build/outputs/apk/release/app-release*.apk; do
+            echo "--- $apk"
+            if "$apksigner" verify "$apk" >/dev/null 2>&1; then
+              "$apksigner" verify --print-certs "$apk" \
+                | grep -E "certificate DN|SHA-256 digest" || true
+            else
+              echo "not signed"
+            fi
+          done
+        fi
 
-    - name: Upload debug APK
+    - name: Upload release APK
       uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
       with:
-        name: neverreader-debug
-        path: app/build/outputs/apk/debug/app-debug.apk
+        name: neverreader-release
+        path: app/build/outputs/apk/release/app-release*.apk
         if-no-files-found: error
-        retention-days: 14
+        retention-days: 30
 
-    - name: Upload release APK (unsigned)
+    - name: Upload unsigned release APK
       uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
       with:
         name: neverreader-release-unsigned
-        path: app/build/outputs/apk/release/app-release-unsigned.apk
+        path: app/build/outputs/apk/unsignedRelease/app-unsignedRelease-unsigned.apk
         if-no-files-found: error
-        retention-days: 14
+        retention-days: 30

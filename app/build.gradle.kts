@@ -13,6 +13,15 @@ plugins {
     aboutLibraries()
 }
 
+/**
+ * A signing value, from gradle.properties or the environment, or null if unset.
+ * Environment wins so CI can pass secrets without writing a file into the
+ * checkout.
+ */
+fun signingValue(key: String): String? =
+    providers.environmentVariable("ANDROID_SIGNING_$key").orNull
+        ?: providers.gradleProperty("android.signing.$key").orNull
+
 val versionMajor = 1
 val versionMinor = 0
 val versionPatch = 0
@@ -36,6 +45,34 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    // Signing is opt-in and comes entirely from the environment, so the build
+    // still works on a fork, in CI without secrets, and for anyone building
+    // locally. Nothing about a key is ever committed; see scripts/make-signing-secrets.sh
+    // for how to turn these into GitHub secrets.
+    //
+    // Values are read from either a gradle.properties entry or an environment
+    // variable, so the same build works both ways. A partial set is ignored
+    // rather than half-applied, which would produce an APK signed with
+    // something other than what was intended.
+    val signingStorePath = signingValue("storeFile")
+    val signingStorePassword = signingValue("storePassword")
+    val signingKeyAlias = signingValue("keyAlias")
+    val signingKeyPassword = signingValue("keyPassword")
+    val hasSigning = listOf(
+        signingStorePath, signingStorePassword, signingKeyAlias, signingKeyPassword
+    ).all { it != null } && file(signingStorePath!!).exists()
+
+    if (hasSigning) {
+        signingConfigs {
+            create("release") {
+                storeFile = file(signingStorePath!!)
+                storePassword = signingStorePassword
+                keyAlias = signingKeyAlias
+                keyPassword = signingKeyPassword
+            }
+        }
+    }
+
     buildTypes {
         getByName(BuildTypes.DEBUG) {
             isMinifyEnabled = false
@@ -43,6 +80,14 @@ android {
             matchingFallbacks.add("release")
         }
 
+        // The signed variant, when a key is available.
+        getByName("release") {
+            signingConfig = if (hasSigning) signingConfigs.getByName("release") else null
+        }
+
+        // Stays unsigned whatever the environment says. F-Droid builds and signs
+        // its own copy, and wants exactly this artifact; a release build that
+        // cannot be installed is also the honest default with no key present.
         register(BuildTypes.UNSIGNED_RELEASE) {
             isMinifyEnabled = false
             isDebuggable = false

@@ -19,3 +19,9 @@ gradle.deps
 # public repository discloses the key permanently.
 *.keystore
 *.jks
+*.p12
+
+# Where scripts/make-signing-secrets.sh writes the release key and its password.
+# The *.jks rule above already covers the key; this covers the password file
+# beside it, which has no extension.
+release/

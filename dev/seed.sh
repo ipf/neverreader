@@ -38,6 +38,16 @@ running() {
     "${COMPOSE[@]}" ps --services --filter status=running 2>/dev/null | grep -qx "$1"
 }
 
+# With no argument, seed whatever is up rather than insisting on both. The
+# Readeck image is only on ghcr.io, so there are environments where it cannot
+# be pulled and the Wallabag half is all that can run.
+if [ "$WHICH" = "all" ]; then
+    if ! running readeck; then
+        echo "-- readeck is not running, skipping it"
+        WHICH=wallabag
+    fi
+fi
+
 case "$WHICH" in
 all|readeck|wallabag) ;;
 *) die "unknown target: $WHICH (expected all, readeck or wallabag)" ;;

@@ -24,6 +24,22 @@ export JAVA_HOME=/usr/lib/jvm/java-1.21.0-openjdk-amd64
 Run it without `--offline`: the lower viewBinding artifacts the app module
 resolves are not in the local cache.
 
+## Building and signing
+
+- `./gradlew :app:assembleRelease` produces an **unsigned** APK unless signing
+  credentials are in the environment. There is no signing config checked in and
+  there must not be: the key is generated once with
+  `scripts/make-signing-secrets.sh` and lives only in GitHub secrets.
+- Signing is opt-in and all-or-nothing. The build reads
+  `ANDROID_SIGNING_storeFile`, `storePassword`, `keyAlias` and `keyPassword`
+  (or the `android.signing.*` gradle properties), and ignores them entirely
+  unless all four are set and the store file exists. A partial set is ignored
+  rather than half-applied.
+- `unsignedRelease` stays unsigned regardless. It is the artifact F-Droid wants,
+  because F-Droid builds and signs its own copy.
+- CI runs tests on pull requests and builds APKs on `main`, on tags, and on
+  demand. It does not build an APK per pull request.
+
 ## Modules
 
 - [`app/`](app) — the Android app (UI, previously `Pocket/`).
