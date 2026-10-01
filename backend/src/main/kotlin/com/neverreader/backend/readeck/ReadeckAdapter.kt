@@ -509,7 +509,10 @@ class ReadeckAdapter(
     override suspend fun changedBookmarks(since: Long): List<Bookmark> {
         val text = execute(authorized(url("/bookmarks/sync", mapOf("since" to Iso.fromMillis(since)))))
         val items = json.decodeFromString<List<SyncItem>>(text)
-        return fetchBookmarks(items.map { it.id })
+        // Deleted entries are reported by deletedBookmarkIds instead. Asking
+        // Readeck to resolve an id it no longer holds yields nothing useful and
+        // would make every delete-only sync a wasted round trip.
+        return fetchBookmarks(items.filter { it.type != "delete" }.map { it.id })
     }
 
     override suspend fun deletedBookmarkIds(since: Long): List<String> {
