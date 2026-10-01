@@ -56,10 +56,10 @@ is what loadDataWithBaseURL resolves bundled assets through.
 }
 
 :root {
-  --pkt_grey_1: #1A1A1A;
-  --pkt_grey_6: #D9D9D9;
-  --pkt_dm_grey_1: #F2F2F2;
-  --pkt_dm_grey_6: #404040;
+  --nr_grey_1: #1A1A1A;
+  --nr_grey_6: #D9D9D9;
+  --nr_dm_grey_1: #F2F2F2;
+  --nr_dm_grey_6: #404040;
 }
 
 * {
@@ -67,7 +67,7 @@ is what loadDataWithBaseURL resolves bundled assets through.
 	padding: 0px;
 }
 
-body { 
+body {
 	color: #111111;
 	font-family: "NeverReader Sans", -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;
 	text-align: center;
@@ -111,35 +111,35 @@ body.tighter_line_height
 
 body[textStyle="0"] {
     background: #FFFFFF !important;
-    color: var(--pkt_grey_1);
+    color: var(--nr_grey_1);
     transition: color 0.3s linear, background-color 0.3s linear;
 }
 body[textStyle="0"] a {
-    color: var(--pkt_grey_1);
+    color: var(--nr_grey_1);
     text-shadow: -1px -1px 0 #FFF, 1px -1px 0 #FFF, -1px 1px 0 #FFF, 1px 1px 0 #FFF;
-    background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 1px, var(--pkt_grey_1) 1px, var(--pkt_grey_1) 2px, rgba(0, 0, 0, 0) 2px);
+    background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 1px, var(--nr_grey_1) 1px, var(--nr_grey_1) 2px, rgba(0, 0, 0, 0) 2px);
     transition: color 0.3s linear;
 }
 body[textStyle="0"] a:active {
-    color: var(--pkt_grey_6);
-    background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 1px, var(--pkt_grey_6) 1px, var(--pkt_grey_6) 2px, rgba(0, 0, 0, 0) 2px);
+    color: var(--nr_grey_6);
+    background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 1px, var(--nr_grey_6) 1px, var(--nr_grey_6) 2px, rgba(0, 0, 0, 0) 2px);
     transition: color 0.3s linear;
 }
 
 body[textStyle="1"] {
     background: #1A1A1A !important;
-    color: var(--pkt_dm_grey_1);
+    color: var(--nr_dm_grey_1);
     transition: background-color 0.3s linear;
 }
 body[textStyle="1"] a {
-    color: var(--pkt_dm_grey_1);
+    color: var(--nr_dm_grey_1);
     text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
-    background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 1px, var(--pkt_dm_grey_1) 1px, var(--pkt_dm_grey_1) 2px, rgba(0, 0, 0, 0) 2px);
+    background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 1px, var(--nr_dm_grey_1) 1px, var(--nr_dm_grey_1) 2px, rgba(0, 0, 0, 0) 2px);
     transition: color 0.3s linear;
 }
 body[textStyle="1"] a:active {
-    color: var(--pkt_dm_grey_6);
-    background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 1px, var(--pkt_dm_grey_6) 1px, var(--pkt_dm_grey_6) 2px, rgba(0, 0, 0, 0) 2px);
+    color: var(--nr_dm_grey_6);
+    background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 1px, var(--nr_dm_grey_6) 1px, var(--nr_dm_grey_6) 2px, rgba(0, 0, 0, 0) 2px);
     transition: color 0.3s linear;
 }
 
@@ -177,7 +177,7 @@ h4 {
 	line-height: 1.3em;
 	font-size: 1.2em;
 	margin: 1.7em 0px 0.5em 0px;
-}	
+}
 h5,h6 {
 	font-size: 1.1em;
 	font-weight: bold;
@@ -212,7 +212,7 @@ p {
 {
 	text-align: left;
 }
-li { 
+li {
 	text-align: left;
 }
 
@@ -287,7 +287,7 @@ blockquote { font-style: italic; }
 
 a {
     cursor: pointer;
-    color: var(--pkt_grey_1);
+    color: var(--nr_grey_1);
     text-decoration: none;
     -webkit-tap-highlight-color: transparent;
 }
@@ -328,13 +328,13 @@ hr
 	border: 0px;
     padding: 9px 3px;
     width: 74px;
-    
+
     font-size: 13px;
     font-weight: bold;
     color: #000000;
-    
+
     text-transform: uppercase;
-    
+
     background: #fdec04; /* Old browsers */
 	background: -moz-linear-gradient(top, #fad540 1%, #f6b146 100%); /* FF3.6+ */
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(1%,#fad540), color-stop(100%,#f6b146)); /* Chrome,Safari4+ */
@@ -345,11 +345,11 @@ hr
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fad540', endColorstr='#f6b146',GradientType=0 ); /* IE6-9 */
 }
 
-.RIL_button 
-{ 
+.RIL_button
+{
 	margin-left: auto;
 	margin-right: auto;
-	color: black !important; 
+	color: black !important;
 	max-width: 250px;
 	width: 80% !important;
 	padding-top: 5px !important;
@@ -378,7 +378,7 @@ hr
 }
 
 #RIL_top {
-	position: relative;	
+	position: relative;
 }
 #RIL_top .i {
 	position: absolute;
@@ -489,7 +489,7 @@ body[textStyle="1"]#more #nav_more a {
 
 /* --- */
 
-#RIL_body { 
+#RIL_body {
 	clear: both;
 }
 
@@ -500,8 +500,8 @@ body[textStyle="1"]#more #nav_more a {
 	/* Was display:none until JavaScript added .loaded - see the note on body. */
 	display: block;
 	position: relative;
-	
-	margin: 0 auto; 
+
+	margin: 0 auto;
 	overflow: visible;
 }
 .RIL_IMG:after {
@@ -515,7 +515,7 @@ body[textStyle="1"]#more #nav_more a {
 {
 	display: block;
 	text-align: center;
-	margin-bottom: 0.8em; 
+	margin-bottom: 0.8em;
 }
 .RIL_IMG.hasCaption
 {
@@ -528,10 +528,10 @@ body[textStyle="1"]#more #nav_more a {
 
 .RIL_IMG .ril_wrapper
 {
-	width: 100%; 
-	display: inline-block; 
-	position:relative; 
-	float: right; 
+	width: 100%;
+	display: inline-block;
+	position:relative;
+	float: right;
 	right: 50%;
 }
 
@@ -540,9 +540,9 @@ body[textStyle="1"]#more #nav_more a {
 	display: block;
 	margin: 0px auto;
 	border: 0px !important;
-	text-decoration: none !important;	
-	
-	position: relative; 
+	text-decoration: none !important;
+
+	position: relative;
     right:-50%;
     width: 100%;
     text-align: left;
@@ -595,20 +595,20 @@ body[textStyle="1"] a .RIL_IMG .ril_caption
 
 .RIL_VIDEO .ril_wrapper
 {
-	width: 100%; 
-	display: inline-block; 
-	position:relative; 
-	float: right; 
+	width: 100%;
+	display: inline-block;
+	position:relative;
+	float: right;
 	right: 50%;
 }
 
 .RIL_VIDEO .ril_wrapper .embed_wrapper
-{	
+{
 	margin: 0px auto;
 	border: 0px !important;
-	text-decoration: none !important;	
-	
-	position: relative; 
+	text-decoration: none !important;
+
+	position: relative;
     right:-50%;
     width: 100%;
     text-align: left;
@@ -620,14 +620,14 @@ table.ril_dataTable,
 table.ril_layoutTable {
 	border-collapse: collapse;
 	width: 100%;
-	margin: 20px 0px 20px 0px;	
+	margin: 20px 0px 20px 0px;
 }
 table.ril_dataTable td,
 table.ril_layoutTable td {
 	width: auto;
 	text-align: left;
 	padding: 0px;
-	background: none;	
+	background: none;
 	border: 0px;
 }
 
@@ -642,7 +642,7 @@ table.ril_dataTable
 	margin: 1.5em 0px 1.5em 0px;
 }
 table.ril_dataTable th
-{	
+{
 	font-weight: bold;
 	border: 0px;
 	padding: 0px 5px 0.3em 5px !important;
@@ -677,25 +677,25 @@ body[textStyle="0"] .note a {
     transition: color 0.3s linear;
 }
 body[textStyle="0"] .note a:active {
-	color: var(--pkt_grey_6);
-    background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 1px, var(--pkt_grey_6) 1px, var(--pkt_grey_6) 2px, rgba(0, 0, 0, 0) 2px);
+	color: var(--nr_grey_6);
+    background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 1px, var(--nr_grey_6) 1px, var(--nr_grey_6) 2px, rgba(0, 0, 0, 0) 2px);
     transition: color 0.3s linear;
 }
 
 body[textStyle="1"] .note {
 	color: #CCCCCC;
-	background: var(--pkt_grey_1);
+	background: var(--nr_grey_1);
 	transition: color 0.3s linear, background-color 0.3s linear;
 }
 body[textStyle="1"] .note a {
 	color: #CCCCCC;
-    text-shadow: -1px -1px 0 var(--pkt_grey_1), 1px -1px 0 var(--pkt_grey_1), -1px 1px 0 var(--pkt_grey_1), 1px 1px 0 var(--pkt_grey_1);
+    text-shadow: -1px -1px 0 var(--nr_grey_1), 1px -1px 0 var(--nr_grey_1), -1px 1px 0 var(--nr_grey_1), 1px 1px 0 var(--nr_grey_1);
     background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 1px, #CCCCCC 1px, #CCCCCC 2px, rgba(0, 0, 0, 0) 2px);
     transition: color 0.3s linear;
 }
 body[textStyle="1"] .note a:active {
-    color: var(--pkt_dm_grey_6);
-    background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 1px, var(--pkt_dm_grey_6) 1px, var(--pkt_dm_grey_6) 2px, rgba(0, 0, 0, 0) 2px);
+    color: var(--nr_dm_grey_6);
+    background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 1px, var(--nr_dm_grey_6) 1px, var(--nr_dm_grey_6) 2px, rgba(0, 0, 0, 0) 2px);
     transition: color 0.3s linear;
 }
 
@@ -714,7 +714,7 @@ body[textStyle="1"] .note a:active {
 	top: -15%;
 	right: 0px;
 	width: 10px;
-	border-left: 1px solid var(--pkt_grey_6);
+	border-left: 1px solid var(--nr_grey_6);
 	height: 133%;
 	z-index: 10000;
 	background: #f0f0f0; /* Old browsers */
@@ -725,7 +725,7 @@ body[textStyle="1"] .note a:active {
 	background: -ms-linear-gradient(left, #f0f0f0 0%,#fcfcfc 44%,#fdfdfd 60%,#fcfcfc 77%,#ededed 100%); /* IE10+ */
 	background: linear-gradient(left, #f0f0f0 0%,#fcfcfc 44%,#fdfdfd 60%,#fcfcfc 77%,#ededed 100%); /* W3C */
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f0f0f0', endColorstr='#ededed',GradientType=1 ); /* IE6-9 */
-	
+
 	opacity: 0;
 	-webkit-transition: opacity ease-in 0.3s;
 }
@@ -737,7 +737,7 @@ body[textStyle="1"] .note a:active {
 /* --- */
 
 .page_blocker
-{	
+{
 	position: absolute;
 	top: 0px;
 	left: 0px;
