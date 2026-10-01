@@ -3,7 +3,7 @@ package utils
 import org.gradle.api.Project
 
 /**
- * The short SHA of the current checkout, or a placeholder when there is no Git
+ * The short SHA of the current checkout or a placeholder when there is no Git
  * repository to ask.
  *
  * F-Droid builds from an exported source tree with no .git, and failing the
