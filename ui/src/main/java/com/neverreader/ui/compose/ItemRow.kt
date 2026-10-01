@@ -13,11 +13,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -25,7 +27,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
+import androidx.compose.foundation.Image
+import coil3.compose.AsyncImagePainter
+import coil3.compose.rememberAsyncImagePainter
 import com.neverreader.ui.R
 import com.neverreader.ui.theme.AppRadii
 import com.neverreader.ui.theme.AppTheme
@@ -112,26 +116,10 @@ fun ItemRow(
                 val bytes by produceState<ByteArray?>(null, imageUrl) {
                     value = loadImage(imageUrl)
                 }
-                // Nothing is drawn until the bytes are actually here. A thumbnail
-                // the server cannot serve is a dead link, and reserving a 90x60 tile
-                // for it leaves a hole in the row with nothing in it - worse than
-                // having no thumbnail at all, because the text beside it is narrowed
-                // for a picture that never arrives.
-                if (bytes != null) {
-                    Spacer(Modifier.width(AppTheme.dimensions.spaceSmall))
-                    AsyncImage(
-                        model = bytes,
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .padding(top = AppTheme.dimensions.spaceSmall)
-                            .size(
-                                width = dimensionResource(R.dimen.saves_image_width),
-                                height = dimensionResource(R.dimen.saves_image_height),
-                            )
-                            .clip(RoundedCornerShape(AppRadii.card)),
-                    )
-                }
+                Thumbnail(
+                    bytes = bytes,
+                    modifier = Modifier.padding(top = AppTheme.dimensions.spaceSmall),
+                )
             }
         }
 
@@ -179,6 +167,61 @@ fun ItemRow(
         }
 
         ThinDivider()
+    }
+}
+
+/**
+ * A list row's thumbnail, or nothing at all.
+ *
+ * Reserving the tile for an image that never arrives is worse than having no
+ * thumbnail: the gap sits empty on the trailing edge and the title beside it has
+ * already been narrowed for a picture that is not there. So the tile is laid out
+ * only once Coil has an actual image, which means neither a fetch that failed
+ * nor bytes that turned out to be undecodable can leave a hole behind.
+ *
+ * Coil reports a null model as an error rather than as "nothing to show", so the
+ * null case is short-circuited here rather than left to the painter.
+ */
+@Composable
+private fun Thumbnail(
+    bytes: ByteArray?,
+    modifier: Modifier = Modifier,
+) {
+    if (bytes != null) {
+        val painter = rememberAsyncImagePainter(model = bytes, contentScale = ContentScale.Crop)
+        val state by painter.state.collectAsState()
+
+        ThumbnailTile(
+            painter = state.painter,
+            loaded = state is AsyncImagePainter.State.Success,
+            modifier = modifier,
+        )
+    }
+}
+
+/**
+ * The tile itself, split out so the "do not draw until there is an image" rule
+ * can be exercised without a decoder: Coil never finishes a request under
+ * Robolectric, so testing this through [Thumbnail] would only ever see Loading.
+ */
+@Composable
+internal fun ThumbnailTile(
+    painter: Painter?,
+    loaded: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    if (loaded && painter != null) {
+        Spacer(Modifier.width(AppTheme.dimensions.spaceSmall))
+        Image(
+            painter = painter,
+            contentDescription = null,
+            modifier = modifier
+                .size(
+                    width = dimensionResource(R.dimen.saves_image_width),
+                    height = dimensionResource(R.dimen.saves_image_height),
+                )
+                .clip(RoundedCornerShape(AppRadii.card)),
+        )
     }
 }
 

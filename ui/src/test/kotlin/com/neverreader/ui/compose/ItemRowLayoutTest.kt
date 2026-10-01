@@ -1,6 +1,8 @@
 package com.neverreader.ui.compose
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -183,68 +185,89 @@ class ItemRowLayoutTest {
      *
      * ThumbnailRepository.load returns null on any failure, so a broken image
      * used to reserve a 90x60 tile plus its 10dp gap and then draw nothing in
-     * it: a hole in the row, with the title narrowed to three quarters of the
-     * width for a picture that never arrives. Counting the nodes in the text
-     * column is what tells the two cases apart - the tile is a real child when
-     * it is laid out, and absent when the bytes never arrive.
+     * it: a blank hole on the trailing edge, with the title already narrowed for
+     * a picture that was never going to appear.
      */
     @Test
-    fun `a thumbnail that fails to load reserves no space`() {
+    fun `neither a failed fetch nor undecodable bytes reserve a tile`() {
+        // Dead link: the fetch returned null.
         imageUrl.value = "https://example.com/gone.jpg"
         imageBytes.value = null
         setRow()
+        val deadLink = textColumnChildCount()
 
-        val withoutTile = textColumnChildCount()
-
-        // produceState is keyed on imageUrl, so a new URL is what makes the load
-        // run again - which is exactly what happens when a recycled row gets a
-        // different article.
+        // Fetched, but Coil has not finished and may never finish: under
+        // Robolectric it never does, which stands in for undecodable bytes.
+        imageUrl.value = "https://example.com/present.jpg"
         imageBytes.value = PNG_BYTES
-        imageUrl.value = "https://example.com/ok.jpg"
         compose.waitForIdle()
-        val withTile = textColumnChildCount()
+        val undecodable = textColumnChildCount()
 
-        assertTrue(
-            withoutTile < withTile,
-            message = "a failed load should lay out one node fewer than a successful one " +
-                "(failed=$withoutTile, loaded=$withTile)",
-        )
-    }
-
-    @Test
-    fun `a row with no thumbnail and a row with a broken one look the same`() {
+        // And a row that never asked for an image at all.
         imageUrl.value = null
-        setRow()
-        val noUrl = textColumnChildCount()
-
-        imageUrl.value = "https://example.com/gone.jpg"
         compose.waitForIdle()
-        val broken = textColumnChildCount()
+        val noImage = textColumnChildCount()
 
         assertEquals(
-            noUrl, broken,
-            message = "a broken thumbnail should be indistinguishable from having none",
+            noImage, deadLink,
+            message = "a dead link should be indistinguishable from having no thumbnail",
+        )
+        assertEquals(
+            noImage, undecodable,
+            message = "bytes that never decode should not reserve a tile either",
+        )
+    }
+
+    /**
+     * Bytes that came back from a 200 but are not a decodable image - an HTML
+     * error page, a truncated body - must be treated the same as a dead link.
+     * Coil reports that as an error state, and the tile must not be held open
+     * for it.
+     */
+    @Test
+    fun `an undecodable thumbnail reserves no space`() {
+        setThumbnailTile(painter = ColorPainter(Color.Magenta), loaded = false)
+
+        assertEquals(
+            0, tileNodeCount(),
+            message = "an undecodable image must not reserve a tile",
         )
     }
 
     @Test
-    fun `a thumbnail that loads does take up its tile`() {
-        imageUrl.value = "https://example.com/ok.jpg"
-        imageBytes.value = PNG_BYTES
-        setRow()
+    fun `a decoded thumbnail takes its tile and its gap`() {
+        setThumbnailTile(painter = ColorPainter(Color.Magenta), loaded = true)
 
-        val withTile = textColumnChildCount()
-
-        imageBytes.value = null
-        imageUrl.value = "https://example.com/gone.jpg"
-        compose.waitForIdle()
-        val withoutTile = textColumnChildCount()
-
-        assertTrue(
-            withTile > withoutTile,
-            message = "a loaded thumbnail should add nodes (loaded=$withTile, null=$withoutTile)",
+        // One node, not two: the Image itself carries no semantics because its
+        // contentDescription is null, so the 10dp gap in front of it is the only
+        // thing that shows up in the tree.
+        assertEquals(
+            1, tileNodeCount(),
+            message = "a decoded image should lay out the gap that separates it from the text",
         )
     }
+
+    /** A successful load with no painter to draw is treated as nothing to show. */
+    @Test
+    fun `a decoded state with no painter reserves no space`() {
+        setThumbnailTile(painter = null, loaded = true)
+
+        assertEquals(
+            0, tileNodeCount(),
+            message = "there is nothing to draw without a painter",
+        )
+    }
+
+    private fun setThumbnailTile(painter: androidx.compose.ui.graphics.painter.Painter?, loaded: Boolean) {
+        compose.setContent {
+            AppTheme(darkTheme = false) {
+                ThumbnailTile(painter = painter, loaded = loaded)
+            }
+        }
+    }
+
+    /** Nodes the tile contributed: the 10dp gap plus the image itself. */
+    private fun tileNodeCount(): Int = compose.onRoot(useUnmergedTree = true).fetchSemanticsNode().children.size
 
     /** Child count of the row's weighted text column, from the unmerged tree. */
     private fun textColumnChildCount(): Int {
