@@ -1,21 +1,13 @@
 package com.neverreader.app.list
 
 import android.content.Intent
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -30,21 +22,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.painterResource
-import androidx.core.os.bundleOf
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.neverreader.app.R
-import com.neverreader.app.repository.ThumbnailRepository
 import com.neverreader.app.list.list.ListManager
 import com.neverreader.backend.model.Bookmark
 import com.neverreader.backend.model.BookmarkSort
@@ -148,7 +132,7 @@ fun MyListScreen(
                 }
                 AppIconButton(onClick = { searching = true }) {
                     Icon(
-                        painter = painterResource(com.neverreader.ui.R.drawable.ic_pkt_search_line),
+                        painter = painterResource(com.neverreader.ui.R.drawable.ic_nr_search_line),
                         contentDescription = stringResource(com.neverreader.ui.R.string.ic_search),
                         tint = AppTheme.colors.grey3,
                     )
@@ -185,7 +169,7 @@ fun MyListScreen(
                     selected = sortFilter.sort,
                     optionLabel = { stringResource(it.labelRes()) },
                     onSelect = viewModel::setSort,
-                    icon = com.neverreader.ui.R.drawable.ic_pkt_sort_line,
+                    icon = com.neverreader.ui.R.drawable.ic_nr_sort_line,
                     iconContentDescription = com.neverreader.ui.R.string.ic_sort,
                 )
             },
