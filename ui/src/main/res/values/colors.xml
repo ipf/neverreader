@@ -32,8 +32,6 @@
     <!-- Light Mode Color Palette -->
     <color name="nr_base_bg">@color/white</color>
     <color name="nr_grey_3">#404040</color>
-    <color name="nr_teal_3">#009990</color>
-    <color name="nr_teal_4">#80BFBB</color>
     <color name="nr_coral_2">#EF4056</color>
 
     <!-- Dark Mode Color Palette -->
