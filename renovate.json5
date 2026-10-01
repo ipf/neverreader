@@ -1,49 +1,75 @@
 {
   $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  // Self-contained on purpose. This used to extend `local>Pocket/renovate-config`,
+  // which meant an Android build's dependency policy was decided by a config file
+  // in another repository that we do not control and cannot merge a fix into. That
+  // repo is also aimed at a Node/webapp: it pinned allowedVersions for npm
+  // engines, grouped typescript and aws-xray, and set preview:dockerCompose, none
+  // of which means anything here. Anything worth keeping is written out below.
   extends: [
-    // Use a set of Pocket-wide defaults.
-    // See https://github.com/Pocket/renovate-config for more details and documentation.
-    'local>Pocket/renovate-config',
+    'config:base',
+    'group:recommended',
+    ':dependencyDashboard',
+    ':semanticCommits',
   ],
-  ignorePaths: [
-    // Ignore our legacy dependency definitions in `buildSrc`,
-    // while we gradually migrate to version catalog.
-    'buildSrc/src/main/kotlin/Deps.kt',
-  ],
-  ignorePresets: [
-    // Ignore the default setting from https://github.com/Pocket/renovate-config
-    // and allow opening PRs without approval.
-    ':dependencyDashboardApproval',
-  ],
+  labels: ['dependencies'],
+  // Grouped updates land as one reviewable commit, and the Android SDK is only
+  // usable through a version catalog, so there is no lockfile to keep in step.
+  pinDigests: false,
   packageRules: [
-    // Amend the default config from https://github.com/Pocket/renovate-config
-    // and allow auto-merging minor version updates as well.
-    // This means only major updates will stay open to let a human decide before merging.
     {
-      matchUpdateTypes: ['minor', 'patch', 'pin', 'digest'],
+      // Everything short of a major goes in without waiting for a human. A major
+      // is the point where a hand is meant to read the release notes.
+      matchUpdateTypes: ['minor', 'patch', 'pin'],
       automerge: true,
     },
-    // Tweak the default commit message a bit to cut a redundant word from already pretty long messages.
     {
-      matchManagers: ['gradle', 'gradle-wrapper'],
-      commitMessageTopic: '{{depName}}',
+      // Platforms and build tooling are not a user-visible dependency bump, and
+      // group them apart so a toolchain jump is not buried under library updates.
+      matchManagers: ['android', 'gradle', 'gradle-wrapper', 'github-actions'],
+      groupName: 'build and platform tooling',
+      automerge: true,
+    },
+    {
+      // Compose is best upgraded with the compiler plugin; a split BOM and
+      // plugin update can break the build.
+      matchPackageNames: ['androidx-compose-bom'],
+      groupName: 'compose',
+      matchUpdateTypes: ['major', 'minor'],
     },
   ],
   customManagers: [
-    // Update .java-version file with the latest JDK version.
     {
+      // .java-version pins the JDK, and Gradle's toolchain resolver reads it.
+      // Record only the major, since CI pins the full patch version.
       customType: 'regex',
-      fileMatch: [
-        '\\.java-version$',
-      ],
-      matchStrings: [
-        '(?<currentValue>.*)\\n',
-      ],
+      fileMatch: ['\\.java-version$'],
+      matchStrings: ['(?<currentValue>.*)\\n'],
       datasourceTemplate: 'java-version',
       depNameTemplate: 'java',
       depTypeTemplate: '',
-      // Only write the major version.
       extractVersionTemplate: '^(?<version>\\d+)',
     },
   ],
+  // The Gradle version catalog is the single source of truth for dependency
+  // versions; nothing declares them elsewhere, so there are no legacy paths left
+  // to ignore. Deps.kt, which used to hold some of them, has been deleted.
+  ignorePaths: [],
+  ignoreDeps: [],
+  // Android's own repositories are pinned by the SDK manager, not by us, and
+  // Renovate has no datasource for the platform versions it reports.
+  ignorePlatforms: ['android'],
+  vulnerabilityAlerts: {
+    groupName: null,
+    schedule: ['at any time'],
+    dependencyDashboardApproval: false,
+    stabilityDays: 0,
+    rangeStrategy: 'update-lockfile',
+    commitMessageSuffix: '[SECURITY]',
+    branchTopic: '{{{datasource}}}-{{{depName}}}-vulnerability',
+    prCreation: 'immediate',
+    addLabels: ['dependencies'],
+    branchConcurrentLimit: 0,
+    prConcurrentLimit: 0,
+  },
 }
