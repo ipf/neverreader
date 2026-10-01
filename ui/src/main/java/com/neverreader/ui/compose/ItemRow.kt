@@ -106,25 +106,32 @@ fun ItemRow(
             }
 
             if (!imageUrl.isNullOrBlank()) {
-                Spacer(Modifier.width(AppTheme.dimensions.spaceSmall))
                 // The bytes are fetched by the app, not by the image library, so the
                 // Authorization header can be attached when the image is served by
                 // the user's own server. Coil only decodes.
                 val bytes by produceState<ByteArray?>(null, imageUrl) {
                     value = loadImage(imageUrl)
                 }
-                AsyncImage(
-                    model = bytes,
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .padding(top = AppTheme.dimensions.spaceSmall)
-                        .size(
-                            width = dimensionResource(R.dimen.saves_image_width),
-                            height = dimensionResource(R.dimen.saves_image_height),
-                        )
-                        .clip(RoundedCornerShape(AppRadii.card)),
-                )
+                // Nothing is drawn until the bytes are actually here. A thumbnail
+                // the server cannot serve is a dead link, and reserving a 90x60 tile
+                // for it leaves a hole in the row with nothing in it - worse than
+                // having no thumbnail at all, because the text beside it is narrowed
+                // for a picture that never arrives.
+                if (bytes != null) {
+                    Spacer(Modifier.width(AppTheme.dimensions.spaceSmall))
+                    AsyncImage(
+                        model = bytes,
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .padding(top = AppTheme.dimensions.spaceSmall)
+                            .size(
+                                width = dimensionResource(R.dimen.saves_image_width),
+                                height = dimensionResource(R.dimen.saves_image_height),
+                            )
+                            .clip(RoundedCornerShape(AppRadii.card)),
+                    )
+                }
             }
         }
 

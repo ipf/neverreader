@@ -45,6 +45,9 @@ class ItemRowLayoutTest {
      */
     private val date = mutableStateOf<String?>("Sep 29, 2026")
     private val imageUrl = mutableStateOf<String?>(null)
+
+    /** What ThumbnailRepository.load returns: null means the fetch failed. */
+    private val imageBytes = mutableStateOf<ByteArray?>(null)
     private var favoriteTaps = 0
     private var shareTaps = 0
     private var archiveTaps = 0
@@ -58,7 +61,7 @@ class ItemRowLayoutTest {
                     meta = "3 min read",
                     excerpt = null,
                     imageUrl = imageUrl.value,
-                    loadImage = { null },
+                    loadImage = { imageBytes.value },
                     favorite = false,
                     unread = true,
                     savedDate = date.value,
@@ -175,6 +178,81 @@ class ItemRowLayoutTest {
         compose.onNodeWithText("A title").assertIsDisplayed()
     }
 
+    /**
+     * A photo the server cannot serve must leave no trace in the row.
+     *
+     * ThumbnailRepository.load returns null on any failure, so a broken image
+     * used to reserve a 90x60 tile plus its 10dp gap and then draw nothing in
+     * it: a hole in the row, with the title narrowed to three quarters of the
+     * width for a picture that never arrives. Counting the nodes in the text
+     * column is what tells the two cases apart - the tile is a real child when
+     * it is laid out, and absent when the bytes never arrive.
+     */
+    @Test
+    fun `a thumbnail that fails to load reserves no space`() {
+        imageUrl.value = "https://example.com/gone.jpg"
+        imageBytes.value = null
+        setRow()
+
+        val withoutTile = textColumnChildCount()
+
+        // produceState is keyed on imageUrl, so a new URL is what makes the load
+        // run again - which is exactly what happens when a recycled row gets a
+        // different article.
+        imageBytes.value = PNG_BYTES
+        imageUrl.value = "https://example.com/ok.jpg"
+        compose.waitForIdle()
+        val withTile = textColumnChildCount()
+
+        assertTrue(
+            withoutTile < withTile,
+            message = "a failed load should lay out one node fewer than a successful one " +
+                "(failed=$withoutTile, loaded=$withTile)",
+        )
+    }
+
+    @Test
+    fun `a row with no thumbnail and a row with a broken one look the same`() {
+        imageUrl.value = null
+        setRow()
+        val noUrl = textColumnChildCount()
+
+        imageUrl.value = "https://example.com/gone.jpg"
+        compose.waitForIdle()
+        val broken = textColumnChildCount()
+
+        assertEquals(
+            noUrl, broken,
+            message = "a broken thumbnail should be indistinguishable from having none",
+        )
+    }
+
+    @Test
+    fun `a thumbnail that loads does take up its tile`() {
+        imageUrl.value = "https://example.com/ok.jpg"
+        imageBytes.value = PNG_BYTES
+        setRow()
+
+        val withTile = textColumnChildCount()
+
+        imageBytes.value = null
+        imageUrl.value = "https://example.com/gone.jpg"
+        compose.waitForIdle()
+        val withoutTile = textColumnChildCount()
+
+        assertTrue(
+            withTile > withoutTile,
+            message = "a loaded thumbnail should add nodes (loaded=$withTile, null=$withoutTile)",
+        )
+    }
+
+    /** Child count of the row's weighted text column, from the unmerged tree. */
+    private fun textColumnChildCount(): Int {
+        val row = compose.onRoot(useUnmergedTree = true).fetchSemanticsNode()
+        val column = row.children.first { it.children.size >= 3 }
+        return column.children.size
+    }
+
     // ---- behaviour --------------------------------------------------------
 
     @Test
@@ -207,7 +285,7 @@ class ItemRowLayoutTest {
     }
 
     /**
-     * The meta line joins domain and reading time with a middot, so asserting on
+     * The meta-line joins domain and reading time with a middot, so asserting on
      * the pieces separately would be wrong; the joined string is the contract.
      */
     @Test
@@ -229,6 +307,17 @@ class ItemRowLayoutTest {
         assertTrue(
             rightEdgeOf(R.string.ic_archive) > 0f,
             message = "archive should still be laid out with no date",
+        )
+    }
+
+    private companion object {
+        /**
+         * A real 1x1 PNG. The tile is never decoded in these tests - Coil does not
+         * fetch under Robolectric - but passing bytes rather than null is what
+         * distinguishes "the fetch worked" from "it did not".
+         */
+        val PNG_BYTES: ByteArray = java.util.Base64.getDecoder().decode(
+            "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
         )
     }
 }
