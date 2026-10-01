@@ -140,7 +140,7 @@ licensee {
     allow("MIT")
     allow("BSD-2-Clause")
     allowUrl("http://opensource.org/licenses/BSD-2-Clause")
-    allowUrl("https://raw.githubusercontent.com/ThreeTen/threetenbp/master/LICENSE.txt") { because("self-hosted BSD") }
+    allowUrl("https://raw.githubusercontent.com/ThreeTen/threetenbp/main/LICENSE.txt") { because("self-hosted BSD") }
     allow("MPL-1.1")
     allow("CC0-1.0")
     allow("OFL-1.1") // Inter, substituting for the licensed Graphik brand font
