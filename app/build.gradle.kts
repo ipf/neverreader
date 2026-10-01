@@ -42,7 +42,7 @@ android {
         // scaffolded by a legacy view tree.
         targetSdk = AndroidConfigs.TargetSdkVersion
 
-        buildStringField("GIT_SHA", getGitSha())
+        buildStringField("GIT_SHA", getGitSha(project))
 
         versionCode = versionMajor * 1000000 + versionMinor * 1000 + versionPatch
         versionName = "$versionMajor.$versionMinor.$versionPatch"
