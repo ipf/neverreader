@@ -20,10 +20,11 @@ jobs:
       uses: ./.github/actions/setup-environment
       with:
         gradle: true
-    # The backend adapters' tests run against MockWebServer, so this needs no
-    # network and no server. Same task list as AGENTS.md documents.
+    # The backend adapters' tests run against MockWebServer, and the UI ones run
+    # under Robolectric, so this needs no network, no server and no emulator.
+    # Same task list as AGENTS.md documents.
     - name: Run unit tests
-      run: ./gradlew :app:testDebugUnitTest :backend:test :utils-android:testReleaseUnitTest
+      run: ./gradlew :app:testDebugUnitTest :backend:test :ui:test :utils-android:testReleaseUnitTest
     - name: Publish test results
       uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
       with:

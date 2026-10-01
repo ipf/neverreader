@@ -18,7 +18,7 @@ Requires **JDK 21** (what CI pins, via `.java-version`) and the Android SDK
 
 ```bash
 export JAVA_HOME=/usr/lib/jvm/java-1.21.0-openjdk-amd64
-./gradlew :app:assembleDebug :app:testDebugUnitTest :backend:test :utils-android:testReleaseUnitTest :app:lintDebug
+./gradlew :app:assembleDebug :app:testDebugUnitTest :backend:test :ui:test :utils-android:testReleaseUnitTest :app:lintDebug
 ```
 
 Run it without `--offline`: the lower viewBinding artifacts the app module
@@ -39,6 +39,11 @@ resolves are not in the local cache.
   because F-Droid builds and signs its own copy.
 - CI runs tests on pull requests and builds APKs on `main`, on tags, and on
   demand. It does not build an APK per pull request.
+- Static analysis is Android Lint, plus `detekt` if you wire it in. JetBrains
+  Qodana is deliberately **not** used: since 2023.2 its linters require a Qodana
+  Cloud token, and the free Community edition is Java only, so it cannot check
+  Kotlin or Android. Android Studio's own `inspect.sh` is no longer a usable
+  entry point either, so there is no free path to Studio's full inspection set.
 
 ## Modules
 
@@ -47,7 +52,11 @@ resolves are not in the local cache.
   `Backend` interface, Readeck + Wallabag adapters, sync, account management.
 - [`ui/`](ui) — the Compose design system and shared components (`ui/theme/` for
   colour, type, shape and `AppTheme`; `ui/compose/` for `AppBar`, `ItemRow`,
-  `FilterChips`, `SettingsList`).
+  `FilterChips`, `SettingsList`). It also has tests: Compose UI tests run on the
+  JVM under Robolectric, which needs no emulator, but it does need the
+  `ComponentActivity` declared in `ui/src/test/AndroidManifest.xml` because the
+  usual `ui-test-manifest` route is `debugImplementation` and this module has
+  its debug variant disabled.
 - [`utils-android/`](utils-android) — the preference store (`prefs/`) and the
   few Android helpers. There is no pure-JVM `utils` module: everything in it was
   dead, and what remains belongs next to the code that uses it.

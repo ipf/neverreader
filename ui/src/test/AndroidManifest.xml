@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--
+      Compose's createComposeRule() launches this activity, and it is not
+      declared by the app: it ships in the androidx.compose.ui:ui-test-manifest
+      artifact, which can only be added as debugImplementation - and this module
+      has its debug variant disabled (see com.neverreader.android.library.gradle.kts).
+
+      So the unit test component merges this manifest instead, which is how
+      Robolectric ends up with a launchable activity. Declaring it here rather
+      than in src/main keeps it out of the real app, where MainActivity is the
+      only activity that should exist.
+      -->
+    <application>
+        <activity
+            android:name="androidx.activity.ComponentActivity"
+            android:exported="true"
+            android:theme="@style/Theme.AppCompat" />
+    </application>
+
+</manifest>
