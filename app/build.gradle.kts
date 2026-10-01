@@ -70,7 +70,7 @@ android {
     if (hasSigning) {
         signingConfigs {
             create("release") {
-                storeFile = file(signingStorePath!!)
+                storeFile = file(signingStorePath)
                 storePassword = signingStorePassword
                 keyAlias = signingKeyAlias
                 keyPassword = signingKeyPassword
@@ -91,7 +91,7 @@ android {
         }
 
         // Stays unsigned whatever the environment says. F-Droid builds and signs
-        // its own copy, and wants exactly this artifact; a release build that
+        // its own copy and wants exactly this artifact; a release build that
         // cannot be installed is also the honest default with no key present.
         register(BuildTypes.UNSIGNED_RELEASE) {
             isMinifyEnabled = false
