@@ -8,10 +8,13 @@ androidx-navigation = "2.10.1"
 androidx-paging = "3.3.6"
 coil = "3.4.0"
 dagger = "2.60.1"
+lifecycle = "2.5.1"
 kotlin = "2.4.0"
 ksp = "2.3.12"
 okhttp = "5.5.0"
 room = "2.8.5"
+swiperefresh = "1.1.0"
+threetenabp = "1.4.0"
 tink = "1.18.0"
 
 [libraries]
@@ -31,8 +34,10 @@ androidx-compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-mani
 androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 androidx-compose-ui-viewbinding = { module = "androidx.compose.ui:ui-viewbinding" }
-androidx-core = { module = "androidx.core:core-ktx", version = "1.16.0" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version = "1.2.0" }
+androidx-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel", version.ref = "lifecycle" }
+androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
+androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
 androidx-localbroadcastmanager = { module = "androidx.localbroadcastmanager:localbroadcastmanager", version.ref = "androidx-localbroadcastmanager" }
 androidx-media = { module = "androidx.media:media", version = "1.7.1" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "androidx-navigation" }
@@ -42,12 +47,12 @@ androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref =
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 androidx-room-paging = { module = "androidx.room:room-paging", version.ref = "room" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+androidx-swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "swiperefresh" }
 androidx-test-core = { module = "androidx.test:core-ktx", version = "1.7.0" }
 androidx-work = { module = "androidx.work:work-runtime", version = "2.10.3" }
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version = "2.10.3" }
 coil = { module = "io.coil-kt.coil3:coil", version.ref = "coil" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
-coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
 dagger-hilt = { module = "com.google.dagger:hilt-android", version.ref = "dagger" }
 dagger-hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "dagger" }
 kotlin-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit" }
@@ -71,5 +76,5 @@ plugin-ksp = { module = "com.google.devtools.ksp:symbol-processing-gradle-plugin
 plugin-licensee = { module = "app.cash.licensee:licensee-gradle-plugin", version = "1.13.0" }
 plugin-versions = { module = "com.github.ben-manes:gradle-versions-plugin", version = "0.52.0" }
 robolectric = { module = "org.robolectric:robolectric", version = "4.16" }
+threetenabp = { module = "com.jakewharton.threetenabp:threetenabp", version.ref = "threetenabp" }
 tink = { module = "com.google.crypto.tink:tink-android", version.ref = "tink" }
-turbine = { module = "app.cash.turbine:turbine", version = "1.2.1" }

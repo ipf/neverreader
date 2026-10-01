@@ -174,10 +174,10 @@ dependencies {
     implementation(libs.androidx.media)
     implementation(libs.androidx.work)
 
-    implementation(Deps.AndroidX.SwipeRefreshLayout.swipeRefresh)
-    implementation(Deps.AndroidX.Lifecycle.viewmodel)
-    implementation(Deps.AndroidX.Lifecycle.viewmodelKtx)
-    implementation(Deps.AndroidX.Lifecycle.viewmodelCompose)
+    implementation(libs.androidx.swiperefreshlayout)
+    implementation(libs.androidx.lifecycle.viewmodel)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
 
     implementation(libs.kotlinx.serialization.json)
 
@@ -197,22 +197,17 @@ dependencies {
     implementation(libs.okhttp.logginginterceptor)
 
 
-    implementation(Deps.JakeWharton.ThreeTenAbp.threeTen)
+    implementation(libs.threetenabp)
 
     implementation(libs.aboutlibraries)
 
 
-    testImplementation(Deps.Mockito.core)
-    testImplementation(Deps.AssertJ.core)
     testImplementation(libs.kotlin.junit)
-    testImplementation(Deps.MockK.mockk)
     testImplementation(platform(libs.kotlinx.coroutines.bom))
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.kotlin.test)
-    testImplementation(libs.turbine)
     testImplementation(libs.robolectric)
 
-    androidTestImplementation(Deps.AndroidX.Test.rules)
     androidTestImplementation(libs.kotlin.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test)

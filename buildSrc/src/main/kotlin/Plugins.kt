@@ -12,12 +12,6 @@ fun PluginDependenciesSpec.neverReaderAndroidLib(): PluginDependencySpec =
 fun PluginDependenciesSpec.neverReaderAndroidApp(): PluginDependencySpec =
     id("com.neverreader.android.application")
 
-fun PluginDependenciesSpec.kotlinJvm(): PluginDependencySpec =
-    id("com.neverreader.kotlin.jvm")
-
-fun PluginDependenciesSpec.kotlinKapt(): PluginDependencySpec =
-    id("org.jetbrains.kotlin.kapt")
-
 fun PluginDependenciesSpec.kotlinKsp(): PluginDependencySpec =
     id("com.google.devtools.ksp")
 
