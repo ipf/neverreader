@@ -27,6 +27,14 @@ this file is the whole of it — there is no second, XML way to do any of it.
 Bottom sheets use Compose's own `ModalBottomSheet`. The design system's
 `TransparentBottomSheetDialogTheme` is gone with the View implementation.
 
+Every component above has tests under `src/test`, running on the JVM under
+Robolectric — no emulator. They assert layout and behaviour: the trailing edge of
+`ItemRow`'s actions, the 56dp of `AppBar`, that `SettingsToggle` follows its
+preference rather than a snapshot of it, that a thumbnail which will not load
+takes no space. What they cannot see is anything visual: Robolectric's rendering
+is not faithful enough to assert a colour, so the theming above is only covered
+by eye.
+
 ## Colour
 
 `values/colors.xml` holds the palette, and the file's own header comment is the

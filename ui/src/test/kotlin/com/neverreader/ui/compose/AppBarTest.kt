@@ -5,6 +5,7 @@ import androidx.compose.ui.test.assertHeightIsEqualTo
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.performClick
@@ -75,8 +76,20 @@ class AppBarTest {
         .fetchSemanticsNodes()
 
     /**
-     * The action target is 50dp; the bar is 56dp, so an action of any sensible
-     * size has to fit inside it with room to spare.
+     * The one thing worth pinning: the bar is 56dp so it meets the settings
+     * screen's XML bar without a seam. A wrong height still lays out perfectly
+     * well, which is exactly why nothing else in the build would notice.
+     */
+    @Test
+    fun `the bar is 56dp tall`() {
+        setBar()
+
+        compose.onNodeWithTag(AppBarTestTag).assertHeightIsEqualTo(56.dp)
+    }
+
+    /**
+     * And the 50dp action target has to fit inside it, which is the constraint
+     * that makes 56dp the number rather than a round 48.
      */
     @Test
     fun `an action fits inside the bar height`() {

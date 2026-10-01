@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -26,6 +27,14 @@ import com.neverreader.ui.view.button.UpIcon
  * The top app bar. Height is pinned to `nr_app_bar_height` (56dp) so it matches
  * the settings screen, which still uses the XML bar.
  */
+/**
+ * Test tag on the bar's row, so a test can measure its height. The row carries
+ * no semantics of its own and a wrong height still lays out without complaint,
+ * so without this the 56dp - which exists to meet the XML settings bar without a
+ * seam - would go unpinned.
+ */
+internal const val AppBarTestTag = "app-bar"
+
 @Composable
 fun AppBar(
     modifier: Modifier = Modifier,
@@ -37,7 +46,8 @@ fun AppBar(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(dimensionResource(R.dimen.nr_app_bar_height)),
+                .height(dimensionResource(R.dimen.nr_app_bar_height))
+                .testTag(AppBarTestTag),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Spacer(Modifier.width(AppTheme.dimensions.sideGrid))
