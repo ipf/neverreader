@@ -32,7 +32,7 @@ object ContextUtil {
      * Reified so the test is a real type check at the call site. Taking a
      * [Class] instead would have meant casting the result back to T unchecked,
      * so nothing checked that the two agreed and a mismatch became a
-     * ClassCastException at runtime instead of a compile error.
+     * ClassCastException at runtime instead of a compiler error.
      */
     inline fun <reified T : Context> findContext(context: Context?): T? {
         var current = context
