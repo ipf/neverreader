@@ -1,0 +1,1 @@
+A read-it-later client for your own Readeck or Wallabag server. No account, no tracking, no ads.

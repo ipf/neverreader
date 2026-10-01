@@ -1,0 +1,13 @@
+First release.
+
+* Connects to a self-hosted Readeck or Wallabag server, using your own API
+  credentials. There is no NeverReader account and nothing is sent anywhere
+  except your own server.
+* Unread, favorites and archive lists, with search, sorting and tags.
+* Highlights and annotations on saved articles.
+* Reads offline from the on-device cache, and syncs in the background through
+  WorkManager, pushing your changes upstream and pulling new ones down.
+* Light and dark themes, adjustable reader text size, and in-app article reader.
+* No analytics, crash reporting, ads or telemetry of any kind.
+* Forked from the archived Pocket Android app, with the Pocket backend and all
+  tracking removed.

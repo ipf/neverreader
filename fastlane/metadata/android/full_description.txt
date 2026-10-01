@@ -1,0 +1,19 @@
+NeverReader is a read-it-later client for a server you run yourself. It connects to
+Readeck or Wallabag over their own APIs and reads your list from there, so your
+saved articles stay on your own hardware.
+
+There is no NeverReader account, and no analytics, crash reporting or telemetry of
+any kind: the app requests only network access, plus the background permissions
+Android's own WorkManager needs to sync on a schedule.
+
+Features:
+
+* Unread, favorites and archive lists, with search and sorting
+* Highlights and annotations on saved articles
+* Offline reading, with the list cached on the device
+* Background sync that pushes your changes upstream and pulls new ones down
+* Light and dark themes, and adjustable text size for the reader
+* Open articles in your browser or read them in the built-in reader
+
+NeverReader is a fork of the archived Pocket Android app, with the Pocket backend
+and all tracking removed.
