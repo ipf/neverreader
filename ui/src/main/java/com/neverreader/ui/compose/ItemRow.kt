@@ -1,9 +1,6 @@
 package com.neverreader.ui.compose
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -135,8 +132,12 @@ fun ItemRow(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            // Bottom-left: when the item was saved. The weighted spacer pushes the
-            // actions right whether or not there is a date to show.
+            // Bottom-left: when the item was saved. The date absorbs all the
+            // leftover width, so the actions end up flush right, which puts the
+            // archive button on the same trailing edge as the thumbnail above.
+            // This used to be a weighted date plus a second weighted spacer,
+            // which split the leftover in half and left the icons stranded
+            // mid-row with the remainder after them.
             if (savedDate != null) {
                 Text(
                     text = savedDate,
@@ -144,10 +145,11 @@ fun ItemRow(
                     color = colors.textSecondary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f, fill = false),
+                    modifier = Modifier.weight(1f),
                 )
+            } else {
+                Spacer(Modifier.weight(1f))
             }
-            Spacer(Modifier.weight(1f))
             AppIconButton(onClick = onToggleFavorite) {
                 Icon(
                     painter = painterResource(
