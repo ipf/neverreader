@@ -8,6 +8,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.neverreader.ui.theme.AppTheme
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
@@ -38,7 +39,7 @@ class AppSnackbarHostTest {
     @get:Rule
     val compose = createComposeRule()
 
-    private val scope = CoroutineScope(SupervisorJob())
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
     @After
     fun tearDown() {
@@ -53,9 +54,17 @@ class AppSnackbarHostTest {
         }
     }
 
+    /**
+     * Launched from runOnIdle so the coroutine is already running when
+     * waitForIdle pumps the main looper. Starting it inline races: the pump can
+     * find nothing to do and return before showSnackbar has queued its message,
+     * which shows up as a message that never appears.
+     */
     private fun show(state: SnackbarHostState, message: String, action: String? = null) {
-        scope.launch {
-            state.showSnackbar(message, actionLabel = action, duration = SnackbarDuration.Indefinite)
+        compose.runOnIdle {
+            scope.launch {
+                state.showSnackbar(message, actionLabel = action, duration = SnackbarDuration.Indefinite)
+            }
         }
         compose.waitForIdle()
     }

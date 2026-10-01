@@ -42,7 +42,7 @@ fun <T> FilterChips(
     modifier: Modifier = Modifier,
     /**
      * Rendered after the tabs, inside the same scrolling row. The sort control
-     * lives here rather than in the app bar so the bar does not grow to four
+     * lives here rather than in the app bar, so the bar does not grow to four
      * 50dp actions, which squeezes the title on a narrow phone.
      */
     trailing: @Composable RowScope.() -> Unit = {},

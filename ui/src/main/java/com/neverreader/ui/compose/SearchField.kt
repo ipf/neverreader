@@ -93,7 +93,7 @@ fun SearchField(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
-            painter = painterResource(R.drawable.ic_pkt_search_line),
+            painter = painterResource(R.drawable.ic_nr_search_line),
             contentDescription = null,
             tint = colors.grey4,
             modifier = Modifier.size(16.dp),
@@ -127,7 +127,7 @@ fun SearchField(
                 modifier = Modifier.size(24.dp),
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.ic_pkt_close_x_line),
+                    painter = painterResource(R.drawable.ic_nr_close_x_line),
                     contentDescription = stringResource(R.string.search_clear),
                     tint = colors.grey3,
                     modifier = Modifier.size(14.dp),

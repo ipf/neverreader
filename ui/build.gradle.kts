@@ -14,9 +14,6 @@ android {
 dependencies {
     implementation(projects.utilsAndroid)
 
-    // ButtonBoxDrawable resolves drawables through AppCompatResources.
-    api(libs.androidx.appcompat)
-
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.runtime)
     implementation(libs.androidx.compose.ui)

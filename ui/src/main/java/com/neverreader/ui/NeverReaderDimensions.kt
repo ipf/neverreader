@@ -6,7 +6,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.unit.Dp
 
 object NeverReaderDimensions {
-    private const val LargeScreenSmallestWidth = 590
+    private const val LARGE_SCREEN_SMALLEST_WIDTH: Int = 590
 
     val spaceSmall: Dp @Composable get() = dimensionResource(R.dimen.nr_space_sm)
     val spaceMedium: Dp @Composable get() = dimensionResource(R.dimen.nr_space_md)
@@ -15,7 +15,7 @@ object NeverReaderDimensions {
     val sideGrid: Dp
         @Composable get() {
             val configuration = LocalConfiguration.current
-            return if (configuration.smallestScreenWidthDp >= LargeScreenSmallestWidth) {
+            return if (configuration.smallestScreenWidthDp >= LARGE_SCREEN_SMALLEST_WIDTH) {
                 spaceLarge
             } else {
                 spaceMedium
