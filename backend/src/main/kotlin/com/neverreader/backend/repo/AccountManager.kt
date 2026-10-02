@@ -14,11 +14,25 @@ import kotlinx.coroutines.launch
 
 data class SyncState(val lastSyncAt: Long, val lastFullSyncAt: Long)
 
+/**
+ * The part of [AccountManager] the repositories depend on.
+ *
+ * Extracted so the sync path can be tested. AccountManager decrypts tokens
+ * through Tink and the Android keystore, neither of which Robolectric provides,
+ * so taking it as a concrete class left every caller of sync() untestable.
+ */
+interface Accounts {
+    suspend fun active(): Account?
+    suspend fun syncState(): SyncState
+    suspend fun update(account: Account)
+    suspend fun updateSyncState(lastSyncAt: Long? = null, lastFullSyncAt: Long? = null)
+}
+
 @javax.inject.Singleton
 class AccountManager @javax.inject.Inject constructor(
     @dagger.hilt.android.qualifiers.ApplicationContext private val context: Context,
     private val db: NeverReaderDatabase,
-) {
+) : Accounts {
 
     private val aead by lazy { TokenCrypto.aead(context) }
 
@@ -37,9 +51,9 @@ class AccountManager @javax.inject.Inject constructor(
 
     fun observe(): Flow<Account?> = db.accountDao().observe().map { it?.toAccount() }
 
-    suspend fun active(): Account? = db.accountDao().get()?.toAccount()
+    override suspend fun active(): Account? = db.accountDao().get()?.toAccount()
 
-    suspend fun syncState(): SyncState {
+    override suspend fun syncState(): SyncState {
         val current = db.accountDao().get() ?: return SyncState(0L, 0L)
         return SyncState(current.lastSyncAt, current.lastFullSyncAt)
     }
@@ -48,7 +62,7 @@ class AccountManager @javax.inject.Inject constructor(
         db.accountDao().upsert(account.toEntity(lastSyncAt = 0L, lastFullSyncAt = 0L))
     }
 
-    suspend fun update(account: Account) {
+    override suspend fun update(account: Account) {
         val current = db.accountDao().get() ?: return
         db.accountDao().upsert(current.copy(
             accessToken = TokenCrypto.encrypt(aead, account.accessToken),
@@ -56,7 +70,7 @@ class AccountManager @javax.inject.Inject constructor(
         ))
     }
 
-    suspend fun updateSyncState(lastSyncAt: Long? = null, lastFullSyncAt: Long? = null) {
+    override suspend fun updateSyncState(lastSyncAt: Long?, lastFullSyncAt: Long?) {
         val current = db.accountDao().get() ?: return
         db.accountDao().upsert(current.copy(
             lastSyncAt = lastSyncAt ?: current.lastSyncAt,

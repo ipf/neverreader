@@ -8,6 +8,7 @@ import androidx.paging.map
 import androidx.sqlite.db.SimpleSQLiteQuery
 import com.neverreader.backend.Backend
 import com.neverreader.backend.Backends
+import com.neverreader.backend.model.Account
 import com.neverreader.backend.db.MutationType
 import com.neverreader.backend.db.NeverReaderDatabase
 import com.neverreader.backend.db.PendingMutationEntity
@@ -32,7 +33,14 @@ private val FULL_REFRESH_MS = 7L * 24 * 60 * 60 * 1000
 class BookmarkRepository(
     private val context: Context,
     private val db: NeverReaderDatabase,
-    private val accounts: AccountManager,
+    private val accounts: Accounts,
+    /**
+     * How a [Backend] is built for an account. Injected rather than called
+     * directly so a test can drive sync() against a fake instead of a live
+     * server; production leaves it alone.
+     */
+    private val backendFactory: (Account, suspend (Account) -> Unit) -> Backend =
+        { account, onRefresh -> Backends.create(account, onTokensRefreshed = onRefresh) },
 ) {
 
     fun bookmarks(filter: ListFilter): Flow<PagingData<Bookmark>> =
@@ -110,7 +118,7 @@ class BookmarkRepository(
 
     suspend fun sync(): Boolean {
         val account = accounts.active() ?: return false
-        val backend = Backends.create(account, onTokensRefreshed = { accounts.update(it) })
+        val backend = backendFactory(account) { accounts.update(it) }
         pushPending(backend)
         pullDown(backend)
         return true
@@ -118,7 +126,7 @@ class BookmarkRepository(
 
     private suspend fun currentBackend(): Backend {
         val account = accounts.active() ?: error("No active account")
-        return Backends.create(account, onTokensRefreshed = { accounts.update(it) })
+        return backendFactory(account) { accounts.update(it) }
     }
 
     private suspend fun enqueueMutation(bookmarkId: String, type: String, payload: String?) {
@@ -188,7 +196,7 @@ class BookmarkRepository(
             val changed = backend.changedBookmarks(state.lastSyncAt)
             store(changed)
             backend.deletedBookmarkIds(state.lastSyncAt)?.let { ids -> removeAll(db, ids) }
-            accounts.updateSyncState(lastSyncAt = now)
+            accounts.updateSyncState(lastSyncAt = now, lastFullSyncAt = null)
         }
     }
 
