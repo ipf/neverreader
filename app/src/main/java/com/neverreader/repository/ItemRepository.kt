@@ -2,7 +2,6 @@ package com.neverreader.repository
 
 import com.neverreader.backend.DataGraph
 import com.neverreader.backend.model.Bookmark
-import com.neverreader.backend.model.ListFilter
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton

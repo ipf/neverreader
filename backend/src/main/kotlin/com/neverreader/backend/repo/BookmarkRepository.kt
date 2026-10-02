@@ -12,7 +12,6 @@ import com.neverreader.backend.db.MutationType
 import com.neverreader.backend.db.NeverReaderDatabase
 import com.neverreader.backend.db.PendingMutationEntity
 import com.neverreader.backend.db.TagCount
-import com.neverreader.backend.model.Account
 import com.neverreader.backend.model.Annotation
 import com.neverreader.backend.model.Bookmark
 import com.neverreader.backend.model.ListFilter
@@ -22,7 +21,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
-import java.io.IOException
 private val json = Json
 
 private val PAGE = 30

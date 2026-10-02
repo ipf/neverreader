@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
-import com.neverreader.app.App
 import com.neverreader.app.R
 import com.neverreader.backend.repo.AccountManager
 import com.neverreader.backend.model.Bookmark

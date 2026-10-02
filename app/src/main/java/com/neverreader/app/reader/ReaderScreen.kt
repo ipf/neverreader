@@ -1,13 +1,8 @@
 package com.neverreader.app.reader
 
-import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -24,7 +19,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.res.stringResource
@@ -32,14 +26,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.neverreader.app.R
-import com.neverreader.app.settings.Theme
 import com.neverreader.backend.model.Bookmark
-import com.neverreader.sdk.util.AbsNeverReaderActivity
 import com.neverreader.ui.compose.AppBar
 import com.neverreader.ui.theme.AppTheme
 import com.neverreader.ui.view.button.AppIconButton
 import com.neverreader.ui.view.button.UpIcon
-import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * The article reader: renders the backend's article HTML in a WebView.

@@ -2,7 +2,6 @@ package com.neverreader.util.java
 
 import android.util.Patterns
 import android.webkit.URLUtil
-import com.neverreader.app.App
 import java.util.regex.Pattern
 
 object UrlFinder {

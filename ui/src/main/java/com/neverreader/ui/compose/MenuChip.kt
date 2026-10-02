@@ -23,7 +23,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.neverreader.ui.R
 import com.neverreader.ui.theme.AppRadii
 import com.neverreader.ui.theme.AppTheme
 

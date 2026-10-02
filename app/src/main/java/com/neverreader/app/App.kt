@@ -9,7 +9,6 @@ import com.neverreader.repository.BookmarkRepository
 import com.neverreader.app.settings.Theme
 import com.neverreader.util.android.Clipboard
 import com.neverreader.util.prefs.Prefs
-import com.neverreader.sdk.util.AbsNeverReaderActivity
 import androidx.work.Configuration
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
