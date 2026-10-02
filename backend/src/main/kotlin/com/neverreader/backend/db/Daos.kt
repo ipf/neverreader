@@ -35,6 +35,13 @@ interface BookmarkDao {
     @Query("DELETE FROM bookmarks")
     suspend fun clear()
 
+    /**
+     * Every id currently stored. A full refresh compares this against what the
+     * server returned, so it needs the whole set rather than a page.
+     */
+    @Query("SELECT id FROM bookmarks")
+    suspend fun allIds(): List<String>
+
     @Query("UPDATE bookmarks SET unread = :unread WHERE id = :id")
     suspend fun setUnread(id: String, unread: Boolean)
 

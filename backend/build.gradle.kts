@@ -6,6 +6,10 @@ plugins {
 
 android {
     namespace = "com.neverreader.backend"
+
+    // Room's generated DAO implementations need the real Android runtime, so the
+    // database tests run under Robolectric with merged resources on the classpath.
+    testOptions.unitTests.isIncludeAndroidResources = true
 }
 
 dependencies {
@@ -24,6 +28,9 @@ dependencies {
     implementation(libs.dagger.hilt)
 
     testImplementation(libs.okhttp.mockwebserver)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.androidx.room.testing)
+    testImplementation(libs.androidx.test.core)
     testImplementation(libs.kotlin.test)
     testImplementation(libs.kotlin.junit)
     testImplementation(libs.kotlinx.coroutines.test)

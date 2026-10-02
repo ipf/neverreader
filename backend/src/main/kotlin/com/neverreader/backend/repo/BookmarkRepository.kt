@@ -25,8 +25,8 @@ private val json = Json
 
 private val PAGE = 30
 
-// ponytail: deletions made directly on the wallabag server only propagate through the
-// periodic full refresh (every 7 days), upgrade path: per-sync compare-by-id scan.
+// A deletion made directly on the server is only noticed by a full refresh,
+// because Wallabag's updatedSince has no tombstone. That is how often one runs.
 private val FULL_REFRESH_MS = 7L * 24 * 60 * 60 * 1000
 
 class BookmarkRepository(
@@ -168,21 +168,26 @@ class BookmarkRepository(
         val state = accounts.syncState()
         val now = System.currentTimeMillis()
         if (state.lastFullSyncAt == 0L || now - state.lastFullSyncAt > FULL_REFRESH_MS) {
+            // The full refresh is the only chance to notice a deletion, because
+            // Wallabag's updatedSince cannot report one. It used to just upsert
+            // every page, which meant an article deleted on the server stayed in
+            // the local list forever - the comments here and in WallabagAdapter
+            // both claimed the refresh handled it and it did not.
+            val seen = mutableSetOf<String>()
             var offset = 0
             while (true) {
                 val page = backend.listBookmarks(ListFilter(), PAGE, offset)
+                seen += page.map { it.id }
                 store(page)
                 if (page.size < PAGE) break
                 offset += PAGE
             }
+            purgeMissing(db, seen)
             accounts.updateSyncState(lastSyncAt = now, lastFullSyncAt = now)
         } else {
             val changed = backend.changedBookmarks(state.lastSyncAt)
             store(changed)
-            backend.deletedBookmarkIds(state.lastSyncAt)?.let { ids ->
-                db.bookmarkDao().deleteByIds(ids)
-                db.bookmarkDao().deleteTagLinks(ids)
-            }
+            backend.deletedBookmarkIds(state.lastSyncAt)?.let { ids -> removeAll(db, ids) }
             accounts.updateSyncState(lastSyncAt = now)
         }
     }
@@ -196,6 +201,36 @@ class BookmarkRepository(
     }
 
     private fun queryFor(filter: ListFilter): SimpleSQLiteQuery = BookmarkQuery.build(filter)
+}
+
+/**
+ * Drop everything stored locally that a full refresh did not see.
+ *
+ * Only the full refresh can do this, since a delta sync asks the server what
+ * changed and Wallabag cannot answer that with a tombstone. Compared by id, so
+ * an article that was merely re-favorited, archived or re-tagged on the server
+ * between refreshes survives.
+ *
+ * Internal rather than private so it can be tested against a real database:
+ * AccountManager needs Tink and the Android keystore, which Robolectric does
+ * not provide, and this is the part worth pinning anyway.
+ */
+internal suspend fun purgeMissing(db: NeverReaderDatabase, seen: Set<String>) =
+    removeAll(db, db.bookmarkDao().allIds() - seen)
+
+/**
+ * Remove bookmarks and everything hanging off them.
+ *
+ * Annotations are keyed by their own id rather than foreign-keyed to the
+ * bookmark, so nothing removes them for us. Both sync paths have to do it: a
+ * delta sync that dropped the bookmark left orphaned highlights, and so did a
+ * full refresh before it purged at all.
+ */
+internal suspend fun removeAll(db: NeverReaderDatabase, ids: List<String>) {
+    if (ids.isEmpty()) return
+    db.bookmarkDao().deleteByIds(ids)
+    db.bookmarkDao().deleteTagLinks(ids)
+    ids.forEach { db.annotationDao().deleteByBookmark(it) }
 }
 
 private fun com.neverreader.backend.db.BookmarkEntity.toDomain() = Bookmark(
