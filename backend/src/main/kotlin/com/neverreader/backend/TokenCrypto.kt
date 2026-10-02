@@ -8,6 +8,29 @@ import com.google.crypto.tink.RegistryConfiguration
 import com.google.crypto.tink.aead.AeadConfig
 import com.google.crypto.tink.integration.android.AndroidKeysetManager
 
+/**
+ * Symmetric encryption for access tokens.
+ *
+ * An interface rather than the Tink calls themselves so AccountManager can be
+ * tested: AndroidKeysetManager keeps its master key in the Android keystore,
+ * which Robolectric does not provide, so anything taking a concrete Aead was
+ * unreachable from a test.
+ */
+interface TokenCipher {
+    fun encrypt(plaintext: String): String
+    fun decrypt(ciphertext: String): String
+}
+
+/** The real thing: Tink, with its master key in the Android keystore. */
+class TinkTokenCipher(context: Context) : TokenCipher {
+
+    private val aead: Aead by lazy { TokenCrypto.aead(context) }
+
+    override fun encrypt(plaintext: String): String = TokenCrypto.encrypt(aead, plaintext)
+
+    override fun decrypt(ciphertext: String): String = TokenCrypto.decrypt(aead, ciphertext)
+}
+
 object TokenCrypto {
 
     init {

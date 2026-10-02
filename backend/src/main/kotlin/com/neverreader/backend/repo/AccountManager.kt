@@ -1,7 +1,8 @@
 package com.neverreader.backend.repo
 
 import android.content.Context
-import com.neverreader.backend.TokenCrypto
+import com.neverreader.backend.TinkTokenCipher
+import com.neverreader.backend.TokenCipher
 import com.neverreader.backend.db.NeverReaderDatabase
 import com.neverreader.backend.model.Account
 import com.neverreader.backend.model.BackendType
@@ -29,14 +30,34 @@ interface Accounts {
 }
 
 @javax.inject.Singleton
-class AccountManager @javax.inject.Inject constructor(
-    @dagger.hilt.android.qualifiers.ApplicationContext private val context: Context,
+// The primary constructor is internal rather than private because it carries the
+// test seams; see the injected constructor below.
+class AccountManager internal constructor(
     private val db: NeverReaderDatabase,
+    private val cipher: TokenCipher,
+    /**
+     * Where the activeCached mirror is kept up to date. Injectable so a test can
+     * cancel it: the collector in init never ends on its own, and a leaked one
+     * outlives the test that made it.
+     */
+    private val scope: CoroutineScope,
 ) : Accounts {
 
-    private val aead by lazy { TokenCrypto.aead(context) }
+    /**
+     * Dagger ignores Kotlin default arguments, so the injectable constructor
+     * keeps only the two dependencies it can actually supply; the cipher and the
+     * scope are test seams.
+     */
+    @javax.inject.Inject
+    constructor(
+        @dagger.hilt.android.qualifiers.ApplicationContext context: Context,
+        db: NeverReaderDatabase,
+    ) : this(
+        db = db,
+        cipher = TinkTokenCipher(context),
+        scope = CoroutineScope(SupervisorJob() + Dispatchers.IO),
+    )
 
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     // Quick sync access for UI checks; kept fresh by observe() collection.
     @Volatile
@@ -65,8 +86,8 @@ class AccountManager @javax.inject.Inject constructor(
     override suspend fun update(account: Account) {
         val current = db.accountDao().get() ?: return
         db.accountDao().upsert(current.copy(
-            accessToken = TokenCrypto.encrypt(aead, account.accessToken),
-            refreshToken = account.refreshToken?.let { TokenCrypto.encrypt(aead, it) },
+            accessToken = cipher.encrypt(account.accessToken),
+            refreshToken = account.refreshToken?.let { cipher.encrypt(it) },
         ))
     }
 
@@ -90,8 +111,8 @@ class AccountManager @javax.inject.Inject constructor(
         backendType = BackendType.valueOf(backendType),
         serverUrl = serverUrl,
         username = username,
-        accessToken = accessToken?.let { TokenCrypto.decrypt(aead, it) }.orEmpty(),
-        refreshToken = refreshToken?.let { TokenCrypto.decrypt(aead, it) },
+        accessToken = accessToken?.let { cipher.decrypt(it) }.orEmpty(),
+        refreshToken = refreshToken?.let { cipher.decrypt(it) },
         clientId = clientId,
         clientSecret = clientSecret,
     )
@@ -100,8 +121,8 @@ class AccountManager @javax.inject.Inject constructor(
         backendType = backendType.name,
         serverUrl = serverUrl,
         username = username,
-        accessToken = TokenCrypto.encrypt(aead, accessToken),
-        refreshToken = refreshToken?.let { TokenCrypto.encrypt(aead, it) },
+        accessToken = cipher.encrypt(accessToken),
+        refreshToken = refreshToken?.let { cipher.encrypt(it) },
         clientId = clientId,
         clientSecret = clientSecret,
         lastSyncAt = lastSyncAt,
