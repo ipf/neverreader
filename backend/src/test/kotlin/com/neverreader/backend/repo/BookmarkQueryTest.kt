@@ -83,8 +83,18 @@ class BookmarkQueryTest {
     }
 
     @Test
-    fun `tags and search agree on escaping`() {
-        assertEquals(BookmarkQuery.likePattern("a%b"), args(ListFilter(tag = "a%b")).single())
+    fun `tags and search escape the same way`() {
+        // Same escaping, different wrapping: a tag is matched as a whole element
+        // of the tagsJson array, so its quotes are part of the pattern.
+        assertEquals(
+            "%\"a\\%b\"%",
+            args(ListFilter(tag = "a%b")).single(),
+        )
+        // The search pattern is the plain wrapped form.
+        assertEquals(
+            BookmarkQuery.likePattern("a%b"),
+            args(ListFilter(search = "a%b")).first(),
+        )
     }
 
     @Test

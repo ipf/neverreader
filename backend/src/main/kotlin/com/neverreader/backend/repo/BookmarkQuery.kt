@@ -44,7 +44,7 @@ internal object BookmarkQuery {
     fun args(filter: ListFilter): List<Any> = buildList {
         filter.unread?.let { add(it) }
         filter.favorite?.let { add(it) }
-        filter.tag?.let { add(likePattern(it)) }
+        filter.tag?.let { add(quotedLikePattern(it)) }
         filter.search?.let {
             val pattern = likePattern(it)
             add(pattern); add(pattern); add(pattern)
@@ -68,9 +68,23 @@ internal object BookmarkQuery {
      * Wraps a term in `%` with the LIKE metacharacters escaped, so a user typing
      * `100%` or `a_b` searches for that literal text.
      */
-    fun likePattern(term: String): String =
-        "%" + term
-            .replace("\\", "\\\\")
-            .replace("%", "\\%")
-            .replace("_", "\\_") + "%"
+    fun likePattern(term: String): String = "%" + escape(term) + "%"
+
+    /**
+     * The same, but matching a whole element of the tagsJson array.
+     *
+     * tagsJson is `["news","sport"]`, so a bare %news% also matches a tag called
+     * "newsletter" - tapping the news chip listed everything that merely
+     * contained it. Wrapping the term in the JSON quotes makes it an element
+     * match instead.
+     */
+    fun quotedLikePattern(term: String): String = "%" + Q + escape(term) + Q + "%"
+
+    /** JSON string delimiter; tagsJson stores tags as quoted strings. */
+    private const val Q = "\""
+
+    private fun escape(term: String): String = term
+        .replace("\\", "\\\\")
+        .replace("%", "\\%")
+        .replace("_", "\\_")
 }
